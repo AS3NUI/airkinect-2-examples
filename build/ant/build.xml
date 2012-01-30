@@ -1,0 +1,225 @@
+<?xml version="1.0" ?>
+<project>
+	<property file="build.properties" />
+
+	<condition property="isMac">
+		<os family="mac" />
+	</condition>
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+
+	<!-- SDK properties -->
+	<property name="MXMLC.JAR" value="${SDK_HOME}/lib/mxmlc.jar" />
+	<property name="COMPC.JAR" value="${SDK_HOME}/lib/compc.jar" />
+	<property name="ADT.JAR" value="${SDK_HOME}/lib/adt.jar" />
+
+	<!-- Project properties -->
+	<property name="APP_ROOT_FILE" value="${APP_MAIN_NAME}.swf" />
+	<property name="APP_SOURCE_DIR" value="${APP_ROOT_DIR}/src" />
+	<property name="MAIN_SOURCE" value="${APP_SOURCE_DIR}/${APP_MAIN_NAME}${APP_MAIN_EXTENSION}" />
+	<property name="APP_SOURCE_DESCRIPTOR" value="${APP_SOURCE_DIR}/${APP_MAIN_NAME}-app.xml" />
+
+	<!-- Debug settings -->
+	<property name="APP_DEBUG_DIR" location="${APP_ROOT_DIR}/bin-debug" />
+	<property name="APP_DEBUG_DESCRIPTOR" value="${APP_DEBUG_DIR}/${APP_MAIN_NAME}-app.xml" />
+
+	<!-- Release settings -->
+	<property name="APP_RELEASE_DIR" location="${APP_ROOT_DIR}/bin-release" />
+	<property name="APP_RELEASE_DESCRIPTOR" value="${APP_RELEASE_DIR}/${APP_MAIN_NAME}-app.xml" />
+
+	<!-- Certificate Properties -->
+	<property name="ORG_NAME" value="howest" />
+	<property name="ORG_UNIT" value="devine" />
+	<property name="COUNTRY" value="US" />
+	<property name="KEY_TYPE" value="2048-RSA" />
+
+	<!-- Native Extension settings -->
+	<property name="NATIVE_EXTENSION_DEBUG_DIR" location="${APP_DEBUG_DIR}/extensions" />
+
+	<!-- GET ANT CONTRIB IF IT DOESNT EXIST -->
+	<!-- task found on http://stackoverflow.com/questions/653552/how-to-install-ant-contrib-under-windows -->
+	<available property="ant-contrib-exists" file="${ant.library.dir}/ant-contrib-1.0b3.jar" />
+	<target name="download-ant-contrib" unless="ant-contrib-exists">
+		<mkdir dir="${ant.library.dir}" />
+		<get src="http://downloads.sourceforge.net/project/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3-bin.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fant-contrib%2Ffiles%2Fant-contrib%2F1.0b3%2F&amp;use_mirror=cdnetworks-us-1" dest="${ant.library.dir}/ant-contrib-1.0b3-bin.zip" username="true" />
+		<unzip src="${ant.library.dir}/ant-contrib-1.0b3-bin.zip" dest="${ant.library.dir}" overwrite="no" />
+		<move todir="${ant.library.dir}">
+			<fileset file="${ant.library.dir}/ant-contrib/*.jar" />
+			<fileset file="${ant.library.dir}/ant-contrib/lib/*.jar" />
+		</move>
+		<delete file="${ant.library.dir}/ant-contrib-1.0b3-bin.zip" />
+		<delete dir="${ant.library.dir}/ant-contrib" />
+	</target>
+	<target name="init-ant-contrib" depends="download-ant-contrib">
+		<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${ant.library.dir}/ant-contrib-1.0b3.jar" />
+	</target>
+
+	<target name="Clean Release Dir">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${APP_RELEASE_DIR}" />
+		</delete>
+		<mkdir dir="${APP_RELEASE_DIR}" />
+	</target>
+
+	<target name="Clean Debug Dir">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${APP_DEBUG_DIR}" />
+		</delete>
+		<mkdir dir="${APP_DEBUG_DIR}" />
+		<mkdir dir="${NATIVE_EXTENSION_DEBUG_DIR}" />
+	</target>
+
+	<target name="Check Certificate Presence" depends="init-ant-contrib">
+		<propertyregex override="yes" property="AIR_CERTIFICATE_NAME" input="${CERTIFICATE_FILE}" regexp=".*/([^\.]*)\.p12" replace="\1" />
+
+		<available file="${CERTIFICATE_FILE}" type="file" property="cert.present" />
+	</target>
+
+	<target name="Generate Certificate" depends="Check Certificate Presence" unless="cert.present">
+		<java jar="${ADT.JAR}" fork="true">
+			<arg value="-certificate" />
+			<arg value="-cn" />
+			<arg value="${AIR_CERTIFICATE_NAME}" />
+			<arg value="-ou" />
+			<arg value="${ORG_UNIT}" />
+			<arg value="-o" />
+			<arg value="${ORG_NAME}" />
+			<arg value="-c" />
+			<arg value="${COUNTRY}" />
+			<arg value="${KEY_TYPE}" />
+			<arg value="${CERTIFICATE_FILE}" />
+			<arg value="${CERTIFICATE_PASSWORD}" />
+		</java>
+	</target>
+
+	<target name="Unpack Native Extensions" depends="Clean Debug Dir, init-ant-contrib">
+		<for param="nativeExtensionFile">
+			<path>
+				<fileset dir="${NATIVE_EXTENSION_ANE_DIR}" includes="**/*.ane" />
+			</path>
+			<sequential>
+				<propertyregex override="yes" property="nativeExtensionBaseName" input="@{nativeExtensionFile}" regexp=".*[\\/]+([^\.]*)\.ane" replace="\1" />
+				<unzip src="@{nativeExtensionFile}" dest="${NATIVE_EXTENSION_DEBUG_DIR}/${nativeExtensionBaseName}.ane" />
+			</sequential>
+		</for>
+	</target>
+
+	<target name="Compile Debug SWF" depends="Unpack Native Extensions">
+		<copy filtering="true" file="${APP_SOURCE_DESCRIPTOR}" tofile="${APP_DEBUG_DESCRIPTOR}" />
+		<replace file="${APP_DEBUG_DESCRIPTOR}">
+			<replacefilter token="[This value will be overwritten by Flash Builder in the output app.xml]" value="${APP_ROOT_FILE}" />
+		</replace>
+		
+		<java jar="${MXMLC.JAR}" fork="true" failonerror="true" maxmemory="256m">
+			<arg value="-debug=true" />
+			<arg value="+flexlib=${SDK_HOME}/frameworks" />
+			<arg value="-external-library-path=${NATIVE_EXTENSION_ANE_DIR}" />
+			<arg value="+configname=air" />
+			<arg value="-file-specs=${MAIN_SOURCE}" />
+			<arg value="-output=${APP_DEBUG_DIR}/${APP_ROOT_FILE}" />
+		</java>
+	</target>
+
+	<target name="Run Debug SWF" depends="Compile Debug SWF, init-ant-contrib">
+
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<property name="ADL" value="${SDK_HOME}/bin/adl.exe" />
+			</then>
+			<else>
+				<property name="ADL" value="${SDK_HOME}/bin/adl" />
+			</else>
+		</if>
+
+		<exec executable="${ADL}">
+			<arg value="${APP_DEBUG_DESCRIPTOR}" />
+			<arg value="-extdir" />
+			<arg value="${NATIVE_EXTENSION_DEBUG_DIR}" />
+			<arg value="${APP_DEBUG_DIR}" />
+		</exec>
+	</target>
+
+	<target name="Compile Release SWF" depends="Clean Release Dir, Generate Certificate">
+		<copy filtering="true" file="${APP_SOURCE_DESCRIPTOR}" tofile="${APP_RELEASE_DESCRIPTOR}" />
+		<replace file="${APP_RELEASE_DESCRIPTOR}">
+			<replacefilter token="[This value will be overwritten by Flash Builder in the output app.xml]" value="${APP_ROOT_FILE}" />
+		</replace>
+		<java jar="${MXMLC.JAR}" fork="true" failonerror="true" maxmemory="256m">
+			<arg value="-debug=false" />
+			<arg value="+flexlib=${SDK_HOME}/frameworks" />
+			<arg value="-external-library-path=${NATIVE_EXTENSION_ANE_DIR}" />
+			<arg value="+configname=air" />
+			<arg value="-file-specs=${MAIN_SOURCE}" />
+			<arg value="-output=${APP_RELEASE_DIR}/${APP_ROOT_FILE}" />
+		</java>
+	</target>
+	
+	<target name="Create Standalone Application" depends="Compile Release SWF">
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<property name="STANDALONE_EXTENSION" value=".exe" />
+			</then>
+			<else>
+				<property name="STANDALONE_EXTENSION" value=".app" />
+			</else>
+		</if>
+		<copy filtering="true" file="${APP_SOURCE_DESCRIPTOR}" tofile="${APP_RELEASE_DESCRIPTOR}" />
+		<java jar="${ADT.JAR}" fork="true" failonerror="true">
+			<arg value="-package" />
+			<arg value="-storetype" />
+			<arg value="pkcs12" />
+			<arg value="-keystore" />
+			<arg value="${CERTIFICATE_FILE}" />
+			<arg value="-storepass" />
+			<arg value="${CERTIFICATE_PASSWORD}" />
+			<arg value="-target" />
+			<arg value="bundle" />
+			<arg value="${APP_RELEASE_DIR}/${APP_MAIN_NAME}${STANDALONE_EXTENSION}" />
+			<arg value="${APP_RELEASE_DESCRIPTOR}" />
+			<arg value="-extdir" />
+			<arg value="${NATIVE_EXTENSION_ANE_DIR}" />
+			<arg value="-C" />
+			<arg value="${APP_RELEASE_DIR}" />
+			<arg value="${APP_MAIN_NAME}.swf" />
+		</java>
+		<delete file="${APP_RELEASE_DESCRIPTOR}" failonerror="false" />
+		<delete file="${APP_RELEASE_DIR}/${APP_MAIN_NAME}.swf" failonerror="false" />
+	</target>
+
+	<target name="Create Desktop Installer" depends="Compile Release SWF">
+		<if>
+			<equals arg1="${isWindows}" arg2="true" />
+			<then>
+				<property name="INSTALLER_EXTENSION" value=".exe" />
+			</then>
+			<else>
+				<property name="INSTALLER_EXTENSION" value=".dmg" />
+			</else>
+		</if>
+		<copy filtering="true" file="${APP_SOURCE_DESCRIPTOR}" tofile="${APP_RELEASE_DESCRIPTOR}" />
+		<java jar="${ADT.JAR}" fork="true" failonerror="true">
+			<arg value="-package" />
+			<arg value="-storetype" />
+			<arg value="pkcs12" />
+			<arg value="-keystore" />
+			<arg value="${CERTIFICATE_FILE}" />
+			<arg value="-storepass" />
+			<arg value="${CERTIFICATE_PASSWORD}" />
+			<arg value="-target" />
+			<arg value="native" />
+			<arg value="${APP_RELEASE_DIR}/${APP_MAIN_NAME}${INSTALLER_EXTENSION}" />
+			<arg value="${APP_RELEASE_DESCRIPTOR}" />
+			<arg value="-extdir" />
+			<arg value="${NATIVE_EXTENSION_ANE_DIR}" />
+			<arg value="-C" />
+			<arg value="${APP_RELEASE_DIR}" />
+			<arg value="${APP_MAIN_NAME}.swf" />
+		</java>
+		<delete file="${APP_RELEASE_DESCRIPTOR}" failonerror="false" />
+		<delete file="${APP_RELEASE_DIR}/${APP_MAIN_NAME}.swf" failonerror="false" />
+	</target>
+
+</project>
