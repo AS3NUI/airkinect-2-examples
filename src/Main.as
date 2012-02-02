@@ -7,6 +7,8 @@ package
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.DepthCameraDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.InfraredCameraDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.RGBCameraDemo;
+	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.JointRotationsDemo;
+	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
 	import com.bit101.components.ComboBox;
 	
 	import flash.display.Sprite;
@@ -25,6 +27,8 @@ package
 			{label: "RGB Camera Demo", data: RGBCameraDemo},
 			{label: "Depth Camera Demo", data: DepthCameraDemo},
 			{label: "Infrared Camera Demo", data: InfraredCameraDemo},
+			{label: "User Mask Demo", data: UserMaskDemo},
+			{label: "Joint Rotations Demo", data: JointRotationsDemo},
 			{label: "Joint Cubes Demo", data: JointCubesDemo},
 			{label: "3D Character Demo", data: RiggedModelDemo}
 		]);
@@ -62,7 +66,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoIndex = 5;
+			currentDemoIndex = 4;
 			
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 			//stage.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler, false, 0, true);

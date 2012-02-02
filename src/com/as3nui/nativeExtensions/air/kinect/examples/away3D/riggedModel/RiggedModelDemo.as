@@ -2,7 +2,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 {
 	import away3d.animators.data.SkeletonAnimation;
 	import away3d.animators.data.SkeletonAnimationState;
-	import away3d.animators.skeleton.JointPose;
 	import away3d.animators.skeleton.SkeletonJoint;
 	import away3d.cameras.Camera3D;
 	import away3d.containers.Scene3D;
@@ -11,7 +10,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import away3d.events.AssetEvent;
 	import away3d.library.AssetLibrary;
 	import away3d.lights.PointLight;
-	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
 	import away3d.materials.lightpickers.StaticLightPicker;
 	import away3d.textures.BitmapTexture;
@@ -44,18 +42,61 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		[Embed(source="/../assets/characters/hellknight/hellknight_local.png")]
 		private var BodyNorms : Class;
 		
+		/*
+		[Embed(source="/../assets/characters/player/body.png")]
+		private var BodyAlbedo : Class;
+		
+		[Embed(source="/../assets/characters/player/body_s.png")]
+		private var BodySpec : Class;
+		
+		[Embed(source="/../assets/characters/player/body_local.png")]
+		private var BodyNorms : Class;
+		
+		[Embed(source="/../assets/characters/player/arm2.png")]
+		private var ArmAlbedo : Class;
+		
+		[Embed(source="/../assets/characters/player/arm2_s.png")]
+		private var ArmSpec : Class;
+		
+		[Embed(source="/../assets/characters/player/arm2_local.png")]
+		private var ArmNorms : Class;
+		
+		[Embed(source="/../assets/characters/player/playerhead.png")]
+		private var HeadAlbedo : Class;
+		
+		[Embed(source="/../assets/characters/player/playerhead_s.png")]
+		private var HeadSpec : Class;
+		
+		[Embed(source="/../assets/characters/player/playerhead_local.png")]
+		private var HeadNorms : Class;
+		
+		[Embed(source="/../assets/characters/player/teethdeadb.png")]
+		private var TeethAlbedo : Class;
+		
+		[Embed(source="/../assets/characters/player/teeth_local.png")]
+		private var TeethNorms : Class;
+		
+		[Embed(source="/../assets/characters/player/green.png")]
+		private var Eye : Class;
+		*/
+		
 		private var scene:Scene3D;
 		private var camera:Camera3D;
 		private var view:View3D;
 		private var mesh:Mesh;
-		private var bodyMaterial:TextureMaterial;
-		private var colorMaterial:ColorMaterial;
+		
+		private var _bodyMaterial:TextureMaterial;
+		private var _armsMaterial:TextureMaterial;
+		private var _headMaterial:TextureMaterial;
+		private var _teethMaterial:TextureMaterial;
+		private var _eyeMaterial:TextureMaterial;
+		
 		
 		private var _light:PointLight;
 		private var _light2:PointLight;
 		private var _light3:PointLight;
 		
-		private var animationController:RiggedModelAnimationController;
+		private var animationController:RiggedModelAnimationControllerByRotation;
 		
 		private var kinect:Kinect;
 		
@@ -69,9 +110,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			scene = new Scene3D();
 			camera = new Camera3D();
 			
-			camera.z = -100;
-			camera.y = 100;
-			
 			view = new View3D();
 			view.antiAlias = 4;
 			view.backgroundColor = 0xFFFFFF;
@@ -81,8 +119,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			
 			AssetLibrary.enableParser(RotatedMD5MeshParser);
 			AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, assetCompleteHandler, false, 0, true);
+			
+			//you'll need a mesh in T-pose for rotation based rigging to work!
+			
 			AssetLibrary.load(new URLRequest("assets/characters/hellknight/hellknight.md5mesh"));
-			//AssetLibrary.load(new URLRequest("assets/characters/character3D/der3.md5mesh"));
+			//AssetLibrary.load(new URLRequest("assets/characters/player/player.md5mesh"));
 		}
 		
 		protected function assetCompleteHandler(event:AssetEvent):void
@@ -94,70 +135,79 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			
 			mesh = Mesh(event.asset);
 			
+			camera.z = mesh.maxZ * -4;
+			camera.y = mesh.maxY / 2;
+			
 			initLights();
 			initMaterials();
 			
-			mesh.material = bodyMaterial;
-			//mesh.material = colorMaterial;
+			mesh.material = _bodyMaterial;
 			
-			
-			for each(var skeletonJoint:away3d.animators.skeleton.SkeletonJoint in (mesh.animationState.animation as SkeletonAnimation).skeleton.joints)
-			{
-				trace(skeletonJoint.name, skeletonJoint.parentIndex);
-			}
-			
-			//der3 model
 			/*
-			var jointMapping:Vector.<Number> = Vector.<Number>([
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("_head"), 			// XN_SKEL_HEAD
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("head"),			// XN_SKEL_NECK
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("torseDown"),		// XN_SKEL_TORSO
-				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("upArmL"), 		// XN_SKEL_LEFT_SHOULDER
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("foreArmL"),		// XN_SKEL_LEFT_ELBOW
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("handL"),			// XN_SKEL_LEFT_HAND
-				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("upArmR"), 		// XN_SKEL_RIGHT_SHOULDER
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("foreArmR"),		// XN_SKEL_RIGHT_ELBOW
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("handR"), 			// XN_SKEL_RIGHT_HAND
-				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("thighL"),			// XN_SKEL_LEFT_HIP
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("legL"),			// XN_SKEL_LEFT_KNEE
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("footL"),			// XN_SKEL_LEFT_FOOT
-				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("thighR"),			// XN_SKEL_RIGHT_HIP
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("legR"),			// XN_SKEL_RIGHT_KNEE
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("footR")			// XN_SKEL_RIGHT_FOOT
-			]);
+			mesh.subMeshes[0].material = _headMaterial;
+			mesh.subMeshes[1].material = _teethMaterial;
+			mesh.subMeshes[2].material = _eyeMaterial;
+			mesh.subMeshes[3].material = _eyeMaterial;
+			mesh.subMeshes[6].material = _armsMaterial;
 			*/
 			
+			scene.addChild(mesh);
+			
+			var i:uint = 0;
+			for each(var skeletonJoint:away3d.animators.skeleton.SkeletonJoint in (mesh.animationState.animation as SkeletonAnimation).skeleton.joints)
+			{
+				trace(i, skeletonJoint.name, skeletonJoint.parentIndex);
+				i++;
+			}
+			
+			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
+			
 			var jointMapping:Vector.<Number> = Vector.<Number>([
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("head"), 			// XN_SKEL_HEAD
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("neck"),			// XN_SKEL_NECK
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("origin"),			// XN_SKEL_TORSO
-			
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("luparm"), 		// XN_SKEL_LEFT_SHOULDER
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lloarm"),			// XN_SKEL_LEFT_ELBOW
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lwrist"),			// XN_SKEL_LEFT_HAND
-			
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("ruparm"), 		// XN_SKEL_RIGHT_SHOULDER
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rloarm"),			// XN_SKEL_RIGHT_ELBOW
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rwrist"), 		// XN_SKEL_RIGHT_HAND
-			
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lupleg"),			// XN_SKEL_LEFT_HIP
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lloleg"),			// XN_SKEL_LEFT_KNEE
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lfoot"),			// XN_SKEL_LEFT_FOOT
-			
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rupleg"),			// XN_SKEL_RIGHT_HIP
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rloleg"),			// XN_SKEL_RIGHT_KNEE
-			(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rfoot")			// XN_SKEL_RIGHT_FOOT
+			/*
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Head"), 			// XN_SKEL_HEAD
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Neck"),			// XN_SKEL_NECK
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Chest"),			// XN_SKEL_TORSO
+				
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Luparm"), 		// XN_SKEL_LEFT_SHOULDER
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Lloarm"),			// XN_SKEL_LEFT_ELBOW
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Lhand"),			// XN_SKEL_LEFT_HAND
+				
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Ruparm"), 		// XN_SKEL_RIGHT_SHOULDER
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Rloarm"),			// XN_SKEL_RIGHT_ELBOW
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Rhand"), 		// XN_SKEL_RIGHT_HAND
+				
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Lupleg"),			// XN_SKEL_LEFT_HIP
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Lloleg"),			// XN_SKEL_LEFT_KNEE
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Lball_r"),			// XN_SKEL_LEFT_FOOT
+				
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Rupleg"),			// XN_SKEL_RIGHT_HIP
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Rloleg"),			// XN_SKEL_RIGHT_KNEE
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Rball_r")			// XN_SKEL_RIGHT_FOOT
+			*/
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("head"), 			// XN_SKEL_HEAD
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("neck"),			// XN_SKEL_NECK
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("origin"),			// XN_SKEL_TORSO
+				
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("luparm"), 		// XN_SKEL_LEFT_SHOULDER
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lloarm"),			// XN_SKEL_LEFT_ELBOW
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lwrist"),			// XN_SKEL_LEFT_HAND
+				
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("ruparm"), 		// XN_SKEL_RIGHT_SHOULDER
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rloarm"),			// XN_SKEL_RIGHT_ELBOW
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rwrist"), 		// XN_SKEL_RIGHT_HAND
+				
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lupleg"),			// XN_SKEL_LEFT_HIP
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lloleg"),			// XN_SKEL_LEFT_KNEE
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("lfoot"),			// XN_SKEL_LEFT_FOOT
+				
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rupleg"),			// XN_SKEL_RIGHT_HIP
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rloleg"),			// XN_SKEL_RIGHT_KNEE
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("rfoot")			// XN_SKEL_RIGHT_FOOT
 			]);
 			
 			jointMapping.fixed = true;
 			
-			animationController = new RiggedModelAnimationController(jointMapping, SkeletonAnimationState(mesh.animationState));
-			
-			scene.addChild(mesh);
+			animationController = new RiggedModelAnimationControllerByRotation(jointMapping, SkeletonAnimationState(mesh.animationState));
 			
 			if(Kinect.isSupported())
 			{
@@ -182,8 +232,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				trace("[RiggedModelDemo] Start Kinect");
 				kinect.start(config);
 			}
-			
-			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
 		}
 		
 		protected function rgbImageUpdateHandler(event:CameraImageEvent):void
@@ -250,49 +298,74 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		{
 			var lightPicker:StaticLightPicker = new StaticLightPicker([ _light, _light2, _light3 ]);
 			
-			bodyMaterial = new TextureMaterial(new BitmapTexture(new BodyAlbedo().bitmapData));
-			bodyMaterial.lightPicker = lightPicker;
-			bodyMaterial.ambientColor = 0x101020;
-			bodyMaterial.ambient = 1;
-			bodyMaterial.specularMap = new BitmapTexture(new BodySpec().bitmapData);
-			bodyMaterial.normalMap = new BitmapTexture(new BodyNorms().bitmapData);
+			_bodyMaterial = new TextureMaterial(new BitmapTexture(new BodyAlbedo().bitmapData));
+			_bodyMaterial.lightPicker = lightPicker;
+			_bodyMaterial.ambientColor = 0x101020;
+			_bodyMaterial.ambient = 1;
+			_bodyMaterial.specularMap = new BitmapTexture(new BodySpec().bitmapData);
+			_bodyMaterial.normalMap = new BitmapTexture(new BodyNorms().bitmapData);
+			/*
+			_armsMaterial = new TextureMaterial(new BitmapTexture(new ArmAlbedo().bitmapData));
+			_armsMaterial.lightPicker = lightPicker;
+			_armsMaterial.ambientColor = 0x101020;
+			_armsMaterial.ambient = 1;
+			_armsMaterial.specularMap = new BitmapTexture(new ArmSpec().bitmapData);
+			_armsMaterial.normalMap = new BitmapTexture(new ArmNorms().bitmapData);
 			
-			colorMaterial = new ColorMaterial(0xFF0000);
-			colorMaterial.lightPicker = lightPicker;
+			_headMaterial = new TextureMaterial(new BitmapTexture(new HeadAlbedo().bitmapData));
+			_headMaterial.lightPicker = lightPicker;
+			_headMaterial.ambientColor = 0x101020;
+			_headMaterial.ambient = 1;
+			_headMaterial.specularMap = new BitmapTexture(new HeadSpec().bitmapData);
+			_headMaterial.normalMap = new BitmapTexture(new HeadNorms().bitmapData);
+			
+			_teethMaterial = new TextureMaterial(new BitmapTexture(new TeethAlbedo().bitmapData));
+			_teethMaterial.lightPicker = lightPicker;
+			_teethMaterial.ambientColor = 0x101020;
+			_teethMaterial.ambient = 1;
+			//			_teethMaterial.specular = 0;
+			_teethMaterial.normalMap = new BitmapTexture(new TeethNorms().bitmapData);
+			
+			_eyeMaterial = new TextureMaterial(new BitmapTexture(new Eye().bitmapData));
+			_eyeMaterial.lightPicker = lightPicker;
+			*/
 		}
 		
 		protected function enterFrameHandler(event:Event):void
 		{
 			view.render();
-			rgbSkeletonContainer.graphics.clear();
-			for each(var user:User in kinect.usersWithSkeleton)
+			if(rgbSkeletonContainer != null && kinect != null)
 			{
-				drawRGBBone(user.getJointByName(JointNames.LEFT_HAND), user.getJointByName(JointNames.LEFT_ELBOW));
-				drawRGBBone(user.getJointByName(JointNames.LEFT_ELBOW), user.getJointByName(JointNames.LEFT_SHOULDER));
-				drawRGBBone(user.getJointByName(JointNames.LEFT_SHOULDER), user.getJointByName(JointNames.NECK));
-				drawRGBBone(user.getJointByName(JointNames.LEFT_SHOULDER), user.getJointByName(JointNames.TORSO));
-				
-				drawRGBBone(user.getJointByName(JointNames.RIGHT_HAND), user.getJointByName(JointNames.RIGHT_ELBOW));
-				drawRGBBone(user.getJointByName(JointNames.RIGHT_ELBOW), user.getJointByName(JointNames.RIGHT_SHOULDER));
-				drawRGBBone(user.getJointByName(JointNames.RIGHT_SHOULDER), user.getJointByName(JointNames.NECK));
-				drawRGBBone(user.getJointByName(JointNames.RIGHT_SHOULDER), user.getJointByName(JointNames.TORSO));
-				
-				drawRGBBone(user.getJointByName(JointNames.HEAD), user.getJointByName(JointNames.NECK));
-				
-				drawRGBBone(user.getJointByName(JointNames.TORSO), user.getJointByName(JointNames.LEFT_HIP));
-				drawRGBBone(user.getJointByName(JointNames.LEFT_HIP), user.getJointByName(JointNames.LEFT_KNEE));
-				drawRGBBone(user.getJointByName(JointNames.LEFT_KNEE), user.getJointByName(JointNames.LEFT_FOOT));
-				
-				drawRGBBone(user.getJointByName(JointNames.TORSO), user.getJointByName(JointNames.RIGHT_HIP));
-				drawRGBBone(user.getJointByName(JointNames.RIGHT_HIP), user.getJointByName(JointNames.RIGHT_KNEE));
-				drawRGBBone(user.getJointByName(JointNames.RIGHT_KNEE), user.getJointByName(JointNames.RIGHT_FOOT));
-				
-				for each(var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint in user.skeletonJoints)
+				rgbSkeletonContainer.graphics.clear();
+				for each(var user:User in kinect.usersWithSkeleton)
 				{
-					rgbSkeletonContainer.graphics.lineStyle(2, 0xFFFFFF);
-					rgbSkeletonContainer.graphics.beginFill(0xFF0000);
-					rgbSkeletonContainer.graphics.drawCircle(joint.rgbPosition.x, joint.rgbPosition.y, 2);
-					rgbSkeletonContainer.graphics.endFill();
+					drawRGBBone(user.getJointByName(JointNames.LEFT_HAND), user.getJointByName(JointNames.LEFT_ELBOW));
+					drawRGBBone(user.getJointByName(JointNames.LEFT_ELBOW), user.getJointByName(JointNames.LEFT_SHOULDER));
+					drawRGBBone(user.getJointByName(JointNames.LEFT_SHOULDER), user.getJointByName(JointNames.NECK));
+					drawRGBBone(user.getJointByName(JointNames.LEFT_SHOULDER), user.getJointByName(JointNames.TORSO));
+					
+					drawRGBBone(user.getJointByName(JointNames.RIGHT_HAND), user.getJointByName(JointNames.RIGHT_ELBOW));
+					drawRGBBone(user.getJointByName(JointNames.RIGHT_ELBOW), user.getJointByName(JointNames.RIGHT_SHOULDER));
+					drawRGBBone(user.getJointByName(JointNames.RIGHT_SHOULDER), user.getJointByName(JointNames.NECK));
+					drawRGBBone(user.getJointByName(JointNames.RIGHT_SHOULDER), user.getJointByName(JointNames.TORSO));
+					
+					drawRGBBone(user.getJointByName(JointNames.HEAD), user.getJointByName(JointNames.NECK));
+					
+					drawRGBBone(user.getJointByName(JointNames.TORSO), user.getJointByName(JointNames.LEFT_HIP));
+					drawRGBBone(user.getJointByName(JointNames.LEFT_HIP), user.getJointByName(JointNames.LEFT_KNEE));
+					drawRGBBone(user.getJointByName(JointNames.LEFT_KNEE), user.getJointByName(JointNames.LEFT_FOOT));
+					
+					drawRGBBone(user.getJointByName(JointNames.TORSO), user.getJointByName(JointNames.RIGHT_HIP));
+					drawRGBBone(user.getJointByName(JointNames.RIGHT_HIP), user.getJointByName(JointNames.RIGHT_KNEE));
+					drawRGBBone(user.getJointByName(JointNames.RIGHT_KNEE), user.getJointByName(JointNames.RIGHT_FOOT));
+					
+					for each(var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint in user.skeletonJoints)
+					{
+						rgbSkeletonContainer.graphics.lineStyle(2, 0xFFFFFF);
+						rgbSkeletonContainer.graphics.beginFill(0xFF0000);
+						rgbSkeletonContainer.graphics.drawCircle(joint.rgbPosition.x, joint.rgbPosition.y, 2);
+						rgbSkeletonContainer.graphics.endFill();
+					}
 				}
 			}
 		}
