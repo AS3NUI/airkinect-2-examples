@@ -86,15 +86,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					drawX = centerX;
 					drawY = centerY;
 					
-					joint = user.getJointByName(JointNames.LEFT_SHOULDER);
-					drawX = drawX + Math.cos(joint.orientation.z) * 100;
-					drawY = drawY + Math.sin(joint.orientation.z) * 100;
+					drawX = drawX + Math.cos(user.leftShoulder.orientation.z) * 100;
+					drawY = drawY + Math.sin(user.leftShoulder.orientation.z) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 					
-					joint = user.getJointByName(JointNames.LEFT_ELBOW);
-					drawX = drawX + Math.cos(joint.orientation.z) * 100;
-					drawY = drawY + Math.sin(joint.orientation.z) * 100;
+					drawX = drawX + Math.cos(user.leftElbow.orientation.z) * 100;
+					drawY = drawY + Math.sin(user.leftElbow.orientation.z) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 					
@@ -105,15 +103,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					drawX = centerX;
 					drawY = centerY;
 					
-					joint = user.getJointByName(JointNames.RIGHT_SHOULDER);
-					drawX = drawX + Math.cos(joint.orientation.z + Math.PI) * 100;
-					drawY = drawY + Math.sin(joint.orientation.z + Math.PI) * 100;
+					drawX = drawX + Math.cos(user.rightShoulder.orientation.z + Math.PI) * 100;
+					drawY = drawY + Math.sin(user.rightShoulder.orientation.z + Math.PI) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 					
-					joint = user.getJointByName(JointNames.RIGHT_ELBOW);
-					drawX = drawX + Math.cos(joint.orientation.z + Math.PI) * 100;
-					drawY = drawY + Math.sin(joint.orientation.z + Math.PI) * 100;
+					drawX = drawX + Math.cos(user.rightElbow.orientation.z + Math.PI) * 100;
+					drawY = drawY + Math.sin(user.rightElbow.orientation.z + Math.PI) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 				}

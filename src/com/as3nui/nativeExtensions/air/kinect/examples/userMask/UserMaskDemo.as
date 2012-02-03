@@ -9,8 +9,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	
 	import flash.display.Bitmap;
-	import flash.display.BitmapData;
 	import flash.geom.Point;
+	import flash.utils.Dictionary;
 	
 	public class UserMaskDemo extends DemoBase
 	{
@@ -19,7 +19,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 		
 		private var kinect:Kinect;
 		private var depthImage:Bitmap;
-		private var bmp:Bitmap;
+		
+		private var userMasks:Vector.<Bitmap>;
+		private var userMaskDictionary:Dictionary;
 		
 		override protected function startDemoImplementation():void
 		{
@@ -31,23 +33,59 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 				depthImage = new Bitmap();
 				addChild(depthImage);
 				
+				userMasks = new Vector.<Bitmap>();
+				userMaskDictionary = new Dictionary();
+				
 				kinect = Kinect.getKinect();
 				
 				kinect.addEventListener(KinectEvent.STARTED, kinectStartedHandler, false, 0, true);
 				kinect.addEventListener(KinectEvent.STOPPED, kinectStoppedHandler, false, 0, true);
 				kinect.addEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthImageUpdateHandler, false, 0, true);
-				kinect.addEventListener(UserEvent.USER_MASK_IMAGE_UPDATE, userMaskImageUpdateHandler, false, 0, true);
+				kinect.addEventListener(UserEvent.USERS_ADDED, usersAddedHandler, false, 0, true);
+				kinect.addEventListener(UserEvent.USERS_REMOVED, usersRemovedHandler, false, 0, true);
+				kinect.addEventListener(UserEvent.USERS_MASK_IMAGE_UPDATE, usersMaskImageUpdateHandler, false, 0, true);
 				
 				var config:KinectConfig = new KinectConfig();
 				config.depthEnabled = true;
 				config.depthShowUserColors = true;
 				config.userMaskEnabled = true;
 				
-				bmp = new Bitmap(new BitmapData(config.userMaskWidth, config.userMaskHeight, true, 0));
-				addChild(bmp);
-				
 				kinect.start(config);
 			}
+		}
+		
+		protected function usersAddedHandler(event:UserEvent):void
+		{
+			for each(var user:User in event.users)
+			{
+				var bmp:Bitmap = new Bitmap();
+				userMasks.push(bmp);
+				userMaskDictionary[user.trackingID] = bmp;
+				addChild(bmp);
+			}
+			layout();
+		}
+		
+		protected function usersRemovedHandler(event:UserEvent):void
+		{
+			for each(var user:User in event.users)
+			{
+				var bmp:Bitmap = userMaskDictionary[user.trackingID];
+				if(bmp != null)
+				{
+					if(bmp.parent != null)
+					{
+						bmp.parent.removeChild(bmp);
+					}
+					var index:int = userMasks.indexOf(bmp);
+					if(index > -1)
+					{
+						userMasks.splice(index, 1);
+					}
+				}
+				delete userMaskDictionary[user.trackingID];
+			}
+			layout();
 		}
 		
 		protected function depthImageUpdateHandler(event:CameraImageEvent):void
@@ -65,40 +103,34 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 			trace("[UserMaskDemo] Kinect Stopped");
 		}
 		
-		protected function userMaskImageUpdateHandler(event:UserEvent):void
+		protected function usersMaskImageUpdateHandler(event:UserEvent):void
 		{
-			//first user
-			/*
-			if(event.users.length > 0)
-			{
-				bmp.bitmapData = event.users[0].userMaskData;
-			}
-			*/
-			
-			//all users
-			bmp.bitmapData.lock();
-			bmp.bitmapData.fillRect(bmp.bitmapData.rect, 0);
-			
 			for each(var user:User in event.users)
 			{
-				if(user.userMaskData != null)
+				var bmp:Bitmap = userMaskDictionary[user.trackingID];
+				if(bmp != null)
 				{
-					bmp.bitmapData.copyPixels(user.userMaskData, user.userMaskData.rect, TOP_LEFT);
+					bmp.bitmapData = user.userMaskData;
 				}
 			}
-			
-			bmp.bitmapData.unlock();
 		}
 		
 		override protected function stopDemoImplementation():void
 		{
 			trace("[UserMaskDemo] Stop Demo");
-			
 			if(kinect != null)
 			{
+				for each(var user:User in kinect.users)
+				{
+					if(userMaskDictionary[user.trackingID] != null)
+					{
+						userMaskDictionary[user.trackingID].bitmapData.dispose();
+					}
+					delete userMaskDictionary[user.trackingID];
+				}
 				kinect.removeEventListener(KinectEvent.STARTED, kinectStartedHandler);
 				kinect.removeEventListener(KinectEvent.STOPPED, kinectStoppedHandler);
-				kinect.removeEventListener(UserEvent.USER_MASK_IMAGE_UPDATE, userMaskImageUpdateHandler);
+				kinect.removeEventListener(UserEvent.USERS_MASK_IMAGE_UPDATE, usersMaskImageUpdateHandler);
 				kinect.stop();
 			}
 		}
@@ -106,10 +138,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 		override protected function layout():void
 		{
 			trace("[UserMaskDemo] Layout");
-			if(bmp != null)
+			var xPos:uint = 0;
+			var yPos:uint = 240;
+			for each(var bmp:Bitmap in userMasks)
 			{
-				bmp.x = (explicitWidth - bmp.width) * .5;
-				bmp.y = (explicitHeight - bmp.height) * .5;
+				bmp.x = xPos;
+				bmp.y = yPos;
+				xPos += bmp.width;
 			}
 		}
 	}

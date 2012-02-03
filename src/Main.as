@@ -69,7 +69,6 @@ package
 			currentDemoIndex = 4;
 			
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
-			//stage.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler, false, 0, true);
 		}
 		
 		protected function demoSelectHandler(event:Event):void

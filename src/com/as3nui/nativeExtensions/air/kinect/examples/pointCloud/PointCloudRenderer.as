@@ -46,7 +46,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 		
 		protected function mouseWheelHandler(event:MouseEvent):void
 		{
-			trace("mouse wheel");
 			_targetZ -= event.shiftKey ? event.delta *2 : event.delta;
 		}
 		

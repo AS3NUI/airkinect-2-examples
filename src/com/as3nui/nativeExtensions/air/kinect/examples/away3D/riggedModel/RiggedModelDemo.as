@@ -252,9 +252,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		protected function usersWithSkeletonAddedHandler(event:UserEvent):void
 		{
 			trace("[RiggedModelDemo] User With Skeleton Added", event.users);
-			if(animationController.kinectSkeleton == null)
+			if(animationController.kinectUser == null)
 			{
-				animationController.kinectSkeleton = event.users[0];
+				animationController.kinectUser = event.users[0];
 			}
 		}
 		
@@ -263,15 +263,15 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			trace("[RiggedModelDemo] User With Skeleton Removed", event.users);
 			for each(var removedUser:User in event.users)
 			{
-				if(removedUser == animationController.kinectSkeleton)
+				if(removedUser == animationController.kinectUser)
 				{
-					animationController.kinectSkeleton = null;
+					animationController.kinectUser = null;
 					break;
 				}
 			}
 			if(kinect.usersWithSkeleton.length > 0)
 			{
-				animationController.kinectSkeleton = kinect.usersWithSkeleton[0];
+				animationController.kinectUser = kinect.usersWithSkeleton[0];
 			}
 		}
 		
@@ -339,25 +339,25 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				rgbSkeletonContainer.graphics.clear();
 				for each(var user:User in kinect.usersWithSkeleton)
 				{
-					drawRGBBone(user.getJointByName(JointNames.LEFT_HAND), user.getJointByName(JointNames.LEFT_ELBOW));
-					drawRGBBone(user.getJointByName(JointNames.LEFT_ELBOW), user.getJointByName(JointNames.LEFT_SHOULDER));
-					drawRGBBone(user.getJointByName(JointNames.LEFT_SHOULDER), user.getJointByName(JointNames.NECK));
-					drawRGBBone(user.getJointByName(JointNames.LEFT_SHOULDER), user.getJointByName(JointNames.TORSO));
+					drawRGBBone(user.leftHand, user.leftElbow);
+					drawRGBBone(user.leftElbow, user.leftShoulder);
+					drawRGBBone(user.leftShoulder, user.neck);
+					drawRGBBone(user.leftShoulder, user.torso);
 					
-					drawRGBBone(user.getJointByName(JointNames.RIGHT_HAND), user.getJointByName(JointNames.RIGHT_ELBOW));
-					drawRGBBone(user.getJointByName(JointNames.RIGHT_ELBOW), user.getJointByName(JointNames.RIGHT_SHOULDER));
-					drawRGBBone(user.getJointByName(JointNames.RIGHT_SHOULDER), user.getJointByName(JointNames.NECK));
-					drawRGBBone(user.getJointByName(JointNames.RIGHT_SHOULDER), user.getJointByName(JointNames.TORSO));
+					drawRGBBone(user.rightHand, user.rightElbow);
+					drawRGBBone(user.rightElbow, user.rightShoulder);
+					drawRGBBone(user.rightShoulder, user.neck);
+					drawRGBBone(user.rightShoulder, user.torso);
 					
-					drawRGBBone(user.getJointByName(JointNames.HEAD), user.getJointByName(JointNames.NECK));
+					drawRGBBone(user.head, user.neck);
 					
-					drawRGBBone(user.getJointByName(JointNames.TORSO), user.getJointByName(JointNames.LEFT_HIP));
-					drawRGBBone(user.getJointByName(JointNames.LEFT_HIP), user.getJointByName(JointNames.LEFT_KNEE));
-					drawRGBBone(user.getJointByName(JointNames.LEFT_KNEE), user.getJointByName(JointNames.LEFT_FOOT));
+					drawRGBBone(user.torso, user.leftHip);
+					drawRGBBone(user.leftHip, user.leftKnee);
+					drawRGBBone(user.leftKnee, user.leftFoot);
 					
-					drawRGBBone(user.getJointByName(JointNames.TORSO), user.getJointByName(JointNames.RIGHT_HIP));
-					drawRGBBone(user.getJointByName(JointNames.RIGHT_HIP), user.getJointByName(JointNames.RIGHT_KNEE));
-					drawRGBBone(user.getJointByName(JointNames.RIGHT_KNEE), user.getJointByName(JointNames.RIGHT_FOOT));
+					drawRGBBone(user.torso, user.rightHip);
+					drawRGBBone(user.rightHip, user.rightKnee);
+					drawRGBBone(user.rightKnee, user.rightFoot);
 					
 					for each(var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint in user.skeletonJoints)
 					{
