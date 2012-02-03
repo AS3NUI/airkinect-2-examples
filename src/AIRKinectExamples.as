@@ -19,7 +19,7 @@ package
 	import flash.ui.Keyboard;
 	
 	[SWF(frameRate="60", width="1024", height="768", backgroundColor="#FFFFFF")]
-	public class Main extends Sprite
+	public class AIRKinectExamples extends Sprite
 	{
 		
 		public static const DEMO_CLASSES:Vector.<Object> = Vector.<Object>([
@@ -50,7 +50,7 @@ package
 		
 		private var demoBox:ComboBox;
 		
-		public function Main()
+		public function AIRKinectExamples()
 		{
 			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
