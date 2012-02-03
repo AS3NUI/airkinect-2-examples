@@ -6,3 +6,4 @@
 .settings/org.eclipse.core.resources.prefs
 
 bin-debug/*
+cert/debugCert.p12
