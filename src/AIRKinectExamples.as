@@ -15,8 +15,6 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
-	import flash.events.KeyboardEvent;
-	import flash.ui.Keyboard;
 	
 	[SWF(frameRate="60", width="1024", height="768", backgroundColor="#FFFFFF")]
 	public class AIRKinectExamples extends Sprite
@@ -46,6 +44,18 @@ package
 			currentDemoChanged();
 		}
 		
+		public function set currentDemoClass(value:Class):void
+		{
+			for(var i:uint = 0; i < DEMO_CLASSES.length; i++)
+			{
+				if(DEMO_CLASSES[i].data == value)
+				{
+					this.currentDemoIndex = i;
+					return;
+				}
+			}
+		}
+		
 		private var currentDemo:DemoBase;
 		
 		private var demoBox:ComboBox;
@@ -66,7 +76,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoIndex = 4;
+			currentDemoClass = RiggedModelDemo;
 			
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}
@@ -74,19 +84,6 @@ package
 		protected function demoSelectHandler(event:Event):void
 		{
 			currentDemoIndex = demoBox.selectedIndex;
-		}
-		
-		protected function keyUpHandler(event:KeyboardEvent):void
-		{
-			switch(event.keyCode)
-			{
-				case Keyboard.RIGHT:
-					currentDemoIndex++;
-					break;
-				case Keyboard.LEFT:
-					currentDemoIndex--;
-					break;
-			}
 		}
 		
 		private function currentDemoChanged():void

@@ -1,5 +1,7 @@
 package com.derschmale.openni
 {
+	import com.as3nui.nativeExtensions.air.kinect.constants.JointNames;
+
 	public class XnSkeletonJoint
 	{
 		public static const HEAD : int = 0;
@@ -21,6 +23,24 @@ package com.derschmale.openni
 		public static const RIGHT_HIP : int = 12;
 		public static const RIGHT_KNEE : int = 13;
 		public static const RIGHT_FOOT : int = 14;
+		
+		public static const NAMES_BY_INDEX:Vector.<String> = Vector.<String>([
+			JointNames.HEAD,
+			JointNames.NECK,
+			JointNames.TORSO,
+			JointNames.LEFT_SHOULDER,
+			JointNames.LEFT_ELBOW,
+			JointNames.LEFT_HAND,
+			JointNames.RIGHT_SHOULDER,
+			JointNames.RIGHT_ELBOW,
+			JointNames.RIGHT_HAND,
+			JointNames.LEFT_HIP,
+			JointNames.LEFT_KNEE,
+			JointNames.LEFT_FOOT,
+			JointNames.RIGHT_HIP,
+			JointNames.RIGHT_KNEE,
+			JointNames.RIGHT_FOOT
+		]);
 
 	}
 }
