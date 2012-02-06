@@ -15,8 +15,10 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 	{
 		
 		private var _pointCloudImage:Bitmap;
+		private var _explicitWidth:uint;
+		private var _explicitHeight:uint;
 		
-		private var _buffer: Vector.<uint> = new Vector.<uint>( 320 * 240, true );
+		private var _buffer: Vector.<uint>;
 		private var _focalLength: Number;
 		private var _matrix:Matrix3D = new Matrix3D();
 		private var _targetZ:Number = 0;
@@ -24,13 +26,18 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 		
 		private var stageRef:Stage;
 		
-		public function PointCloudRenderer()
+		public function PointCloudRenderer(width:uint, height:uint)
 		{
+			_explicitWidth = width;
+			_explicitHeight = height;
+			
+			_buffer = new Vector.<uint>(_explicitWidth * _explicitHeight, true );
+			
 			var perspectiveProjection:PerspectiveProjection = new PerspectiveProjection( );
 			perspectiveProjection.fieldOfView = 60.0;
 			_focalLength = perspectiveProjection.focalLength;
 			
-			_pointCloudImage = new Bitmap(new BitmapData(320, 240, true, 0xffff0000));
+			_pointCloudImage = new Bitmap(new BitmapData(_explicitWidth, _explicitHeight, true, 0xffff0000));
 			addChild(_pointCloudImage);
 			
 			addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler, false, 0, true);
@@ -96,14 +103,16 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 			var p22:Number = _matrix.rawData[ 0xa ];
 			var p32:Number = _matrix.rawData[ 0xe ];
 			
-			var bufferWidth:int = 320;
+			var bufferWidth:int = _explicitWidth;
 			var bufferMax:int = _buffer.length;
 			var bufferMin:int = -1;
 			var bufferIndex:int;
 			var buffer:Vector.<uint> = _buffer;
 			
-			var cx:Number = 160.0;
-			var cy:Number = 120.0;
+			var halfWidth:int = _explicitWidth * .5;
+			var halfHeight:int = _explicitHeight * .5;
+			var cx:Number = _explicitWidth * .5;
+			var cy:Number = _explicitHeight * .5;
 			var minZ:Number = 0.0;
 			
 			var n:int = bufferMax;
@@ -114,10 +123,10 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 			depthPoints.position = 0;
 			while (depthPoints.bytesAvailable) {
 				x = depthPoints.readShort();
-				x -= 160;
+				x -= halfWidth;
 				
 				y = depthPoints.readShort();
-				y -= 120;
+				y -= halfHeight;
 				
 				z = depthPoints.readShort();
 				if (z < 1) z = 1;

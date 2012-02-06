@@ -2,7 +2,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
-	import com.as3nui.nativeExtensions.air.kinect.constants.JointNames;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
@@ -67,6 +66,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 			{
 				if(user.hasSkeleton)
 				{
+					
 					for each(joint in user.skeletonJoints)
 					{
 						//rgb overlay
