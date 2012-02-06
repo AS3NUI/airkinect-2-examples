@@ -17,6 +17,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 		private var _pointCloudImage:Bitmap;
 		private var _explicitWidth:uint;
 		private var _explicitHeight:uint;
+		private var _includeRGB:Boolean;
 		
 		private var _buffer: Vector.<uint>;
 		private var _focalLength: Number;
@@ -26,10 +27,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 		
 		private var stageRef:Stage;
 		
-		public function PointCloudRenderer(width:uint, height:uint)
+		public function PointCloudRenderer(width:uint, height:uint, includeRGB:Boolean = false)
 		{
 			_explicitWidth = width;
 			_explicitHeight = height;
+			_includeRGB = includeRGB;
 			
 			_buffer = new Vector.<uint>(_explicitWidth * _explicitHeight, true );
 			
@@ -118,33 +120,76 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 			var n:int = bufferMax;
 			while (--n > -1) buffer[ n ] = 0xff000000;
 			
-			var r:Number;
+			var zAbs:Number;
 			
 			depthPoints.position = 0;
-			while (depthPoints.bytesAvailable) {
-				x = depthPoints.readShort();
-				x -= halfWidth;
-				
-				y = depthPoints.readShort();
-				y -= halfHeight;
-				
-				z = depthPoints.readShort();
-				if (z < 1) z = 1;
-				if (z > 2047) z = 2047;
-				z -= 1024;
-				
-				pz = _focalLength + x * p02 + y * p12 + z * p22 + p32;
-				
-				if (minZ < pz) {
-					xi = int(( w = _focalLength / pz ) * ( x * p00 + y * p10 + z * p20 ) + cx);
-					if (xi < 0) continue;
-					if (xi > bufferWidth) continue;
+			
+			if(_includeRGB)
+			{
+				var r:uint;
+				var g:uint;
+				var b:uint;
+				while (depthPoints.bytesAvailable) {
+					x = depthPoints.readShort();
+					x -= halfWidth;
 					
-					yi = int(w * ( x * p01 + y * p11 + z * p21 ) + cy);
+					y = depthPoints.readShort();
+					y -= halfHeight;
 					
-					if (bufferMin < ( bufferIndex = int(xi + int(yi * bufferWidth)) ) && bufferIndex < bufferMax) {
-						r = Math.abs((1 - Math.abs((z + 1024) / 2047)) * 255);
-						buffer[ bufferIndex ] = 0xff << 24 | r << 16 | r << 8 | r;
+					z = depthPoints.readShort();
+					
+					r = depthPoints.readShort();
+					g = depthPoints.readShort();
+					b = depthPoints.readShort();
+					
+					if (z < 1) z = 1;
+					if (z > 2047) z = 2047;
+					z -= 1024;
+					
+					pz = _focalLength + x * p02 + y * p12 + z * p22 + p32;
+					
+					if (minZ < pz) {
+						xi = int(( w = _focalLength / pz ) * ( x * p00 + y * p10 + z * p20 ) + cx);
+						if (xi < 0) continue;
+						if (xi > bufferWidth) continue;
+						
+						yi = int(w * ( x * p01 + y * p11 + z * p21 ) + cy);
+						
+						if (bufferMin < ( bufferIndex = int(xi + int(yi * bufferWidth)) ) && bufferIndex < bufferMax) {
+							//zAbs = Math.abs((1 - Math.abs((z + 1024) / 2047)) * 255);
+							buffer[ bufferIndex ] = 0xff << 24 | r << 16 | g << 8 | b;
+						}
+					}
+				}
+			}
+			else
+			{
+				while (depthPoints.bytesAvailable) {
+					x = depthPoints.readShort();
+					x -= halfWidth;
+					
+					y = depthPoints.readShort();
+					y -= halfHeight;
+					
+					z = depthPoints.readShort();
+					
+					if (z < 1) z = 1;
+					if (z > 2047) z = 2047;
+					z -= 1024;
+					
+					pz = _focalLength + x * p02 + y * p12 + z * p22 + p32;
+					
+					if (minZ < pz) {
+						xi = int(( w = _focalLength / pz ) * ( x * p00 + y * p10 + z * p20 ) + cx);
+						if (xi < 0) continue;
+						if (xi > bufferWidth) continue;
+						
+						yi = int(w * ( x * p01 + y * p11 + z * p21 ) + cy);
+						
+						if (bufferMin < ( bufferIndex = int(xi + int(yi * bufferWidth)) ) && bufferIndex < bufferMax) {
+							zAbs = Math.abs((1 - Math.abs((z + 1024) / 2047)) * 255);
+							buffer[ bufferIndex ] = 0xff << 24 | zAbs << 16 | zAbs << 8 | zAbs;
+						}
 					}
 				}
 			}

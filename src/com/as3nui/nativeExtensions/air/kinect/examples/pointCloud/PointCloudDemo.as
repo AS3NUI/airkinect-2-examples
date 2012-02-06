@@ -23,8 +23,10 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 				config.pointCloudEnabled = true;
 				config.pointCloudWidth = 640;
 				config.pointCloudHeight = 480;
+				config.pointCloudDensity = 4;
+				config.pointCloudIncludeRGB = true;
 				
-				renderer = new PointCloudRenderer(config.pointCloudWidth, config.pointCloudHeight);
+				renderer = new PointCloudRenderer(config.pointCloudWidth, config.pointCloudHeight, config.pointCloudIncludeRGB);
 				addChild(renderer);
 				
 				kinect.start(config);
