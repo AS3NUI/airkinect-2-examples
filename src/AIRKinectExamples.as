@@ -8,6 +8,8 @@ package
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.InfraredCameraDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.RGBCameraDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudDemo;
+	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRGBDemo;
+	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRegionsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.JointRotationsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
 	import com.bit101.components.ComboBox;
@@ -27,6 +29,8 @@ package
 			{label: "Depth Camera Demo", data: DepthCameraDemo},
 			{label: "Infrared Camera Demo", data: InfraredCameraDemo},
 			{label: "Point Cloud Demo", data: PointCloudDemo},
+			{label: "Point Cloud RGB Demo", data: PointCloudRGBDemo},
+			{label: "Point Cloud Regions Demo", data: PointCloudRegionsDemo},
 			{label: "User Mask Demo", data: UserMaskDemo},
 			{label: "Joint Rotations Demo", data: JointRotationsDemo},
 			{label: "Joint Cubes Demo", data: JointCubesDemo},
@@ -78,7 +82,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoClass = PointCloudDemo;
+			currentDemoClass = PointCloudRGBDemo;
 			
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}

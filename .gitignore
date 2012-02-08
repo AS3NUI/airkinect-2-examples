@@ -7,3 +7,5 @@
 
 bin-debug/*
 cert/debugCert.p12
+
+bin/AIRKinectExamples.dmg

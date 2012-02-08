@@ -5,7 +5,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 	import com.as3nui.nativeExtensions.air.kinect.events.PointCloudEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	
-	public class PointCloudDemo extends DemoBase
+	public class PointCloudRGBDemo extends DemoBase
 	{
 		
 		private var kinect:Kinect;
@@ -24,6 +24,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 				config.pointCloudWidth = 640;
 				config.pointCloudHeight = 480;
 				config.pointCloudDensity = 2;
+				config.pointCloudIncludeRGB = true;
 				
 				renderer = new PointCloudRenderer(config.pointCloudWidth, config.pointCloudHeight, config.pointCloudIncludeRGB);
 				addChild(renderer);

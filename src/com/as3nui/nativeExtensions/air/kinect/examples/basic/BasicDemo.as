@@ -97,6 +97,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 			{
 				if(user.hasSkeleton)
 				{
+					trace(user.leftHand.position);
 					for each(var joint:SkeletonJoint in user.skeletonJoints)
 					{
 						if(joint.positionConfidence > .5)
