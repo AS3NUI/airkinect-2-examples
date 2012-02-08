@@ -2,6 +2,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
+	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.events.PointCloudEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	
@@ -21,11 +22,10 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 				
 				var config:KinectConfig = new KinectConfig();
 				config.pointCloudEnabled = true;
-				config.pointCloudWidth = 640;
-				config.pointCloudHeight = 480;
+				config.pointCloudResolution = CameraResolution.RESOLUTION_640_480;
 				config.pointCloudDensity = 2;
 				
-				renderer = new PointCloudRenderer(config.pointCloudWidth, config.pointCloudHeight, config.pointCloudIncludeRGB);
+				renderer = new PointCloudRenderer(config);
 				addChild(renderer);
 				
 				kinect.start(config);

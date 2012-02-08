@@ -1,5 +1,6 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 {
+	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
 	import com.as3nui.nativeExtensions.air.kinect.data.PointCloudRegion;
 	
 	import flash.display.Bitmap;
@@ -46,11 +47,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 		private var stageRef:Stage;
 		private var regionRendererContainer:Sprite;
 		
-		public function PointCloudRenderer(width:uint, height:uint, includeRGB:Boolean = false)
+		public function PointCloudRenderer(config:KinectConfig)
 		{
-			_explicitWidth = width;
-			_explicitHeight = height;
-			_includeRGB = includeRGB;
+			_explicitWidth = config.pointCloudResolution.x;
+			_explicitHeight = config.pointCloudResolution.y;
+			_includeRGB = config.pointCloudIncludeRGB;
 			
 			_buffer = new Vector.<uint>(_explicitWidth * _explicitHeight, true );
 			

@@ -2,12 +2,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
+	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.KinectEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	
 	import flash.display.Bitmap;
-	import flash.events.Event;
 	
 	public class DepthCameraDemo extends DemoBase
 	{
@@ -29,8 +29,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 				
 				var config:KinectConfig = new KinectConfig();
 				config.depthEnabled = true;
-				config.depthWidth = 640;
-				config.depthHeight = 480;
+				config.depthResolution = CameraResolution.RESOLUTION_640_480;
 				config.depthShowUserColors = true;
 				
 				kinect.start(config);

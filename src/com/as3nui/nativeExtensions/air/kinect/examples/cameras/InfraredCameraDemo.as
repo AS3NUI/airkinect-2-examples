@@ -2,12 +2,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
+	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.KinectEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	
 	import flash.display.Bitmap;
-	import flash.events.Event;
 	
 	public class InfraredCameraDemo extends DemoBase
 	{
@@ -29,8 +29,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 				
 				var config:KinectConfig = new KinectConfig();
 				config.infraredEnabled = true;
-				config.infraredWidth = 640;
-				config.infraredHeight = 480;
+				config.infraredResolution = CameraResolution.RESOLUTION_640_480;
 				
 				kinect.start(config);
 			}
