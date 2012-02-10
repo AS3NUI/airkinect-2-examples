@@ -82,7 +82,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoClass = PointCloudRGBDemo;
+			currentDemoClass = BasicDemo;
 			
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}

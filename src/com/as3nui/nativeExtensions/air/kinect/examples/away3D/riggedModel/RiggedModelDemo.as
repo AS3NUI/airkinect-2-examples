@@ -32,7 +32,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	public class RiggedModelDemo extends DemoBase
 	{
 		
-		[Embed(source="/../assets/characters/export/character.jpg")]
+		[Embed(source="/assets/characters/export/character.jpg")]
 		private var BodyMaterial:Class;
 		
 		private var scene:Scene3D;

@@ -1,9 +1,7 @@
-
 .actionScriptProperties
-
 .project
-
 .settings/org.eclipse.core.resources.prefs
-
+build/*
 bin-debug/*
-cert/debugCert.p12
+bin/*
+cert/*
