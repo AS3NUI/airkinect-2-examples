@@ -2,7 +2,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 {
 	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
 	import com.as3nui.nativeExtensions.air.kinect.data.PointCloudRegion;
-	
+
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
@@ -11,10 +11,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix3D;
 	import flash.geom.PerspectiveProjection;
-	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
-	
+
 	public class PointCloudRenderer extends Sprite
 	{
 		
@@ -46,9 +45,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 		
 		private var stageRef:Stage;
 		private var regionRendererContainer:Sprite;
+		private var _maxDepth:uint;
 		
-		public function PointCloudRenderer(config:KinectConfig)
+		public function PointCloudRenderer(config:KinectConfig, maxDepth:uint = 2048)
 		{
+			_maxDepth = maxDepth;
 			_explicitWidth = config.pointCloudResolution.x;
 			_explicitHeight = config.pointCloudResolution.y;
 			_includeRGB = config.pointCloudIncludeRGB;
@@ -154,7 +155,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 				var r:uint;
 				var g:uint;
 				var b:uint;
-				while (depthPoints.bytesAvailable) {
+				while (depthPoints.bytesAvailable >=12) {
 					x = depthPoints.readShort();
 					y = depthPoints.readShort();
 					z = depthPoints.readShort();
@@ -167,12 +168,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 					y -= halfHeight;
 					
 					if (z < 1) z = 1;
-					if (z > 2047) z = 2047;
-					z -= 1024;
+					if (z > _maxDepth) z = _maxDepth;
+					z -= (_maxDepth/2);
 					
 					pz = _focalLength + x * p02 + y * p12 + z * p22 + p32;
 					
-					if (minZ < pz) {
+					if (minZ < pz && z > -1000) {
 						xi = int(( w = _focalLength / pz ) * ( x * p00 + y * p10 + z * p20 ) + cx);
 						if (xi < 0) continue;
 						if (xi > bufferWidth) continue;
@@ -188,8 +189,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 			}
 			else
 			{
-				
-				while (depthPoints.bytesAvailable) {
+
+				while (depthPoints.bytesAvailable >=6) {
 					x = depthPoints.readShort();
 					y = depthPoints.readShort();
 					z = depthPoints.readShort();
@@ -198,12 +199,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 					y -= halfHeight;
 					
 					if (z < 1) z = 1;
-					if (z > 2047) z = 2047;
-					z -= 1024;
+					if (z > _maxDepth) z = _maxDepth;
+					z -= (_maxDepth/2);
 					
 					pz = _focalLength + x * p02 + y * p12 + z * p22 + p32;
 					
-					if (minZ < pz) {
+					if (minZ < pz && z > -1000) {
 						xi = int(( w = _focalLength / pz ) * ( x * p00 + y * p10 + z * p20 ) + cx);
 						if (xi < 0) continue;
 						if (xi > bufferWidth) continue;
@@ -247,8 +248,17 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 				regionRendererContainer.addChild(renderer);
 			}
 		}
+
+		public function get includeRGB():Boolean {
+			return _includeRGB;
+		}
+
+		public function set includeRGB(value:Boolean):void {
+			_includeRGB = value;
+		}
 	}
 }
+
 import com.as3nui.nativeExtensions.air.kinect.data.PointCloudRegion;
 import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRenderer;
 
@@ -363,7 +373,7 @@ internal class RegionRenderer extends Sprite
 	{
 		var scaleFactor:Number = focalLength/(focalLength + vector.z);
 		
-		var point:Point = new Point()
+		var point:Point = new Point();
 		point.x = vector.x*scaleFactor;
 		point.y = vector.y*scaleFactor;
 		

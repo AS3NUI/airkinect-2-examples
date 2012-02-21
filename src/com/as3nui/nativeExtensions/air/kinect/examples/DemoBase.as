@@ -43,7 +43,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples
 			{
 				demoStarted = false;
 				stopDemoImplementation();
-				layout();
 			}
 		}
 		

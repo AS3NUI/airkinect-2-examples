@@ -11,7 +11,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 	import away3d.materials.MaterialBase;
 	import away3d.materials.lightpickers.StaticLightPicker;
 	import away3d.primitives.CubeGeometry;
-	
+
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
@@ -19,14 +19,14 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 	import com.as3nui.nativeExtensions.air.kinect.events.KinectEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.UserEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-	
+
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
-	
+
 	public class JointCubesDemo extends DemoBase
 	{
 		
@@ -113,7 +113,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 			//remove cubes for the removed users
 			for each(var removedUser:User in event.users)
 			{
-				var boxes:Vector.<Mesh> = skeletonViewsDictionary[removedUser.trackingID];
+				var boxes:Vector.<Mesh> = skeletonViewsDictionary[removedUser.userID];
 				if(boxes != null)
 				{
 					for each(var box:Mesh in boxes)
@@ -121,7 +121,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 						scene.removeChild(box);
 					}
 				}
-				delete skeletonViewsDictionary[removedUser.trackingID];
+				delete skeletonViewsDictionary[removedUser.userID];
 			}
 		}
 		
@@ -140,7 +140,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 					scene.addChild(box);
 					boxes.push(box);
 				}
-				skeletonViewsDictionary[addedUser.trackingID] = boxes;
+				skeletonViewsDictionary[addedUser.userID] = boxes;
 			}
 		}
 		
@@ -201,7 +201,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 			{
 				for each(var skeleton:User in kinect.usersWithSkeleton)
 				{
-					var boxes:Vector.<Mesh> = skeletonViewsDictionary[skeleton.trackingID];
+					var boxes:Vector.<Mesh> = skeletonViewsDictionary[skeleton.userID];
 					if(boxes != null)
 					{
 						for(var i:uint = 0; i < skeleton.skeletonJoints.length; i++)

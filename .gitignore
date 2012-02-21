@@ -5,3 +5,6 @@ build/*
 bin-debug/*
 bin/*
 cert/*
+/assets/
+/bin-debug/
+/airkinect-2-examples.iml
