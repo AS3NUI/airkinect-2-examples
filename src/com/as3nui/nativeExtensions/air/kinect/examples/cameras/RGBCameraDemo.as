@@ -1,59 +1,59 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 {
-	import com.as3nui.nativeExtensions.air.kinect.Kinect;
-	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
+	import com.as3nui.nativeExtensions.air.kinect.Device;
+	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
-	import com.as3nui.nativeExtensions.air.kinect.events.KinectEvent;
+	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-	
+
 	import flash.display.Bitmap;
-	
+
 	public class RGBCameraDemo extends DemoBase
 	{
 		
 		private var rgbBitmap:Bitmap;
-		private var kinect:Kinect;
+		private var device:Device;
 		
 		override protected function startDemoImplementation():void
 		{
-			if(Kinect.isSupported())
+			if(Device.isSupported())
 			{
-				kinect = Kinect.getKinect();
+				device = Device.getDeviceByOS();
 				
 				rgbBitmap = new Bitmap();
 				addChild(rgbBitmap);
 				
-				kinect.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
-				kinect.addEventListener(KinectEvent.STARTED, kinectStartedHandler, false, 0, true);
-				kinect.addEventListener(KinectEvent.STOPPED, kinectStoppedHandler, false, 0, true);
+				device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
+				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
+				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
 				
-				var config:KinectConfig = new KinectConfig();
-				config.rgbEnabled = true;
-				config.rgbResolution = CameraResolution.RESOLUTION_640_480;
+				var settings:DeviceSettings = new DeviceSettings();
+				settings.rgbEnabled = true;
+				settings.rgbResolution = CameraResolution.RESOLUTION_640_480;
 				
-				kinect.start(config);
+				device.start(settings);
 			}
 		}
 		
-		protected function kinectStartedHandler(event:KinectEvent):void
+		protected function kinectStartedHandler(event:DeviceEvent):void
 		{
-			trace("[RGBCameraDemo] kinect started");
+			trace("[RGBCameraDemo] device started");
 		}
 		
-		protected function kinectStoppedHandler(event:KinectEvent):void
+		protected function kinectStoppedHandler(event:DeviceEvent):void
 		{
-			trace("[RGBCameraDemo] kinect stopped");
+			trace("[RGBCameraDemo] device stopped");
 		}
 		
 		override protected function stopDemoImplementation():void
 		{
-			if(kinect != null)
+			if(device != null)
 			{
-				kinect.stop();
-				kinect.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
-				kinect.removeEventListener(KinectEvent.STARTED, kinectStartedHandler);
-				kinect.removeEventListener(KinectEvent.STOPPED, kinectStoppedHandler);
+				device.stop();
+				device.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
+				device.removeEventListener(DeviceEvent.STARTED, kinectStartedHandler);
+				device.removeEventListener(DeviceEvent.STOPPED, kinectStoppedHandler);
 			}
 		}
 		

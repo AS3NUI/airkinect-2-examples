@@ -12,11 +12,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 	import away3d.materials.lightpickers.StaticLightPicker;
 	import away3d.primitives.CubeGeometry;
 
-	import com.as3nui.nativeExtensions.air.kinect.Kinect;
-	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
+	import com.as3nui.nativeExtensions.air.kinect.Device;
+	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
+
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
-	import com.as3nui.nativeExtensions.air.kinect.events.KinectEvent;
+	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.UserEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 
@@ -45,7 +46,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 		private var lastMouseY:Number;
 		private var move:Boolean;
 		
-		private var kinect:Kinect;
+		private var device:Device;
 		
 		private var skeletonViewsDictionary:Dictionary;
 		
@@ -81,30 +82,30 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 			stageRef.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
 			stageRef.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
 			
-			if(Kinect.isSupported())
+			if(Device.isSupported())
 			{
-				kinect = Kinect.getKinect();
+				device = Device.getDeviceByOS();
 				
-				kinect.addEventListener(KinectEvent.STARTED, kinectStartedHandler, false, 0, true);
-				kinect.addEventListener(KinectEvent.STOPPED, kinectStoppedHandler, false, 0, true);
-				kinect.addEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler, false, 0, true);
-				kinect.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler, false, 0, true);
+				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
+				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
+				device.addEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler, false, 0, true);
+				device.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler, false, 0, true);
 				
-				var config:KinectConfig = new KinectConfig();
-				config.skeletonEnabled = true;
+				var settings:DeviceSettings = new DeviceSettings();
+				settings.skeletonEnabled = true;
 				
-				kinect.start(config);
+				device.start(settings);
 			}
 		}
 		
-		protected function kinectStartedHandler(event:KinectEvent):void
+		protected function kinectStartedHandler(event:DeviceEvent):void
 		{
-			trace("[JointCubesDemo] kinect started");
+			trace("[JointCubesDemo] device started");
 		}
 		
-		protected function kinectStoppedHandler(event:KinectEvent):void
+		protected function kinectStoppedHandler(event:DeviceEvent):void
 		{
-			trace("[JointCubesDemo] kinect stopped");
+			trace("[JointCubesDemo] device stopped");
 		}
 		
 		protected function usersWithSkeletonRemovedHandler(event:UserEvent):void
@@ -150,13 +151,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 			stageRef.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			stageRef.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-			if(kinect != null)
+			if(device != null)
 			{
-				kinect.stop();
-				kinect.removeEventListener(KinectEvent.STARTED, kinectStartedHandler);
-				kinect.removeEventListener(KinectEvent.STOPPED, kinectStoppedHandler);
-				kinect.removeEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler);
-				kinect.removeEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler);
+				device.stop();
+				device.removeEventListener(DeviceEvent.STARTED, kinectStartedHandler);
+				device.removeEventListener(DeviceEvent.STOPPED, kinectStoppedHandler);
+				device.removeEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler);
+				device.removeEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler);
 			}
 			view.dispose();
 		}
@@ -197,9 +198,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 				cameraController.tiltAngle = 0.3 * (stage.mouseY - lastMouseY) + lastTiltAngle;
 			}
 			
-			if(kinect != null && kinect.usersWithSkeleton.length > 0)
+			if(device != null && device.usersWithSkeleton.length > 0)
 			{
-				for each(var skeleton:User in kinect.usersWithSkeleton)
+				for each(var skeleton:User in device.usersWithSkeleton)
 				{
 					var boxes:Vector.<Mesh> = skeletonViewsDictionary[skeleton.userID];
 					if(boxes != null)

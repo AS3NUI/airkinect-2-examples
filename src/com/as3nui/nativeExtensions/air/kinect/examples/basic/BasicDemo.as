@@ -1,13 +1,13 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.basic
 {
-	import com.as3nui.nativeExtensions.air.kinect.Kinect;
-	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
+	import com.as3nui.nativeExtensions.air.kinect.Device;
+	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.JointIndices;
-	import com.as3nui.nativeExtensions.air.kinect.data.KinectCapabilities;
+	import com.as3nui.nativeExtensions.air.kinect.data.DeviceCapabiltiies;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
-	import com.as3nui.nativeExtensions.air.kinect.events.KinectEvent;
+	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.bit101.components.CheckBox;
 	import com.bit101.components.ComboBox;
@@ -27,7 +27,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 	{
 		public static const KinectMaxDepthInFlash:uint = 200;
 
-		private var kinect:Kinect;
+		private var device:Device;
 		private var rgbBitmap:Bitmap;
 		private var depthBitmap:Bitmap;
 		
@@ -64,9 +64,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 		override protected function startDemoImplementation():void
 		{
 			trace("[BasicDemo] startDemoImplementation");
-			if(Kinect.isSupported())
+			if(Device.isSupported())
 			{
-				kinect = Kinect.getKinect();
+				device = Device.getDeviceByOS();
 				
 				rgbBitmap = new Bitmap();
 				addChild(rgbBitmap);
@@ -83,27 +83,27 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 				skeletonContainer = new Sprite();
 				addChild(skeletonContainer);
 				
-				kinect.addEventListener(KinectEvent.STARTED, kinectStartedHandler, false, 0, true);
-				kinect.addEventListener(KinectEvent.STOPPED, kinectStoppedHandler, false, 0, true);
-				kinect.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
-				kinect.addEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthImageUpdateHandler, false, 0, true);
+				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
+				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
+				device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
+				device.addEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthImageUpdateHandler, false, 0, true);
 				
-				var config:KinectConfig = new KinectConfig();
-				config.rgbEnabled = true;
+				var settings:DeviceSettings = new DeviceSettings();
+				settings.rgbEnabled = true;
 
-				config.depthEnabled = true;
-				config.depthShowUserColors = true;
-				config.skeletonEnabled = true;
+				settings.depthEnabled = true;
+				settings.depthShowUserColors = true;
+				settings.skeletonEnabled = true;
 				
-				kinect.start(config);
+				device.start(settings);
 
-				initUI(config);
+				initUI(settings);
 
 				addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
 			}
 		}
 
-		private function initUI(kConfig:KinectConfig):void {
+		private function initUI(deviceSettings:DeviceSettings):void {
 			var config:MinimalConfigurator = new MinimalConfigurator(this);
 
 			var mainLayout:XML = <comps>
@@ -122,11 +122,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 				</Window>
 			</comps>;
 
-			var kinectCapabilities:KinectCapabilities = Kinect.Capabilities;
+			var deviceCapabilities:DeviceCapabiltiies = Device.Capabilities;
 			var capability:String;
-			for each(var capabilityXML:XML in describeType(kinectCapabilities)..accessor) {
+			for each(var capabilityXML:XML in describeType(deviceCapabilities)..accessor) {
 				capability = capabilityXML.@name.toString();
-				var value:String = kinectCapabilities[capability].toString();
+				var value:String = deviceCapabilities[capability].toString();
 				var lblXML:XML = <Label text={capability + " :: " + value}/>;
 				mainLayout..Window.(@id =="wnd_capabilities").VBox.appendChild(lblXML);
 			}
@@ -149,9 +149,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 			wnd_stats.x = (stage.stageWidth/2) - (wnd_stats.width/2);
 			wnd_stats.y = stage.stageHeight - wnd_stats.height - 50;
 
-			chk_rgbMirror.selected = kConfig.rgbMirrored;
-			chk_depthMirror.selected = kConfig.depthMirrored;
-			chk_skeletonMirror.selected = kConfig.skeletonMirrored;
+			chk_rgbMirror.selected = deviceSettings.rgbMirrored;
+			chk_depthMirror.selected = deviceSettings.depthMirrored;
+			chk_skeletonMirror.selected = deviceSettings.skeletonMirrored;
 		}
 
 		private function jointSelectedHandler(event:Event):void {
@@ -209,38 +209,38 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 		public function onChkClick(event:MouseEvent):void {
 			switch(event.target){
 				case chk_rgbMirror:
-					kinect.setRGBMirror(chk_rgbMirror.selected);
+					device.setRGBMirror(chk_rgbMirror.selected);
 					break;
 				case chk_depthMirror:
-					kinect.setDepthMirror(chk_depthMirror.selected);
+					device.setDepthMirror(chk_depthMirror.selected);
 					break;
 				case chk_skeletonMirror:
-					kinect.setSkeletonMirror(chk_skeletonMirror.selected);
+					device.setSkeletonMirror(chk_skeletonMirror.selected);
 					break;
 			}
 		}
 		
-		protected function kinectStartedHandler(event:KinectEvent):void
+		protected function kinectStartedHandler(event:DeviceEvent):void
 		{
-			trace("[BasicDemo] kinect started");
+			trace("[BasicDemo] device started");
 		}
 		
-		protected function kinectStoppedHandler(event:KinectEvent):void
+		protected function kinectStoppedHandler(event:DeviceEvent):void
 		{
-			trace("[BasicDemo] kinect stopped");
+			trace("[BasicDemo] device stopped");
 		}
 		
 		override protected function stopDemoImplementation():void
 		{
 			cmb_jointList.removeEventListener(Event.SELECT, jointSelectedHandler);
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
-			if(kinect != null)
+			if(device != null)
 			{
-				kinect.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
-				kinect.removeEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthImageUpdateHandler);
-				kinect.removeEventListener(KinectEvent.STARTED, kinectStartedHandler);
-				kinect.stop();
-				kinect.removeEventListener(KinectEvent.STOPPED, kinectStoppedHandler);
+				device.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
+				device.removeEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthImageUpdateHandler);
+				device.removeEventListener(DeviceEvent.STARTED, kinectStartedHandler);
+				device.stop();
+				device.removeEventListener(DeviceEvent.STOPPED, kinectStoppedHandler);
 			}
 		}
 		
@@ -251,7 +251,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 			skeletonContainer.removeChildren();
 			
 			
-			for each(var user:User in kinect.users)
+			for each(var user:User in device.users)
 			{
 				if(user.hasSkeleton)
 				{

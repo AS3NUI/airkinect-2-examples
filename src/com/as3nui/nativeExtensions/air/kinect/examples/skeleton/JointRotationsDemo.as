@@ -1,21 +1,21 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 {
-	import com.as3nui.nativeExtensions.air.kinect.Kinect;
-	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
+	import com.as3nui.nativeExtensions.air.kinect.Device;
+	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-	
+
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
-	
+
 	public class JointRotationsDemo extends DemoBase
 	{
 		
-		private var kinect:Kinect;
+		private var device:Device;
 		
 		private var rgbImage:Bitmap;
 		private var rgbSkeletonContainer:Sprite;
@@ -24,7 +24,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 		override protected function startDemoImplementation():void
 		{
 			trace("[JointRotationsDemo] Start Demo");
-			if(Kinect.isSupported())
+			if(Device.isSupported())
 			{
 				
 				rgbImage = new Bitmap();
@@ -36,15 +36,15 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 				skeletonContainer = new Sprite();
 				addChild(skeletonContainer);
 				
-				kinect = Kinect.getKinect();
+				device = Device.getDeviceByOS();
 				
-				kinect.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
+				device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
 				
-				var config:KinectConfig = new KinectConfig();
-				config.skeletonEnabled = true;
-				config.rgbEnabled = true;
+				var settings:DeviceSettings = new DeviceSettings();
+				settings.skeletonEnabled = true;
+				settings.rgbEnabled = true;
 				
-				kinect.start(config);
+				device.start(settings);
 				
 				addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
 			}
@@ -62,7 +62,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 			var drawX:uint = centerX;
 			var drawY:uint = centerY;
 			
-			for each(var user:User in kinect.usersWithSkeleton)
+			for each(var user:User in device.usersWithSkeleton)
 			{
 				if(user.hasSkeleton)
 				{
@@ -124,12 +124,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 		override protected function stopDemoImplementation():void
 		{
 			trace("[JointRotationsDemo] Stop Demo");
-			if(kinect != null)
+			if(device != null)
 			{
 				removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 				
-				kinect.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
-				kinect.stop();
+				device.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
+				device.stop();
 			}
 		}
 	}

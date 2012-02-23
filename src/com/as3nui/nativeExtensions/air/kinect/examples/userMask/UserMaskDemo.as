@@ -1,11 +1,11 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 {
-	import com.as3nui.nativeExtensions.air.kinect.Kinect;
-	import com.as3nui.nativeExtensions.air.kinect.KinectConfig;
+	import com.as3nui.nativeExtensions.air.kinect.Device;
+	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
-	import com.as3nui.nativeExtensions.air.kinect.events.KinectEvent;
+	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.UserEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.bit101.components.CheckBox;
@@ -21,7 +21,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 		
 		private static const TOP_LEFT:Point = new Point(0, 0);
 		
-		private var kinect:Kinect;
+		private var device:Device;
 		private var depthImage:Bitmap;
 
 		public var chk_depthMirror:CheckBox;
@@ -33,7 +33,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 		override protected function startDemoImplementation():void
 		{
 			trace("[UserMaskDemo] Start Demo");
-			if(Kinect.isSupported())
+			if(Device.isSupported())
 			{
 				trace("[UserMaskDemo] Start Kinect");
 				
@@ -43,29 +43,29 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 				userMasks = new Vector.<Bitmap>();
 				userMaskDictionary = new Dictionary();
 
-				kinect = Kinect.getKinect();
+				device = Device.getDeviceByOS();
 				
-				kinect.addEventListener(KinectEvent.STARTED, kinectStartedHandler, false, 0, true);
-				kinect.addEventListener(KinectEvent.STOPPED, kinectStoppedHandler, false, 0, true);
-				kinect.addEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthImageUpdateHandler, false, 0, true);
-				kinect.addEventListener(UserEvent.USERS_ADDED, usersAddedHandler, false, 0, true);
-				kinect.addEventListener(UserEvent.USERS_REMOVED, usersRemovedHandler, false, 0, true);
-				kinect.addEventListener(UserEvent.USERS_MASK_IMAGE_UPDATE, usersMaskImageUpdateHandler, false, 0, true);
+				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
+				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
+				device.addEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthImageUpdateHandler, false, 0, true);
+				device.addEventListener(UserEvent.USERS_ADDED, usersAddedHandler, false, 0, true);
+				device.addEventListener(UserEvent.USERS_REMOVED, usersRemovedHandler, false, 0, true);
+				device.addEventListener(UserEvent.USERS_MASK_IMAGE_UPDATE, usersMaskImageUpdateHandler, false, 0, true);
 
-				var config:KinectConfig = new KinectConfig();
-				config.depthEnabled = true;
-				config.depthResolution = CameraResolution.RESOLUTION_320_240;
+				var settings:DeviceSettings = new DeviceSettings();
+				settings.depthEnabled = true;
+				settings.depthResolution = CameraResolution.RESOLUTION_320_240;
 
-				config.userMaskEnabled = true;
-				config.userMaskResolution = CameraResolution.RESOLUTION_320_240;
+				settings.userMaskEnabled = true;
+				settings.userMaskResolution = CameraResolution.RESOLUTION_320_240;
 
-				initUI(config);
+				initUI(settings);
 
-				kinect.start(config);
+				device.start(settings);
 			}
 		}
 
-		private function initUI(kConfig:KinectConfig):void {
+		private function initUI(deviceSettings:DeviceSettings):void {
 			var config:MinimalConfigurator = new MinimalConfigurator(this);
 
 			var mainLayout:XML = <comps>
@@ -79,18 +79,18 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 
 			config.parseXML(mainLayout);
 
-			chk_depthMirror.selected = kConfig.depthMirrored;
-			chk_userMaskMirror.selected = kConfig.userMaskMirrored;
+			chk_depthMirror.selected = deviceSettings.depthMirrored;
+			chk_userMaskMirror.selected = deviceSettings.userMaskMirrored;
 
 		}
 
 		public function onClick(event:MouseEvent):void {
 			switch(event.target){
 				case chk_depthMirror:
-					kinect.setDepthMirror(chk_depthMirror.selected);
+					device.setDepthMirror(chk_depthMirror.selected);
 					break;
 				case chk_userMaskMirror:
-					kinect.setUserMaskMirror(chk_userMaskMirror.selected);
+					device.setUserMaskMirror(chk_userMaskMirror.selected);
 					break;
 			}
 		}
@@ -134,12 +134,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 			depthImage.bitmapData = event.imageData;
 		}
 		
-		protected function kinectStartedHandler(event:KinectEvent):void
+		protected function kinectStartedHandler(event:DeviceEvent):void
 		{
 			trace("[UserMaskDemo] Kinect Started");
 		}
 		
-		protected function kinectStoppedHandler(event:KinectEvent):void
+		protected function kinectStoppedHandler(event:DeviceEvent):void
 		{
 			trace("[UserMaskDemo] Kinect Stopped");
 		}
@@ -159,9 +159,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 		override protected function stopDemoImplementation():void
 		{
 			trace("[UserMaskDemo] Stop Demo");
-			if(kinect != null)
+			if(device != null)
 			{
-				for each(var user:User in kinect.users)
+				for each(var user:User in device.users)
 				{
 					if(userMaskDictionary[user.userID] != null)
 					{
@@ -169,10 +169,10 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 					}
 					delete userMaskDictionary[user.userID];
 				}
-				kinect.removeEventListener(KinectEvent.STARTED, kinectStartedHandler);
-				kinect.removeEventListener(KinectEvent.STOPPED, kinectStoppedHandler);
-				kinect.removeEventListener(UserEvent.USERS_MASK_IMAGE_UPDATE, usersMaskImageUpdateHandler);
-				kinect.stop();
+				device.removeEventListener(DeviceEvent.STARTED, kinectStartedHandler);
+				device.removeEventListener(DeviceEvent.STOPPED, kinectStoppedHandler);
+				device.removeEventListener(UserEvent.USERS_MASK_IMAGE_UPDATE, usersMaskImageUpdateHandler);
+				device.stop();
 			}
 		}
 		
