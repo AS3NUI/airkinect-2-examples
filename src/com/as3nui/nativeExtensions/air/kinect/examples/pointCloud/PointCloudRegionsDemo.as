@@ -36,6 +36,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 				settings.pointCloudResolution = CameraResolution.RESOLUTION_640_480;
 				settings.pointCloudDensity = 4;
 				//settings.pointCloudIncludeRGB = true;
+				device.start(settings);
 				
 				region1 = new PointCloudRegion(200, 240, 900, 100, 50, 20);
 				region2 = new PointCloudRegion(400, 240, 900, 100, 50, 20);
@@ -57,8 +58,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 				numPointsField2.defaultTextFormat = new TextFormat("Arial", 16);
 				numPointsField2.autoSize = TextFieldAutoSize.LEFT;
 				addChild(numPointsField2);
-				
-				device.start(settings);
 			}
 		}
 		
