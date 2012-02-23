@@ -8,7 +8,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.OpenNIDevice;
 	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.OpenNISettings;
 	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.events.OpenNICameraImageEvent;
-
+	
 	import flash.display.Bitmap;
 
 	public class InfraredCameraDemo extends DemoBase
@@ -18,7 +18,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 		
 		override protected function startDemoImplementation():void
 		{
-			if(Device.isSupported())
+			if(Device.isSupported() && Device.Capabilities.hasInfraredSupport)
 			{
 				device = Device.getDeviceByClass(OpenNIDevice) as OpenNIDevice;
 				
@@ -58,7 +58,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 			}
 		}
 		
-		protected function infraredImageUpdateHandler(event:CameraImageEvent):void
+		protected function infraredImageUpdateHandler(event:OpenNICameraImageEvent):void
 		{
 			infraredBitmap.bitmapData = event.imageData;
 			layout();

@@ -12,7 +12,7 @@ package
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.JointRotationsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
 	import com.bit101.components.ComboBox;
-
+	
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;

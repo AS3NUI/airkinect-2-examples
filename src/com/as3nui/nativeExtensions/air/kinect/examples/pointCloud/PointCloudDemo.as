@@ -9,9 +9,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 	import com.bit101.components.CheckBox;
 	import com.bit101.components.NumericStepper;
 	import com.bit101.utils.MinimalConfigurator;
-
+	
 	import flash.display.Bitmap;
-
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.ui.Keyboard;
