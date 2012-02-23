@@ -14,8 +14,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import away3d.materials.lightpickers.StaticLightPicker;
 	import away3d.textures.BitmapTexture;
 
-	import com.as3nui.nativeExtensions.air.kinect.Device;
-	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
+	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
@@ -50,7 +50,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		private var animationController:RiggedModelAnimationControllerByRotation;
 		
-		private var device:Device;
+		private var device:Kinect;
 		
 		private var rgbBitmap:Bitmap;
 		private var rgbSkeletonContainer:Sprite;
@@ -130,9 +130,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			
 			animationController = new RiggedModelAnimationControllerByRotation(jointMapping, SkeletonAnimationState(mesh.animationState));
 			
-			if(Device.isSupported())
+			if(Kinect.isSupported())
 			{
-				device = Device.getDeviceByOS();
+				device = Kinect.getDevice();
 				
 				rgbBitmap = new Bitmap();
 				addChild(rgbBitmap);
@@ -146,7 +146,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				device.addEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler, false, 0, true);
 				device.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler, false, 0, true);
 				
-				var settings:DeviceSettings = new DeviceSettings();
+				var settings:KinectSettings = new KinectSettings();
 				settings.rgbEnabled = true;
 				settings.skeletonEnabled = true;
 				

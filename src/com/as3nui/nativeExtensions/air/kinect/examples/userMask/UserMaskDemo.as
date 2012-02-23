@@ -1,7 +1,7 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 {
-	import com.as3nui.nativeExtensions.air.kinect.Device;
-	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
+	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
@@ -21,7 +21,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 		
 		private static const TOP_LEFT:Point = new Point(0, 0);
 		
-		private var device:Device;
+		private var device:Kinect;
 		private var depthImage:Bitmap;
 
 		public var chk_depthMirror:CheckBox;
@@ -33,7 +33,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 		override protected function startDemoImplementation():void
 		{
 			trace("[UserMaskDemo] Start Demo");
-			if(Device.isSupported())
+			if(Kinect.isSupported())
 			{
 				trace("[UserMaskDemo] Start Kinect");
 				
@@ -43,7 +43,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 				userMasks = new Vector.<Bitmap>();
 				userMaskDictionary = new Dictionary();
 
-				device = Device.getDeviceByOS();
+				device = Kinect.getDevice();
 				
 				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
 				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
@@ -52,7 +52,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 				device.addEventListener(UserEvent.USERS_REMOVED, usersRemovedHandler, false, 0, true);
 				device.addEventListener(UserEvent.USERS_MASK_IMAGE_UPDATE, usersMaskImageUpdateHandler, false, 0, true);
 
-				var settings:DeviceSettings = new DeviceSettings();
+				var settings:KinectSettings = new KinectSettings();
 				settings.depthEnabled = true;
 				settings.depthResolution = CameraResolution.RESOLUTION_320_240;
 
@@ -65,7 +65,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 			}
 		}
 
-		private function initUI(deviceSettings:DeviceSettings):void {
+		private function initUI(deviceSettings:KinectSettings):void {
 			var config:MinimalConfigurator = new MinimalConfigurator(this);
 
 			var mainLayout:XML = <comps>

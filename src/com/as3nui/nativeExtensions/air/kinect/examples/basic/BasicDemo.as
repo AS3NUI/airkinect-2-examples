@@ -1,7 +1,7 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.basic
 {
-	import com.as3nui.nativeExtensions.air.kinect.Device;
-	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
+	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.JointIndices;
 	import com.as3nui.nativeExtensions.air.kinect.data.DeviceCapabiltiies;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
@@ -27,7 +27,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 	{
 		public static const KinectMaxDepthInFlash:uint = 200;
 
-		private var device:Device;
+		private var device:Kinect;
 		private var rgbBitmap:Bitmap;
 		private var depthBitmap:Bitmap;
 		
@@ -64,9 +64,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 		override protected function startDemoImplementation():void
 		{
 			trace("[BasicDemo] startDemoImplementation");
-			if(Device.isSupported())
+			if(Kinect.isSupported())
 			{
-				device = Device.getDeviceByOS();
+				device = Kinect.getDevice();
 				
 				rgbBitmap = new Bitmap();
 				addChild(rgbBitmap);
@@ -88,7 +88,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 				device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
 				device.addEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthImageUpdateHandler, false, 0, true);
 				
-				var settings:DeviceSettings = new DeviceSettings();
+				var settings:KinectSettings = new KinectSettings();
 				settings.rgbEnabled = true;
 
 				settings.depthEnabled = true;
@@ -103,7 +103,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 			}
 		}
 
-		private function initUI(deviceSettings:DeviceSettings):void {
+		private function initUI(deviceSettings:KinectSettings):void {
 			var config:MinimalConfigurator = new MinimalConfigurator(this);
 
 			var mainLayout:XML = <comps>
@@ -122,7 +122,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 				</Window>
 			</comps>;
 
-			var deviceCapabilities:DeviceCapabiltiies = Device.Capabilities;
+			var deviceCapabilities:DeviceCapabiltiies = Kinect.Capabilities;
 			var capability:String;
 			for each(var capabilityXML:XML in describeType(deviceCapabilities)..accessor) {
 				capability = capabilityXML.@name.toString();

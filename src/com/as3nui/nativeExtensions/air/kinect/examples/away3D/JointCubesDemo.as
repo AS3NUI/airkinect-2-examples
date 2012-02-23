@@ -12,8 +12,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 	import away3d.materials.lightpickers.StaticLightPicker;
 	import away3d.primitives.CubeGeometry;
 
-	import com.as3nui.nativeExtensions.air.kinect.Device;
-	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
+	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
@@ -46,7 +46,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 		private var lastMouseY:Number;
 		private var move:Boolean;
 		
-		private var device:Device;
+		private var device:Kinect;
 		
 		private var skeletonViewsDictionary:Dictionary;
 		
@@ -82,16 +82,16 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 			stageRef.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
 			stageRef.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
 			
-			if(Device.isSupported())
+			if(Kinect.isSupported())
 			{
-				device = Device.getDeviceByOS();
+				device = Kinect.getDevice();
 				
 				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
 				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
 				device.addEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler, false, 0, true);
 				device.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler, false, 0, true);
 				
-				var settings:DeviceSettings = new DeviceSettings();
+				var settings:KinectSettings = new KinectSettings();
 				settings.skeletonEnabled = true;
 				
 				device.start(settings);

@@ -1,7 +1,7 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 {
-	import com.as3nui.nativeExtensions.air.kinect.Device;
-	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
+	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
@@ -15,7 +15,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 	public class JointRotationsDemo extends DemoBase
 	{
 		
-		private var device:Device;
+		private var device:Kinect;
 		
 		private var rgbImage:Bitmap;
 		private var rgbSkeletonContainer:Sprite;
@@ -24,7 +24,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 		override protected function startDemoImplementation():void
 		{
 			trace("[JointRotationsDemo] Start Demo");
-			if(Device.isSupported())
+			if(Kinect.isSupported())
 			{
 				
 				rgbImage = new Bitmap();
@@ -36,11 +36,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 				skeletonContainer = new Sprite();
 				addChild(skeletonContainer);
 				
-				device = Device.getDeviceByOS();
+				device = Kinect.getDevice();
 				
 				device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
 				
-				var settings:DeviceSettings = new DeviceSettings();
+				var settings:KinectSettings = new KinectSettings();
 				settings.skeletonEnabled = true;
 				settings.rgbEnabled = true;
 				

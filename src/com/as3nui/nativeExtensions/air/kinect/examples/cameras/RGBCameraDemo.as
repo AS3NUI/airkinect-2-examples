@@ -1,7 +1,7 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 {
-	import com.as3nui.nativeExtensions.air.kinect.Device;
-	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
+	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
@@ -13,13 +13,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 	{
 		
 		private var rgbBitmap:Bitmap;
-		private var device:Device;
+		private var device:Kinect;
 		
 		override protected function startDemoImplementation():void
 		{
-			if(Device.isSupported())
+			if(Kinect.isSupported())
 			{
-				device = Device.getDeviceByOS();
+				device = Kinect.getDevice();
 				
 				rgbBitmap = new Bitmap();
 				addChild(rgbBitmap);
@@ -28,7 +28,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
 				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
 				
-				var settings:DeviceSettings = new DeviceSettings();
+				var settings:KinectSettings = new KinectSettings();
 				settings.rgbEnabled = true;
 				settings.rgbResolution = CameraResolution.RESOLUTION_640_480;
 				

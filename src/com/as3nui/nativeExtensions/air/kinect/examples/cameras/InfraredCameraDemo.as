@@ -1,12 +1,12 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 {
-	import com.as3nui.nativeExtensions.air.kinect.Device;
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.OpenNIDevice;
-	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.OpenNISettings;
+	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.OpenNIKinect;
+	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.OpenNIKinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.events.OpenNICameraImageEvent;
 	
 	import flash.display.Bitmap;
@@ -14,13 +14,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 	public class InfraredCameraDemo extends DemoBase
 	{
 		private var infraredBitmap:Bitmap;
-		private var device:OpenNIDevice;
+		private var device:OpenNIKinect;
 		
 		override protected function startDemoImplementation():void
 		{
-			if(Device.isSupported() && Device.Capabilities.hasInfraredSupport)
+			if(Kinect.isSupported() && Kinect.Capabilities.hasInfraredSupport)
 			{
-				device = Device.getDeviceByClass(OpenNIDevice) as OpenNIDevice;
+				device = Kinect.getDeviceByClass(OpenNIKinect) as OpenNIKinect;
 				
 				infraredBitmap = new Bitmap();
 				addChild(infraredBitmap);
@@ -29,7 +29,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
 				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
 				
-				var config:OpenNISettings = new OpenNISettings();
+				var config:OpenNIKinectSettings = new OpenNIKinectSettings();
 				config.infraredEnabled = true;
 				config.infraredResolution = CameraResolution.RESOLUTION_640_480;
 				
@@ -66,8 +66,10 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 		
 		override protected function layout():void
 		{
-			infraredBitmap.x = (explicitWidth - infraredBitmap.width) * .5;
-			infraredBitmap.y = (explicitHeight - infraredBitmap.height) * .5;
+			if(infraredBitmap){
+				infraredBitmap.x = (explicitWidth - infraredBitmap.width) * .5;
+				infraredBitmap.y = (explicitHeight - infraredBitmap.height) * .5;
+			}
 		}
 	}
 }

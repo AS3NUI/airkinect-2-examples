@@ -1,7 +1,7 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 {
-	import com.as3nui.nativeExtensions.air.kinect.Device;
-	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
+	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.data.PointCloudRegion;
 	import com.as3nui.nativeExtensions.air.kinect.events.PointCloudEvent;
@@ -14,7 +14,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 	public class PointCloudRegionsDemo extends DemoBase
 	{
 		
-		private var device:Device;
+		private var device:Kinect;
 		private var renderer:PointCloudRenderer;
 		
 		private var numPointsField1:TextField;
@@ -25,13 +25,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 		
 		override protected function startDemoImplementation():void
 		{
-			if(Device.isSupported())
+			if(Kinect.isSupported())
 			{
-				device = Device.getDeviceByOS();
+				device = Kinect.getDevice();
 				
 				device.addEventListener(PointCloudEvent.POINT_CLOUD_UPDATE, pointCloudUpdateHandler, false, 0, true);
 				
-				var settings:DeviceSettings = new DeviceSettings();
+				var settings:KinectSettings = new KinectSettings();
 				settings.pointCloudEnabled = true;
 				settings.pointCloudResolution = CameraResolution.RESOLUTION_640_480;
 				settings.pointCloudDensity = 4;

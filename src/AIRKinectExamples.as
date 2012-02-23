@@ -80,8 +80,7 @@ package
 			}
 			
 			//start default demo
-//			currentDemoClass = BasicDemo;
-			currentDemoClass = PointCloudDemo;
+			currentDemoClass = BasicDemo;
 
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}

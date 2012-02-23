@@ -1,7 +1,7 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 {
-	import com.as3nui.nativeExtensions.air.kinect.Device;
-	import com.as3nui.nativeExtensions.air.kinect.DeviceSettings;
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
+	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.PointCloudEvent;
@@ -18,7 +18,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 	public class PointCloudDemo extends DemoBase
 	{
 		
-		private var device:Device;
+		private var device:Kinect;
 		private var renderer:PointCloudRenderer;
 
 		public var chk_pcMirror:CheckBox;
@@ -28,9 +28,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 		
 		override protected function startDemoImplementation():void
 		{
-			if(Device.isSupported())
+			if(Kinect.isSupported())
 			{
-				device = Device.getDeviceByOS();
+				device = Kinect.getDevice();
 
 				rgbBitmap = new Bitmap();
 				addChild(rgbBitmap);
@@ -39,7 +39,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 				device.addEventListener(PointCloudEvent.POINT_CLOUD_UPDATE, pointCloudUpdateHandler, false, 0, true);
 				//device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
 
-				var settings:DeviceSettings = new DeviceSettings();
+				var settings:KinectSettings = new KinectSettings();
 				settings.pointCloudIncludeRGB = true;
 				settings.pointCloudEnabled = true;
 				settings.pointCloudResolution = CameraResolution.RESOLUTION_320_240;
@@ -75,7 +75,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 			}
 		}
 
-		private function initUI(settings:DeviceSettings):void {
+		private function initUI(settings:KinectSettings):void {
 			var config:MinimalConfigurator = new MinimalConfigurator(this);
 
 			var mainLayout:XML = <comps>
