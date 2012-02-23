@@ -2,7 +2,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
-	import com.as3nui.nativeExtensions.air.kinect.constants.JointIndices;
 	import com.as3nui.nativeExtensions.air.kinect.data.DeviceCapabiltiies;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
@@ -14,7 +13,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 	import com.bit101.components.Text;
 	import com.bit101.components.Window;
 	import com.bit101.utils.MinimalConfigurator;
-
+	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -135,14 +134,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 			mainLayout..Window.(@id =="wnd_stats").HBox.appendChild(getUIPanel("rgb"));
 			mainLayout..Window.(@id =="wnd_stats").HBox.appendChild(getUIPanel("depth"));
 			config.parseXML(mainLayout);
-
-
-			for(var i:uint = 0; i < JointIndices.JOINT_LOOKUP.length; i++)
+			
+			for each(var jointName:String in device.skeletonJointNames)
 			{
-				cmb_jointList.addItem({label:JointIndices.JOINT_LOOKUP[i], data:JointIndices.JOINT_LOOKUP[i]})
+				cmb_jointList.addItem({label:jointName, data:jointName})
 			}
 			//Default to left hand
-			cmb_jointList.selectedIndex = JointIndices.LEFT_HAND;
+			cmb_jointList.selectedIndex = device.skeletonJointNames.indexOf(SkeletonJoint.LEFT_HAND);
 			currentStatsJoint = cmb_jointList.selectedItem.data;
 
 			cmb_jointList.addEventListener(Event.SELECT, jointSelectedHandler, false, 0, true);
@@ -257,21 +255,18 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 				{
 					for each(var joint:SkeletonJoint in user.skeletonJoints)
 					{
-						if(joint.positionConfidence > .5)
-						{
-							rgbSkeletonContainer.graphics.beginFill(0xFF0000);
-							rgbSkeletonContainer.graphics.drawCircle(joint.rgbPosition.x, joint.rgbPosition.y, 5);
-							rgbSkeletonContainer.graphics.endFill();
-							
-							depthSkeletonContainer.graphics.beginFill(0xFF0000);
-							depthSkeletonContainer.graphics.drawCircle(joint.depthPosition.x, joint.depthPosition.y, 5);
-							depthSkeletonContainer.graphics.endFill();
-							
-							var color:uint = (joint.positionRelative.z / (KinectMaxDepthInFlash * 4)) * 255 << 16 | (1 - (joint.positionRelative.z / (KinectMaxDepthInFlash * 4))) * 255 << 8 | 0;
+						rgbSkeletonContainer.graphics.beginFill(0xFF0000);
+						rgbSkeletonContainer.graphics.drawCircle(joint.rgbPosition.x, joint.rgbPosition.y, 5);
+						rgbSkeletonContainer.graphics.endFill();
+						
+						depthSkeletonContainer.graphics.beginFill(0xFF0000);
+						depthSkeletonContainer.graphics.drawCircle(joint.depthPosition.x, joint.depthPosition.y, 5);
+						depthSkeletonContainer.graphics.endFill();
+						
+						var color:uint = (joint.positionRelative.z / (KinectMaxDepthInFlash * 4)) * 255 << 16 | (1 - (joint.positionRelative.z / (KinectMaxDepthInFlash * 4))) * 255 << 8 | 0;
 
-							var jointSprite:Sprite = createCircleForPosition(joint.positionRelative, color);
-							skeletonContainer.addChild(jointSprite);
-						}
+						var jointSprite:Sprite = createCircleForPosition(joint.positionRelative, color);
+						skeletonContainer.addChild(jointSprite);
 					}
 
 					if(currentStatsJoint){

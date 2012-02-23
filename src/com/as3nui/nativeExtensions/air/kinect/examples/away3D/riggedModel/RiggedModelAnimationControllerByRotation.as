@@ -9,9 +9,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import away3d.arcane;
 	import away3d.core.math.Quaternion;
 	
-	import com.as3nui.nativeExtensions.air.kinect.constants.JointNames;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
+	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.data.OpenNISkeletonJoint;
 	import com.derschmale.data.ObjectPool;
 	import com.derschmale.openni.XnSkeletonJoint;
 	
@@ -169,16 +169,16 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		{
 			setPositionConfidences();
 			updateCentralPosition();
-			updateSimpleJoint(XnSkeletonJoint.TORSO, JointNames.TORSO);
-			updateSimpleJoint(XnSkeletonJoint.NECK, JointNames.NECK);
-			updateSimpleJoint(XnSkeletonJoint.LEFT_SHOULDER, JointNames.LEFT_SHOULDER);
-			updateSimpleJoint(XnSkeletonJoint.LEFT_ELBOW, JointNames.LEFT_ELBOW);
-			updateSimpleJoint(XnSkeletonJoint.RIGHT_SHOULDER, JointNames.RIGHT_SHOULDER);
-			updateSimpleJoint(XnSkeletonJoint.RIGHT_ELBOW, JointNames.RIGHT_ELBOW);
-			updateSimpleJoint(XnSkeletonJoint.LEFT_HIP, JointNames.LEFT_HIP);
-			updateSimpleJoint(XnSkeletonJoint.LEFT_KNEE, JointNames.LEFT_KNEE);
-			updateSimpleJoint(XnSkeletonJoint.RIGHT_HIP, JointNames.RIGHT_HIP);
-			updateSimpleJoint(XnSkeletonJoint.RIGHT_KNEE, JointNames.RIGHT_KNEE);
+			updateSimpleJoint(XnSkeletonJoint.TORSO, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.TORSO);
+			updateSimpleJoint(XnSkeletonJoint.NECK, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.NECK);
+			updateSimpleJoint(XnSkeletonJoint.LEFT_SHOULDER, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_SHOULDER);
+			updateSimpleJoint(XnSkeletonJoint.LEFT_ELBOW, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_ELBOW);
+			updateSimpleJoint(XnSkeletonJoint.RIGHT_SHOULDER, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_SHOULDER);
+			updateSimpleJoint(XnSkeletonJoint.RIGHT_ELBOW, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_ELBOW);
+			updateSimpleJoint(XnSkeletonJoint.LEFT_HIP, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_HIP);
+			updateSimpleJoint(XnSkeletonJoint.LEFT_KNEE, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_KNEE);
+			updateSimpleJoint(XnSkeletonJoint.RIGHT_HIP, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_HIP);
+			updateSimpleJoint(XnSkeletonJoint.RIGHT_KNEE, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_KNEE);
 			
 			for (var i : int = 0; i < NUM_TRACKED_JOINTS; ++i) {
 				var mapIndex : int = _jointMapping[i];
@@ -191,25 +191,25 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		private function setPositionConfidences() : void
 		{
-			_positionConfidences[XnSkeletonJoint.HEAD] = kinectUser.head.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.NECK] = kinectUser.neck.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.TORSO] = kinectUser.torso.positionConfidence;
+			_positionConfidences[XnSkeletonJoint.HEAD] = (kinectUser.head as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.NECK] = (kinectUser.neck as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.TORSO] = (kinectUser.torso as OpenNISkeletonJoint).positionConfidence;
 			
-			_positionConfidences[XnSkeletonJoint.LEFT_SHOULDER] = kinectUser.leftShoulder.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.LEFT_ELBOW] = kinectUser.leftElbow.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.LEFT_HAND] = kinectUser.leftHand.positionConfidence;
+			_positionConfidences[XnSkeletonJoint.LEFT_SHOULDER] = (kinectUser.leftShoulder as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.LEFT_ELBOW] = (kinectUser.leftElbow as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.LEFT_HAND] = (kinectUser.leftHand as OpenNISkeletonJoint).positionConfidence;
 			
-			_positionConfidences[XnSkeletonJoint.RIGHT_SHOULDER] = kinectUser.rightShoulder.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.RIGHT_ELBOW] = kinectUser.rightElbow.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.RIGHT_HAND] = kinectUser.rightHand.positionConfidence;
+			_positionConfidences[XnSkeletonJoint.RIGHT_SHOULDER] = (kinectUser.rightShoulder as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.RIGHT_ELBOW] = (kinectUser.rightElbow as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.RIGHT_HAND] = (kinectUser.rightHand as OpenNISkeletonJoint).positionConfidence;
 			
-			_positionConfidences[XnSkeletonJoint.LEFT_HIP] = kinectUser.leftHip.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.LEFT_KNEE] = kinectUser.leftKnee.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.LEFT_FOOT] = kinectUser.leftFoot.positionConfidence;
+			_positionConfidences[XnSkeletonJoint.LEFT_HIP] = (kinectUser.leftHip as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.LEFT_KNEE] = (kinectUser.leftKnee as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.LEFT_FOOT] = (kinectUser.leftFoot as OpenNISkeletonJoint).positionConfidence;
 			
-			_positionConfidences[XnSkeletonJoint.RIGHT_HIP] = kinectUser.rightHip.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.RIGHT_KNEE] = kinectUser.rightKnee.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.RIGHT_FOOT] = kinectUser.rightFoot.positionConfidence;
+			_positionConfidences[XnSkeletonJoint.RIGHT_HIP] = (kinectUser.rightHip as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.RIGHT_KNEE] = (kinectUser.rightKnee as OpenNISkeletonJoint).positionConfidence;
+			_positionConfidences[XnSkeletonJoint.RIGHT_FOOT] = (kinectUser.rightFoot as OpenNISkeletonJoint).positionConfidence;
 		}
 		
 		private function updateCentralPosition() : void
@@ -229,7 +229,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			if (mapIndex < 0) return;
 			_globalWisdom[mapIndex] = true;
 			
-			var orientation:Quaternion = getBoneOrientationFromKinectJoint(kinectUser.getJointByName(kinectSkeletonJointName));
+			var orientation:Quaternion = getBoneOrientationFromKinectJoint(kinectUser.getJointByName(kinectSkeletonJointName) as OpenNISkeletonJoint);
 			
 			var initialBindPose:Vector3D = _bindPoseOrientations[srcJoint];
 			if(initialBindPose != null)
@@ -240,7 +240,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			_globalPoses[mapIndex].orientation = orientation;
 		}
 		
-		private function getBoneOrientationFromKinectJoint(joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint):Quaternion
+		private function getBoneOrientationFromKinectJoint(joint:OpenNISkeletonJoint):Quaternion
 		{
 			var q:Quaternion = new Quaternion();
 			q.fromEulerAngles(joint.orientation.x, joint.orientation.y, joint.orientation.z);

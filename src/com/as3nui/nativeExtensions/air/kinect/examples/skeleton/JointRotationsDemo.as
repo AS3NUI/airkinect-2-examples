@@ -6,7 +6,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-
+	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.data.OpenNISkeletonJoint;
+	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -86,13 +87,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					drawX = centerX;
 					drawY = centerY;
 					
-					drawX = drawX + Math.cos(user.leftShoulder.orientation.z) * 100;
-					drawY = drawY + Math.sin(user.leftShoulder.orientation.z) * 100;
+					drawX = drawX + Math.cos((user.leftShoulder as OpenNISkeletonJoint).orientation.z) * 100;
+					drawY = drawY + Math.sin((user.leftShoulder as OpenNISkeletonJoint).orientation.z) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 					
-					drawX = drawX + Math.cos(user.leftElbow.orientation.z) * 100;
-					drawY = drawY + Math.sin(user.leftElbow.orientation.z) * 100;
+					drawX = drawX + Math.cos((user.leftElbow as OpenNISkeletonJoint).orientation.z) * 100;
+					drawY = drawY + Math.sin((user.leftElbow as OpenNISkeletonJoint).orientation.z) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 					
@@ -103,13 +104,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					drawX = centerX;
 					drawY = centerY;
 					
-					drawX = drawX + Math.cos(user.rightShoulder.orientation.z + Math.PI) * 100;
-					drawY = drawY + Math.sin(user.rightShoulder.orientation.z + Math.PI) * 100;
+					drawX = drawX + Math.cos((user.rightShoulder as OpenNISkeletonJoint).orientation.z + Math.PI) * 100;
+					drawY = drawY + Math.sin((user.rightShoulder as OpenNISkeletonJoint).orientation.z + Math.PI) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 					
-					drawX = drawX + Math.cos(user.rightElbow.orientation.z + Math.PI) * 100;
-					drawY = drawY + Math.sin(user.rightElbow.orientation.z + Math.PI) * 100;
+					drawX = drawX + Math.cos((user.rightElbow as OpenNISkeletonJoint).orientation.z + Math.PI) * 100;
+					drawY = drawY + Math.sin((user.rightElbow as OpenNISkeletonJoint).orientation.z + Math.PI) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 				}

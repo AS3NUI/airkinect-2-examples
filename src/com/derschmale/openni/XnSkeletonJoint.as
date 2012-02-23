@@ -1,6 +1,7 @@
 package com.derschmale.openni
 {
-	import com.as3nui.nativeExtensions.air.kinect.constants.JointNames;
+	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
+	
 
 	public class XnSkeletonJoint
 	{
@@ -25,21 +26,21 @@ package com.derschmale.openni
 		public static const RIGHT_FOOT : int = 14;
 		
 		public static const NAMES_BY_INDEX:Vector.<String> = Vector.<String>([
-			JointNames.HEAD,
-			JointNames.NECK,
-			JointNames.TORSO,
-			JointNames.LEFT_SHOULDER,
-			JointNames.LEFT_ELBOW,
-			JointNames.LEFT_HAND,
-			JointNames.RIGHT_SHOULDER,
-			JointNames.RIGHT_ELBOW,
-			JointNames.RIGHT_HAND,
-			JointNames.LEFT_HIP,
-			JointNames.LEFT_KNEE,
-			JointNames.LEFT_FOOT,
-			JointNames.RIGHT_HIP,
-			JointNames.RIGHT_KNEE,
-			JointNames.RIGHT_FOOT
+			SkeletonJoint.HEAD,
+			SkeletonJoint.NECK,
+			SkeletonJoint.TORSO,
+			SkeletonJoint.LEFT_SHOULDER,
+			SkeletonJoint.LEFT_ELBOW,
+			SkeletonJoint.LEFT_HAND,
+			SkeletonJoint.RIGHT_SHOULDER,
+			SkeletonJoint.RIGHT_ELBOW,
+			SkeletonJoint.RIGHT_HAND,
+			SkeletonJoint.LEFT_HIP,
+			SkeletonJoint.LEFT_KNEE,
+			SkeletonJoint.LEFT_FOOT,
+			SkeletonJoint.RIGHT_HIP,
+			SkeletonJoint.RIGHT_KNEE,
+			SkeletonJoint.RIGHT_FOOT
 		]);
 
 	}

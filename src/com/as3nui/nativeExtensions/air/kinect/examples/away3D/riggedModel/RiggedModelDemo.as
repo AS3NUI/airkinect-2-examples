@@ -13,10 +13,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import away3d.materials.TextureMaterial;
 	import away3d.materials.lightpickers.StaticLightPicker;
 	import away3d.textures.BitmapTexture;
-
+	
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
-
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
@@ -24,7 +23,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import com.as3nui.nativeExtensions.air.kinect.events.UserEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.derschmale.away3d.loading.RotatedMD5MeshParser;
-
+	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;

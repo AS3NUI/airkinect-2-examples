@@ -4,27 +4,24 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
 	import away3d.controllers.HoverController;
-	import away3d.core.math.Quaternion;
 	import away3d.entities.Mesh;
 	import away3d.lights.DirectionalLight;
 	import away3d.materials.ColorMaterial;
 	import away3d.materials.MaterialBase;
 	import away3d.materials.lightpickers.StaticLightPicker;
 	import away3d.primitives.CubeGeometry;
-
+	
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
-
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.UserEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-
+	
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
 
@@ -216,75 +213,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 			}
 			
 			view.render();
-		}
-		
-		private function getBoneOrientationFromKinectJoint(joint:SkeletonJoint, invertX:Boolean = false, invertY:Boolean = false, invertZ:Boolean = false, rotationX:Number = 0, rotationY:Number = 0, rotationZ:Number = 0):Quaternion
-		{
-			var q:Quaternion = new Quaternion();
-			var data:Vector.<Number> = new Vector.<Number>(16, true);
-			data[0] = joint.orientation[0];
-			data[1] = joint.orientation[3];
-			data[2] = joint.orientation[6];
-			data[3] = 0;
-			data[4] = joint.orientation[1];
-			data[5] = joint.orientation[4];
-			data[6] = joint.orientation[7];
-			data[7] = 0;
-			data[8] = joint.orientation[2];
-			data[9] = joint.orientation[5];
-			data[10] = joint.orientation[8];
-			data[11] = 0;
-			data[12] = 0;
-			data[13] = 0;
-			data[14] = 0;
-			data[15] = 1;
-			
-			if(invertX)
-			{
-				data[1] = -joint.orientation[3];
-				data[2] = -joint.orientation[6];
-				data[4] = -joint.orientation[1];
-				data[8] = -joint.orientation[2];
-			}
-			
-			if(invertY)
-			{
-				data[1] = -joint.orientation[3];
-				data[4] = -joint.orientation[1];
-				data[6] = -joint.orientation[7];
-				data[9] = -joint.orientation[5];
-			}
-			
-			if(invertZ)
-			{
-				data[2] = -joint.orientation[6];
-				data[6] = -joint.orientation[7];
-				data[8] = -joint.orientation[2];
-				data[9] = -joint.orientation[5];
-			}
-			
-			q.fromMatrix(new Matrix3D(data));
-			
-			var v:Vector3D = q.toEulerAngles();
-			
-			if(rotationX != 0)
-			{
-				v.x += rotationX;
-			}
-			
-			if(rotationY != 0)
-			{
-				v.y += rotationY;
-			}
-			
-			if(rotationZ != 0)
-			{
-				v.z += rotationZ;
-			}
-			
-			q.fromEulerAngles(v.x, v.y, v.z);
-			
-			return q;
 		}
 		
 		override protected function layout():void
