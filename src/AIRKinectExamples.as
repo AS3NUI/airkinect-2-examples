@@ -7,6 +7,7 @@ package
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.DepthCameraDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.InfraredCameraDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.RGBCameraDemo;
+	import com.as3nui.nativeExtensions.air.kinect.examples.multiple.MultipleDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRegionsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.JointRotationsDemo;
@@ -32,6 +33,7 @@ package
 			{label: "User Mask Demo", data: UserMaskDemo},
 			{label: "Joint Rotations Demo", data: JointRotationsDemo},
 			{label: "Joint Cubes Demo", data: JointCubesDemo},
+			{label: "Dual Kinect Demo", data: MultipleDemo},
 			{label: "3D Character Demo", data: RiggedModelDemo}
 		]);
 		
