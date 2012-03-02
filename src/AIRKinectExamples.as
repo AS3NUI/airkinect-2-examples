@@ -12,6 +12,7 @@ package
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRegionsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.JointRotationsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
+	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskEnterFrameDemo;
 	import com.bit101.components.ComboBox;
 	
 	import flash.display.Sprite;
@@ -31,6 +32,7 @@ package
 			{label: "Point Cloud Demo", data: PointCloudDemo},
 			{label: "Point Cloud Regions Demo", data: PointCloudRegionsDemo},
 			{label: "User Mask Demo", data: UserMaskDemo},
+			{label: "User Mask Demo Enter Frame", data: UserMaskEnterFrameDemo},
 			{label: "Joint Rotations Demo", data: JointRotationsDemo},
 			{label: "Joint Cubes Demo", data: JointCubesDemo},
 			{label: "Dual Kinect Demo", data: MultipleDemo},
@@ -82,7 +84,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoClass = BasicDemo;
+			currentDemoClass = UserMaskEnterFrameDemo;
 
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}
