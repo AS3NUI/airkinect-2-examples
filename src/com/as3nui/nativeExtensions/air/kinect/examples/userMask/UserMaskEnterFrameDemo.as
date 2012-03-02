@@ -71,6 +71,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 				kinect.removeEventListener(DeviceEvent.STARTED, kinectStartedHandler);
 				kinect.removeEventListener(DeviceEvent.STOPPED, kinectStoppedHandler);
 				removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
+				kinect.stop();
 			}
 		}
 	}
