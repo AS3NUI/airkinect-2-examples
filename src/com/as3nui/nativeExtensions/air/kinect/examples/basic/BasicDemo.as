@@ -2,7 +2,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
-	import com.as3nui.nativeExtensions.air.kinect.data.DeviceCapabiltiies;
+	import com.as3nui.nativeExtensions.air.kinect.data.DeviceCapabilities;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
@@ -121,7 +121,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 				</Window>
 			</comps>;
 
-			var deviceCapabilities:DeviceCapabiltiies = Kinect.Capabilities;
+			var deviceCapabilities:DeviceCapabilities = Kinect.Capabilities;
 			var capability:String;
 			for each(var capabilityXML:XML in describeType(deviceCapabilities)..accessor) {
 				capability = capabilityXML.@name.toString();
