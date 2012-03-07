@@ -144,12 +144,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 			currentStatsJoint = cmb_jointList.selectedItem.data;
 
 			cmb_jointList.addEventListener(Event.SELECT, jointSelectedHandler, false, 0, true);
-			wnd_stats.x = (stage.stageWidth/2) - (wnd_stats.width/2);
-			wnd_stats.y = stage.stageHeight - wnd_stats.height - 50;
 
 			chk_rgbMirror.selected = deviceSettings.rgbMirrored;
 			chk_depthMirror.selected = deviceSettings.depthMirrored;
 			chk_skeletonMirror.selected = deviceSettings.skeletonMirrored;
+			
+			layout();
 		}
 
 		private function jointSelectedHandler(event:Event):void {
@@ -334,6 +334,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic
 			if(root != null)
 			{
 				root.transform.perspectiveProjection.projectionCenter = new Point(explicitWidth * .5, explicitHeight * .5);
+			}
+			if(wnd_stats != null)
+			{
+				wnd_stats.x = (explicitWidth/2) - (wnd_stats.width/2);
+				wnd_stats.y = explicitHeight - wnd_stats.height - 50;
 			}
 		}
 	}
