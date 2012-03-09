@@ -1,6 +1,5 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 {
-	import away3d.animators.AnimatorBase;
 	import away3d.animators.data.SkeletonAnimation;
 	import away3d.animators.data.SkeletonAnimationState;
 	import away3d.animators.skeleton.JointPose;
@@ -9,7 +8,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import away3d.arcane;
 	import away3d.core.math.Quaternion;
 	
-	import com.as3nui.nativeExtensions.air.kinect.constants.JointNames;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.derschmale.data.ObjectPool;
@@ -24,7 +22,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	
 	use namespace arcane;
 	
-	public class RiggedModelAnimationControllerByPosition extends AnimatorBase
+	public class RiggedModelAnimationControllerByPosition extends RiggedModelAnimationController
 	{
 		private static const NUM_TRACKED_JOINTS : int = 15;
 		
@@ -47,8 +45,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		private var _quaternionPool:ObjectPool;
 		private var _vector3DPool:ObjectPool;
 		private var _skeletonAnimationState : SkeletonAnimationState;
-		
-		public var kinectSkeleton:User;
 		
 		public function RiggedModelAnimationControllerByPosition(jointMapping : Vector.<Number>, target : SkeletonAnimationState)
 		{
@@ -100,7 +96,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		override protected function updateAnimation(realDT : Number, scaledDT : Number) : void
 		{
-			if(kinectSkeleton != null)
+			if(kinectUser != null)
 			{
 				updatePose();
 			}
@@ -308,31 +304,31 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		private function setPosesFromKinectSkeleton() : void
 		{
-			setPoseForJoint(XnSkeletonJoint.HEAD, JointNames.HEAD);
-			setPoseForJoint(XnSkeletonJoint.NECK, JointNames.NECK);
-			setPoseForJoint(XnSkeletonJoint.TORSO, JointNames.TORSO);
+			setPoseForJoint(XnSkeletonJoint.HEAD, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.HEAD);
+			setPoseForJoint(XnSkeletonJoint.NECK, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.NECK);
+			setPoseForJoint(XnSkeletonJoint.TORSO, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.TORSO);
 			
-			setPoseForJoint(XnSkeletonJoint.LEFT_SHOULDER, JointNames.LEFT_SHOULDER);
-			setPoseForJoint(XnSkeletonJoint.LEFT_ELBOW, JointNames.LEFT_ELBOW);
-			setPoseForJoint(XnSkeletonJoint.LEFT_HAND, JointNames.LEFT_HAND);
+			setPoseForJoint(XnSkeletonJoint.LEFT_SHOULDER, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_SHOULDER);
+			setPoseForJoint(XnSkeletonJoint.LEFT_ELBOW, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_ELBOW);
+			setPoseForJoint(XnSkeletonJoint.LEFT_HAND, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_HAND);
 			
-			setPoseForJoint(XnSkeletonJoint.RIGHT_SHOULDER, JointNames.RIGHT_SHOULDER);
-			setPoseForJoint(XnSkeletonJoint.RIGHT_ELBOW, JointNames.RIGHT_ELBOW);
-			setPoseForJoint(XnSkeletonJoint.RIGHT_HAND, JointNames.RIGHT_HAND);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_SHOULDER, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_SHOULDER);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_ELBOW, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_ELBOW);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_HAND, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_HAND);
 			
-			setPoseForJoint(XnSkeletonJoint.LEFT_HIP, JointNames.LEFT_HIP);
-			setPoseForJoint(XnSkeletonJoint.LEFT_KNEE, JointNames.LEFT_KNEE);
-			setPoseForJoint(XnSkeletonJoint.LEFT_FOOT, JointNames.LEFT_FOOT);
+			setPoseForJoint(XnSkeletonJoint.LEFT_HIP, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_HIP);
+			setPoseForJoint(XnSkeletonJoint.LEFT_KNEE, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_KNEE);
+			setPoseForJoint(XnSkeletonJoint.LEFT_FOOT, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_FOOT);
 			
-			setPoseForJoint(XnSkeletonJoint.RIGHT_HIP, JointNames.RIGHT_HIP);
-			setPoseForJoint(XnSkeletonJoint.RIGHT_KNEE, JointNames.RIGHT_KNEE);
-			setPoseForJoint(XnSkeletonJoint.RIGHT_FOOT, JointNames.RIGHT_FOOT);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_HIP, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_HIP);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_KNEE, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_KNEE);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_FOOT, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_FOOT);
 		}
 		
 		private function setPoseForJoint(targetIndex:int, kinectSkeletonJointName:String):void
 		{
 			var pos : Vector3D;
-			var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint = kinectSkeleton.getJointByName(kinectSkeletonJointName);
+			var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint = kinectUser.getJointByName(kinectSkeletonJointName);
 			pos = (_trackedPositions[targetIndex] ||= new Vector3D());
 			pos.x = joint.position.x;
 			pos.y = joint.position.y;

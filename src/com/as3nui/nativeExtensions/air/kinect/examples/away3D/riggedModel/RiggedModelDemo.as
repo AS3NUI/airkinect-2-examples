@@ -47,7 +47,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		private var _light2:PointLight;
 		private var _light3:PointLight;
 		
-		private var animationController:RiggedModelAnimationControllerByRotation;
+		private var animationController:RiggedModelAnimationController;
 		
 		private var device:Kinect;
 		
@@ -101,8 +101,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				i++;
 			}
 			
-			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
-			
 			var jointMapping:Vector.<Number> = Vector.<Number>([
 				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Head"), 			// XN_SKEL_HEAD
 				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Neck"),			// XN_SKEL_NECK
@@ -127,10 +125,18 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			
 			jointMapping.fixed = true;
 			
-			animationController = new RiggedModelAnimationControllerByRotation(jointMapping, SkeletonAnimationState(mesh.animationState));
-			
 			if(Kinect.isSupported())
 			{
+				if(Kinect.Capabilities.hasJointOrientationConfidenceSupport)
+				{
+					animationController = new RiggedModelAnimationControllerByRotation(jointMapping, SkeletonAnimationState(mesh.animationState));
+				}
+				else
+				{
+					trace("[RiggedModelDemo] No Joint Orientation Support, fallback on positions");
+					animationController = new RiggedModelAnimationControllerByPosition(jointMapping, SkeletonAnimationState(mesh.animationState));
+				}
+				
 				device = Kinect.getDevice();
 				
 				rgbBitmap = new Bitmap();
@@ -151,6 +157,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				
 				trace("[RiggedModelDemo] Start Kinect");
 				device.start(settings);
+				
+				addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
 			}
 		}
 		
