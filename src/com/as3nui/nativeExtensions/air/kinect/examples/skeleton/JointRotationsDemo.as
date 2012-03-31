@@ -7,6 +7,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.data.OpenNISkeletonJoint;
+	import com.bit101.components.Label;
 	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
@@ -22,32 +23,42 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 		private var rgbSkeletonContainer:Sprite;
 		private var skeletonContainer:Sprite;
 		
+		private var errorLabel:Label;
+		
 		override protected function startDemoImplementation():void
 		{
 			trace("[JointRotationsDemo] Start Demo");
 			if(Kinect.isSupported())
 			{
-				
-				rgbImage = new Bitmap();
-				addChild(rgbImage);
-				
-				rgbSkeletonContainer = new Sprite();
-				addChild(rgbSkeletonContainer);
-				
-				skeletonContainer = new Sprite();
-				addChild(skeletonContainer);
-				
-				device = Kinect.getDevice();
-				
-				device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
-				
-				var settings:KinectSettings = new KinectSettings();
-				settings.skeletonEnabled = true;
-				settings.rgbEnabled = true;
-				
-				device.start(settings);
-				
-				addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
+				//check if we have joint rotation info
+				if(Kinect.Capabilities.hasJointOrientationSupport)
+				{
+					rgbImage = new Bitmap();
+					addChild(rgbImage);
+					
+					rgbSkeletonContainer = new Sprite();
+					addChild(rgbSkeletonContainer);
+					
+					skeletonContainer = new Sprite();
+					addChild(skeletonContainer);
+					
+					device = Kinect.getDevice();
+					
+					device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
+					
+					var settings:KinectSettings = new KinectSettings();
+					settings.skeletonEnabled = true;
+					settings.rgbEnabled = true;
+					
+					device.start(settings);
+					
+					addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
+				}
+				else
+				{
+					errorLabel = new Label(this, 0, 0, "Your device / driver does not support joint orientations");
+					layout();
+				}
 			}
 		}
 		
@@ -87,13 +98,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					drawX = centerX;
 					drawY = centerY;
 					
-					drawX = drawX + Math.cos((user.leftShoulder as OpenNISkeletonJoint).orientation.z) * 100;
-					drawY = drawY + Math.sin((user.leftShoulder as OpenNISkeletonJoint).orientation.z) * 100;
+					drawX = drawX + Math.cos(user.leftShoulder.orientation.z) * 100;
+					drawY = drawY + Math.sin(user.leftShoulder.orientation.z) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 					
-					drawX = drawX + Math.cos((user.leftElbow as OpenNISkeletonJoint).orientation.z) * 100;
-					drawY = drawY + Math.sin((user.leftElbow as OpenNISkeletonJoint).orientation.z) * 100;
+					drawX = drawX + Math.cos(user.leftElbow.orientation.z) * 100;
+					drawY = drawY + Math.sin(user.leftElbow.orientation.z) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 					
@@ -104,13 +115,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					drawX = centerX;
 					drawY = centerY;
 					
-					drawX = drawX + Math.cos((user.rightShoulder as OpenNISkeletonJoint).orientation.z + Math.PI) * 100;
-					drawY = drawY + Math.sin((user.rightShoulder as OpenNISkeletonJoint).orientation.z + Math.PI) * 100;
+					drawX = drawX + Math.cos(user.rightShoulder.orientation.z + Math.PI) * 100;
+					drawY = drawY + Math.sin(user.rightShoulder.orientation.z + Math.PI) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 					
-					drawX = drawX + Math.cos((user.rightElbow as OpenNISkeletonJoint).orientation.z + Math.PI) * 100;
-					drawY = drawY + Math.sin((user.rightElbow as OpenNISkeletonJoint).orientation.z + Math.PI) * 100;
+					drawX = drawX + Math.cos(user.rightElbow.orientation.z + Math.PI) * 100;
+					drawY = drawY + Math.sin(user.rightElbow.orientation.z + Math.PI) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
 				}
@@ -131,6 +142,15 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 				
 				device.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
 				device.stop();
+			}
+		}
+		
+		override protected function layout():void
+		{
+			if(errorLabel != null)
+			{
+				errorLabel.x = (explicitWidth - errorLabel.width) * .5;
+				errorLabel.y = (explicitHeight - errorLabel.height) * .5;
 			}
 		}
 	}
