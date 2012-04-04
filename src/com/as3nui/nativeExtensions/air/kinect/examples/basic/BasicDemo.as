@@ -14,7 +14,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 	import com.bit101.components.Text;
 	import com.bit101.components.Window;
 	import com.bit101.utils.MinimalConfigurator;
-
+	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -133,7 +133,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 				</Window>
 			</comps>;
 
-			var deviceCapabilities:DeviceCapabilities = Kinect.Capabilities;
+			var deviceCapabilities:DeviceCapabilities = device.capabilities;
 			var capability:String;
 			for each(var capabilityXML:XML in describeType(deviceCapabilities)..accessor) {
 				capability = capabilityXML.@name.toString();

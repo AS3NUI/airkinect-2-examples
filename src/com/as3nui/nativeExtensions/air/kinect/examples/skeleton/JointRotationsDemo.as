@@ -6,7 +6,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.data.OpenNISkeletonJoint;
 	import com.bit101.components.Label;
 	
 	import flash.display.Bitmap;
@@ -30,8 +29,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 			trace("[JointRotationsDemo] Start Demo");
 			if(Kinect.isSupported())
 			{
+				device = Kinect.getDevice();
 				//check if we have joint rotation info
-				if(Kinect.Capabilities.hasJointOrientationSupport)
+				if(device.capabilities.hasJointOrientationSupport)
 				{
 					rgbImage = new Bitmap();
 					addChild(rgbImage);
@@ -41,8 +41,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					
 					skeletonContainer = new Sprite();
 					addChild(skeletonContainer);
-					
-					device = Kinect.getDevice();
 					
 					device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
 					

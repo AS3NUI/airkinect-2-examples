@@ -18,22 +18,24 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 		
 		override protected function startDemoImplementation():void
 		{
-			if(Kinect.isSupported() && Kinect.Capabilities.hasInfraredSupport)
+			if(Kinect.isSupported())
 			{
 				device = Kinect.getDeviceByClass(OpenNIKinect) as OpenNIKinect;
-				
-				infraredBitmap = new Bitmap();
-				addChild(infraredBitmap);
-				
-				device.addEventListener(OpenNICameraImageEvent.INFRARED_IMAGE_UPDATE, infraredImageUpdateHandler, false, 0, true);
-				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
-				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
-				
-				var config:OpenNIKinectSettings = new OpenNIKinectSettings();
-				config.infraredEnabled = true;
-				config.infraredResolution = CameraResolution.RESOLUTION_640_480;
-				
-				device.start(config);
+				if(device.capabilities.hasInfraredSupport)
+				{
+					infraredBitmap = new Bitmap();
+					addChild(infraredBitmap);
+					
+					device.addEventListener(OpenNICameraImageEvent.INFRARED_IMAGE_UPDATE, infraredImageUpdateHandler, false, 0, true);
+					device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
+					device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
+					
+					var config:OpenNIKinectSettings = new OpenNIKinectSettings();
+					config.infraredEnabled = true;
+					config.infraredResolution = CameraResolution.RESOLUTION_640_480;
+					
+					device.start(config);					
+				}
 			}
 		}
 		

@@ -127,7 +127,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			
 			if(Kinect.isSupported())
 			{
-				if(Kinect.Capabilities.hasJointOrientationConfidenceSupport)
+				device = Kinect.getDevice();
+				if(device.capabilities.hasJointOrientationConfidenceSupport)
 				{
 					animationController = new RiggedModelAnimationControllerByRotation(jointMapping, SkeletonAnimationState(mesh.animationState));
 				}
@@ -136,8 +137,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 					trace("[RiggedModelDemo] No Joint Orientation Support, fallback on positions");
 					animationController = new RiggedModelAnimationControllerByPosition(jointMapping, SkeletonAnimationState(mesh.animationState));
 				}
-				
-				device = Kinect.getDevice();
 				
 				rgbBitmap = new Bitmap();
 				addChild(rgbBitmap);

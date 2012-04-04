@@ -3,14 +3,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
-	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.PointCloudEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.bit101.components.CheckBox;
 	import com.bit101.components.NumericStepper;
 	import com.bit101.utils.MinimalConfigurator;
 	
-	import flash.display.Bitmap;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.ui.Keyboard;
@@ -24,7 +22,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 		public var chk_pcMirror:CheckBox;
 		public var chk_rgbIncluded:CheckBox;
 		public var ns_pcDensity:NumericStepper;
-		private var rgbBitmap:Bitmap;
 		
 		override protected function startDemoImplementation():void
 		{
@@ -32,15 +29,14 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 			{
 				device = Kinect.getDevice();
 
-				rgbBitmap = new Bitmap();
-				addChild(rgbBitmap);
-
 				stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDownHandler);
 				device.addEventListener(PointCloudEvent.POINT_CLOUD_UPDATE, pointCloudUpdateHandler, false, 0, true);
-				//device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
 
 				var settings:KinectSettings = new KinectSettings();
-				settings.pointCloudIncludeRGB = true;
+				if(device.capabilities.hasRGBCameraSupport)
+				{
+					settings.pointCloudIncludeRGB = true;
+				}
 				settings.pointCloudEnabled = true;
 				settings.pointCloudResolution = CameraResolution.RESOLUTION_320_240;
 				settings.pointCloudDensity = 4;
@@ -101,15 +97,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 			updatePointCloudSettings();
 		}
 
-		protected function rgbImageUpdateHandler(event:CameraImageEvent):void
-		{
-			rgbBitmap.bitmapData = event.imageData;
-		}
-
 		public function updatePointCloudSettings():void {
-			device.setPointCloudIncludeRGB(chk_rgbIncluded.selected);
-			renderer.includeRGB = chk_rgbIncluded.selected;
-
+			if(device.capabilities.hasRGBCameraSupport)
+			{
+				device.setPointCloudIncludeRGB(chk_rgbIncluded.selected);
+				renderer.includeRGB = chk_rgbIncluded.selected;
+			}
 			device.setPointCloudMirror(chk_pcMirror.selected);
 			device.setPointCloudDensity(ns_pcDensity.value);
 		}
@@ -124,7 +117,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.pointCloud
 			if(device != null)
 			{
 				device.removeEventListener(PointCloudEvent.POINT_CLOUD_UPDATE, pointCloudUpdateHandler);
-				device.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
 				device.stop();
 			}
 		}
