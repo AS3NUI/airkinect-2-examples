@@ -16,6 +16,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
+	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
@@ -152,6 +153,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				
 				var settings:KinectSettings = new KinectSettings();
 				settings.rgbEnabled = true;
+				settings.rgbResolution = CameraResolution.RESOLUTION_320_240;
 				settings.skeletonEnabled = true;
 				
 				trace("[RiggedModelDemo] Start Kinect");

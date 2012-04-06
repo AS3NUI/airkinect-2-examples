@@ -251,8 +251,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			torsoYawRotation = Quaternion(_quaternionPool.alloc());
 			torsoYawRotation.fromAxisAngle(axis, Math.acos(_bindShoulderOrientation.dotProduct(shoulderDir)));
 			
-			pos1 = _trackedPositions[XnSkeletonJoint.NECK];
-			pos2 = _trackedPositions[XnSkeletonJoint.TORSO];
+			pos1 = _trackedPositions[XnSkeletonJoint.TORSO];
+			pos2 = _trackedPositions[XnSkeletonJoint.NECK];
 			spineDir = Vector3D(_vector3DPool.alloc());
 			spineDir.x = 0.0;
 			spineDir.y = pos1.y - pos2.y;
