@@ -11,6 +11,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.bit101.components.CheckBox;
 	import com.bit101.components.ComboBox;
+	import com.bit101.components.HSlider;
+	import com.bit101.components.NumericStepper;
 	import com.bit101.components.Text;
 	import com.bit101.components.Window;
 	import com.bit101.utils.MinimalConfigurator;
@@ -38,6 +40,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 		public var chk_rgbMirror:CheckBox;
 		public var chk_depthMirror:CheckBox;
 		public var chk_skeletonMirror:CheckBox;
+		public var stp_cameraElevationAngle:NumericStepper;
 		public var txt_deviceMessages:Text;
 
 		public var cmb_jointList:ComboBox;
@@ -122,6 +125,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 							<CheckBox label="RGB Mirror" id="chk_rgbMirror" event="click:onChkClick"/>
 							<CheckBox label="Depth Mirror" id="chk_depthMirror" event="click:onChkClick"/>
 							<CheckBox label="Skeleton Mirror" id="chk_skeletonMirror" event="click:onChkClick"/>
+							<NumericStepper id="stp_cameraElevationAngle" minimum="-27" maximum="27" step="1" event="change:onStepperChange" />
 						</VBox>
 					</HBox>
 				</Window>
@@ -160,6 +164,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 			chk_rgbMirror.selected = deviceSettings.rgbMirrored;
 			chk_depthMirror.selected = deviceSettings.depthMirrored;
 			chk_skeletonMirror.selected = deviceSettings.skeletonMirrored;
+			
+			stp_cameraElevationAngle.value = device.cameraElevationAngle;
 
 			layout();
 		}
@@ -226,6 +232,14 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 					break;
 				case chk_skeletonMirror:
 					device.setSkeletonMirror(chk_skeletonMirror.selected);
+					break;
+			}
+		}
+		
+		public function onStepperChange(event:Event):void {
+			switch(event.target) {
+				case stp_cameraElevationAngle:
+					device.cameraElevationAngle = stp_cameraElevationAngle.value;
 					break;
 			}
 		}
