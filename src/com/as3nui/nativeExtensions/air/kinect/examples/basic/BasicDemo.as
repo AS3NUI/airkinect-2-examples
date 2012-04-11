@@ -164,8 +164,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 			chk_rgbMirror.selected = deviceSettings.rgbMirrored;
 			chk_depthMirror.selected = deviceSettings.depthMirrored;
 			chk_skeletonMirror.selected = deviceSettings.skeletonMirrored;
-			
-			stp_cameraElevationAngle.value = device.cameraElevationAngle;
 
 			layout();
 		}
@@ -246,6 +244,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 
 		protected function kinectStartedHandler(event:DeviceEvent):void {
 			trace("[BasicDemo] device started");
+			stp_cameraElevationAngle.value = device.cameraElevationAngle;
 		}
 
 		protected function kinectStoppedHandler(event:DeviceEvent):void {
