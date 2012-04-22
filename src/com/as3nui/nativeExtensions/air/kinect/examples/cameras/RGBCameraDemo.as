@@ -3,10 +3,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
+	import com.as3nui.nativeExtensions.air.kinect.constants.Framework;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-
+	
 	import flash.display.Bitmap;
 
 	public class RGBCameraDemo extends DemoBase
@@ -30,7 +31,14 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 				
 				var settings:KinectSettings = new KinectSettings();
 				settings.rgbEnabled = true;
-				settings.rgbResolution = CameraResolution.RESOLUTION_640_480;
+				if(device.capabilities.framework == Framework.MSSDK)
+				{
+					settings.rgbResolution = CameraResolution.RESOLUTION_1280_960;
+				}
+				else
+				{
+					settings.rgbResolution = CameraResolution.RESOLUTION_640_480;
+				}
 				
 				device.start(settings);
 			}
