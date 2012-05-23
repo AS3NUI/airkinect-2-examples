@@ -129,7 +129,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			if(Kinect.isSupported())
 			{
 				device = Kinect.getDevice();
-				if(device.capabilities.hasJointOrientationConfidenceSupport)
+				if(device.capabilities.hasJointOrientationSupport)
 				{
 					animationController = new RiggedModelAnimationControllerByRotation(jointMapping, SkeletonAnimationState(mesh.animationState));
 				}
