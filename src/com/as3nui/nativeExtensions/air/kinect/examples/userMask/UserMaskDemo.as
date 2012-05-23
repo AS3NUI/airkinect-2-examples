@@ -163,7 +163,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.userMask
 			{
 				for each(var user:User in device.users)
 				{
-					if(userMaskDictionary[user.userID] != null)
+					if(userMaskDictionary[user.userID] != null && userMaskDictionary[user.userID].bitmapData != null)
 					{
 						userMaskDictionary[user.userID].bitmapData.dispose();
 					}
