@@ -1,5 +1,6 @@
 package
 {
+	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.as3nui.nativeExtensions.air.kinect.examples.away3D.JointCubesDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel.RiggedModelDemo;
@@ -10,11 +11,14 @@ package
 	import com.as3nui.nativeExtensions.air.kinect.examples.multiple.MultipleDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRegionsDemo;
+	import com.as3nui.nativeExtensions.air.kinect.examples.record.RecordAndPlayBackDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.JointRotationsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskEnterFrameDemo;
+	import com.as3nui.nativeExtensions.air.kinect.recorder.KinectRecorder;
 	import com.bit101.components.ComboBox;
+	import com.bit101.components.PushButton;
 	
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -38,7 +42,8 @@ package
 			{label: "Joint Rotations Demo", data: JointRotationsDemo},
 			{label: "Joint Cubes Demo", data: JointCubesDemo},
 			{label: "Dual Kinect Demo", data: MultipleDemo},
-			{label: "3D Character Demo", data: RiggedModelDemo}
+			{label: "3D Character Demo", data: RiggedModelDemo},
+			{label: "Record & Playback Demo", data: RecordAndPlayBackDemo}
 		]);
 		
 		private var _currentDemoIndex:int = -1;
@@ -67,7 +72,6 @@ package
 		}
 		
 		private var currentDemo:DemoBase;
-		
 		private var demoBox:ComboBox;
 		
 		public function AIRKinectExamples()
@@ -86,7 +90,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoClass = BasicDemo;
+			currentDemoClass = RecordAndPlayBackDemo;
 
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}

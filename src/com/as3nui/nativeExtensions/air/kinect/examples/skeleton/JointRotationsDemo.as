@@ -87,7 +87,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					
 					//draw bones according to joint orientation (z rotation = flash rotation)
 					skeletonContainer.graphics.lineStyle(3, 0xFF0000);
-
+					/*
 					//
 					// LEFT ARMS
 					//
@@ -121,6 +121,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					drawY = drawY + Math.sin(user.rightElbow.orientation.z + Math.PI) * 100;
 					
 					skeletonContainer.graphics.lineTo(drawX, drawY);
+					*/
 				}
 			}
 		}

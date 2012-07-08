@@ -2,6 +2,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
+	import com.as3nui.nativeExtensions.air.kinect.constants.Framework;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
@@ -20,7 +21,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 		{
 			if(Kinect.isSupported())
 			{
-				device = Kinect.getDeviceByClass(OpenNIKinect) as OpenNIKinect;
+				device = Kinect.getDeviceByFramework(Framework.OPENNI) as OpenNIKinect;
 				if(device.capabilities.hasInfraredSupport)
 				{
 					infraredBitmap = new Bitmap();

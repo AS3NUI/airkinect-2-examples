@@ -1,6 +1,7 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
+	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 	import com.as3nui.nativeExtensions.air.kinect.data.DeviceCapabilities;
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
@@ -94,7 +95,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 
 				var settings:KinectSettings = new KinectSettings();
 				settings.rgbEnabled = true;
+				settings.rgbResolution = CameraResolution.RESOLUTION_320_240;
 				settings.depthEnabled = true;
+				settings.depthResolution = CameraResolution.RESOLUTION_320_240;
 				settings.depthShowUserColors = true;
 				settings.skeletonEnabled = true;
 
