@@ -31,6 +31,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 		private var depth:Bitmap;
 		private var rgbSkeletonContainer:Sprite;
 		private var depthSkeletonContainer:Sprite;
+
+		private var settings:KinectSettings;
 		
 		public function RecordAndPlayBackDemo()
 		{
@@ -71,19 +73,19 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			depthSkeletonContainer.x = depth.x;
 			addChild(depthSkeletonContainer);
 			
+			settings = new KinectSettings();
+			settings.rgbEnabled = true;
+			settings.rgbResolution = CameraResolution.RESOLUTION_320_240;
+			settings.depthEnabled = true;
+			settings.depthResolution = CameraResolution.RESOLUTION_320_240;
+			settings.skeletonEnabled = true;
+			settings.depthShowUserColors = true;
+			
 			if (Kinect.isSupported()) 
 			{
 				recordingButton.enabled = true;
 				
 				device = Kinect.getDevice();
-				
-				var settings:KinectSettings = new KinectSettings();
-				settings.rgbEnabled = true;
-				settings.rgbResolution = CameraResolution.RESOLUTION_320_240;
-				settings.depthEnabled = true;
-				settings.depthResolution = CameraResolution.RESOLUTION_320_240;
-				settings.skeletonEnabled = true;
-				settings.depthShowUserColors = true;
 				
 				device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbHandler, false, 0, true);
 				device.addEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthHandler, false, 0, true);
@@ -202,7 +204,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 		{
 			if(playbackButton.selected)
 			{
-				player.start(device.settings);
+				player.start(settings);
 			}
 			else
 			{
