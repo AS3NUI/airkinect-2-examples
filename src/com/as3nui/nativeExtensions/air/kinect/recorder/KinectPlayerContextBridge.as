@@ -184,12 +184,54 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		
 		public function getSkeletonJointNameIndices(nr:uint):Dictionary
 		{
-			return null;
+			var skeletonJointNameIndices:Dictionary = new Dictionary();
+			skeletonJointNameIndices['waist'] = 0;
+			skeletonJointNameIndices['torso'] = 1;
+			skeletonJointNameIndices['neck'] = 2;
+			skeletonJointNameIndices['head'] = 3;
+			skeletonJointNameIndices['left_shoulder'] = 4;
+			skeletonJointNameIndices['left_elbow'] = 5;
+			skeletonJointNameIndices['left_wrist'] = 6;
+			skeletonJointNameIndices['left_hand'] = 7;
+			skeletonJointNameIndices['right_shoulder'] = 8;
+			skeletonJointNameIndices['right_elbow'] = 9;
+			skeletonJointNameIndices['right_wrist'] = 10;
+			skeletonJointNameIndices['right_hand'] = 11;
+			skeletonJointNameIndices['left_hip'] = 12;
+			skeletonJointNameIndices['left_knee'] = 13;
+			skeletonJointNameIndices['left_ankle'] = 14;
+			skeletonJointNameIndices['left_foot'] = 15;
+			skeletonJointNameIndices['right_hip'] = 16;
+			skeletonJointNameIndices['right_knee'] = 17;
+			skeletonJointNameIndices['right_ankle'] = 18;
+			skeletonJointNameIndices['right_foot'] = 19;
+			return skeletonJointNameIndices;
 		}
 		
 		public function getSkeletonJointNames(nr:uint):Vector.<String>
 		{
-			return null;
+			return Vector.<String>([
+				'waist',
+				'torso',
+				'neck',
+				'head',
+				'left_shoulder',
+				'left_elbow',
+				'left_wrist',
+				'left_hand',
+				'right_shoulder',
+				'right_elbow',
+				'right_wrist',
+				'right_hand',
+				'left_hip',
+				'left_knee',
+				'left_ankle',
+				'left_foot',
+				'right_hip',
+				'right_knee',
+				'right_ankle',
+				'right_foot'
+			]);
 		}
 		
 		public function setUserEnabled(nr:uint, enabled:Boolean):void
