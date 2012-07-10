@@ -81,6 +81,7 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 				{
 					_kinect.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbHandler, false);
 					_kinect.removeEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthHandler, false);
+					_kinect.removeEventListener(UserFrameEvent.USER_FRAME_UPDATE, userFrameUpdateHandler, false);
 				}
 				
 				//save the recording

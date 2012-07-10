@@ -103,25 +103,25 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			}
 			
 			var jointMapping:Vector.<Number> = Vector.<Number>([
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Head"), 			// XN_SKEL_HEAD
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Neck"),			// XN_SKEL_NECK
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Spine"),			// XN_SKEL_TORSO
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Head"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Neck"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Spine"),
 				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftArm"), 		// XN_SKEL_LEFT_SHOULDER
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftForeArm"),	// XN_SKEL_LEFT_ELBOW
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftHand"),		// XN_SKEL_LEFT_HAND
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightArm"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightForeArm"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightHand"),
 				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightArm"), 		// XN_SKEL_RIGHT_SHOULDER
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightForeArm"),	// XN_SKEL_RIGHT_ELBOW
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightHand"), 		// XN_SKEL_RIGHT_HAND
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftArm"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftForeArm"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftHand"),
 				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftUpLeg"),		// XN_SKEL_LEFT_HIP
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftLeg"),		// XN_SKEL_LEFT_KNEE
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftFoot"),		// XN_SKEL_LEFT_FOOT
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightUpLeg"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightLeg"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightFoot"),
 				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightUpLeg"),		// XN_SKEL_RIGHT_HIP
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightLeg"),		// XN_SKEL_RIGHT_KNEE
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightFoot")		// XN_SKEL_RIGHT_FOOT
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftUpLeg"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftLeg"),
+				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftFoot")
 			]);
 			
 			jointMapping.fixed = true;

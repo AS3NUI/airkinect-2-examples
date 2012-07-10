@@ -1,6 +1,5 @@
 package
 {
-	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.as3nui.nativeExtensions.air.kinect.examples.away3D.JointCubesDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel.RiggedModelDemo;
@@ -16,9 +15,7 @@ package
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskEnterFrameDemo;
-	import com.as3nui.nativeExtensions.air.kinect.recorder.KinectRecorder;
 	import com.bit101.components.ComboBox;
-	import com.bit101.components.PushButton;
 	
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -90,7 +87,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoClass = RecordAndPlayBackDemo;
+			currentDemoClass = RiggedModelDemo;
 
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}
