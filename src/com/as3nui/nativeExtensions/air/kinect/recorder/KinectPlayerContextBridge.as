@@ -166,7 +166,7 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		{
 		}
 		
-		public function setDepthEnableNearMode(nr:uint, enableNearMode:Boolean):void
+		public function setNearModeEnabled(nr:uint, enableNearMode:Boolean):void
 		{
 		}
 		
@@ -281,7 +281,7 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		{
 		}
 		
-		public function setSkeletonMode(nr:uint, mirrored:Boolean):void
+		public function setSkeletonMode(nr:uint, mirrored:Boolean, seatedSkeletonEnabled:Boolean):void
 		{
 		}
 		
@@ -468,7 +468,10 @@ internal class UserFramePlayer extends FramePlayer
 		fs.open(_framesDirectory.resolvePath("" + _currentFrameTime), FileMode.READ);
 		var o:Object = fs.readObject();
 		
-		_userFrame = new UserFrame(o.frameNumber, o.timestamp, deserializeUsers(o.users));
+		_userFrame = new UserFrame();
+		_userFrame.frameNumber = o.frameNumber;
+		_userFrame.timestamp = o.timestamp;
+		_userFrame.users = deserializeUsers(o.users);
 		
 		dispatchEvent(new Event(Event.CHANGE));
 	}
@@ -486,35 +489,37 @@ internal class UserFramePlayer extends FramePlayer
 			for(var j:int = 0; j < numJoints; j++)
 			{
 				var jointObject:Object = userObject.skeletonJoints[j];
-				var joint:SkeletonJoint = new SkeletonJoint(
-					jointObject.name, 
-					deserializeVector3D(jointObject.position),
-					deserializeVector3D(jointObject.positionRelative), 
-					jointObject.positionConfidence, 
-					deserializeMatrix3D(jointObject.absoluteOrientationMatrix), 
-					deserializeVector3D(jointObject.absoluteOrientationQuaternion), 
-					deserializeMatrix3D(jointObject.hierarchicalOrientationMatrix), 
-					deserializeVector3D(jointObject.hierarchicalOrientationQuaternion), 
-					jointObject.orientationConfidence, 
-					deserializePoint(jointObject.rgbPosition), 
-					deserializePoint(jointObject.rgbRelativePosition), 
-					deserializePoint(jointObject.depthPosition), 
-					deserializePoint(jointObject.depthRelativePosition));
+				var joint:SkeletonJoint = new SkeletonJoint();
+				
+				joint.name = jointObject.name;
+				joint.position = deserializeVector3D(jointObject.position);
+				joint.positionRelative = deserializeVector3D(jointObject.positionRelative);
+				joint.positionConfidence = jointObject.positionConfidence;
+				joint.absoluteOrientationMatrix = deserializeMatrix3D(jointObject.absoluteOrientationMatrix);
+				joint.absoluteOrientationQuaternion = deserializeVector3D(jointObject.absoluteOrientationQuaternion);
+				joint.hierarchicalOrientationMatrix = deserializeMatrix3D(jointObject.hierarchicalOrientationMatrix);
+				joint.hierarchicalOrientationQuaternion = deserializeVector3D(jointObject.hierarchicalOrientationQuaternion);
+				joint.orientationConfidence = jointObject.orientationConfidence;
+				joint.rgbPosition = deserializePoint(jointObject.rgbPosition);
+				joint.rgbRelativePosition = deserializePoint(jointObject.rgbRelativePosition);
+				joint.depthPosition = deserializePoint(jointObject.depthPosition);
+				joint.depthRelativePosition = deserializePoint(jointObject.depthRelativePosition);
+				
 				skeletonJoints.push(joint);
 			}
 			
-			var user:User = new User(
-				userObject.framework,
-				userObject.userID, 
-				userObject.trackingID, 
-				deserializeVector3D(userObject.position), 
-				deserializeVector3D(userObject.positionRelative), 
-				deserializePoint(userObject.rgbPosition), 
-				deserializePoint(userObject.rgbRelativePosition), 
-				deserializePoint(userObject.depthPosition), 
-				deserializePoint(userObject.depthRelativePosition), 
-				userObject.hasSkeleton, 
-				skeletonJoints);
+			var user:User = new User();
+			user.framework = userObject.framework;
+			user.userID = userObject.userID;
+			user.trackingID = userObject.trackingID;
+			user.position = deserializeVector3D(userObject.position);
+			user.positionRelative = deserializeVector3D(userObject.positionRelative);
+			user.rgbPosition = deserializePoint(userObject.rgbPosition);
+			user.rgbRelativePosition = deserializePoint(userObject.rgbRelativePosition);
+			user.depthPosition = deserializePoint(userObject.depthPosition);
+			user.depthRelativePosition = deserializePoint(userObject.depthRelativePosition);
+			user.hasSkeleton = userObject.hasSkeleton;
+			user.skeletonJoints = skeletonJoints;
 			users.push(user);
 		}
 		

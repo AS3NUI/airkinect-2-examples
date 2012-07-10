@@ -196,7 +196,6 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 			var o:Object = {};
 			o.frameNumber = userFrame.frameNumber;
 			o.timestamp = userFrame.timestamp;
-			o.usersWithSkeleton = serializeUsers(userFrame.usersWithSkeleton);
 			o.users = serializeUsers(userFrame.users);
 			
 			fileStream.writeObject(o);

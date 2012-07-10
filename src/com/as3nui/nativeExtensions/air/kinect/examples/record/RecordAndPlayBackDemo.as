@@ -85,8 +85,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			bonesContainer = new Sprite();
 			addChild(bonesContainer);
 			
-			//createMSSkeleton();
-			createOpenNISkeleton();
+			createMSSkeleton();
+			//createOpenNISkeleton();
 			
 			settings = new KinectSettings();
 			settings.rgbEnabled = true;
@@ -290,7 +290,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			if(joint)
 			{
 				var m:Matrix3D = joint.absoluteOrientationMatrix.clone();
-				//m.appendScale(1, -1, 1);
+				//TODO: scale the matrix in native code
+				m.appendScale(1, -1, 1);
 				
 				if(boneView.parentBoneView != null && boneView.parentBoneView.transform.matrix3D != null)
 				{
