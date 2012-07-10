@@ -177,7 +177,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 
 		protected function kinectStartedHandler(event:DeviceEvent):void {
 			trace("[BasicDemo] device started");
-			stp_cameraElevationAngle.value = device.cameraElevationAngle;
+			if(stp_cameraElevationAngle != null)
+				stp_cameraElevationAngle.value = device.cameraElevationAngle;
 		}
 
 		protected function kinectStoppedHandler(event:DeviceEvent):void {
