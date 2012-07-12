@@ -182,93 +182,6 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		{
 		}
 		
-		public function getSkeletonJointNameIndices(nr:uint):Dictionary
-		{
-			var skeletonJointNameIndices:Dictionary = new Dictionary();
-			/*
-			skeletonJointNameIndices['waist'] = 0;
-			skeletonJointNameIndices['torso'] = 1;
-			skeletonJointNameIndices['neck'] = 2;
-			skeletonJointNameIndices['head'] = 3;
-			skeletonJointNameIndices['left_shoulder'] = 4;
-			skeletonJointNameIndices['left_elbow'] = 5;
-			skeletonJointNameIndices['left_wrist'] = 6;
-			skeletonJointNameIndices['left_hand'] = 7;
-			skeletonJointNameIndices['right_shoulder'] = 8;
-			skeletonJointNameIndices['right_elbow'] = 9;
-			skeletonJointNameIndices['right_wrist'] = 10;
-			skeletonJointNameIndices['right_hand'] = 11;
-			skeletonJointNameIndices['left_hip'] = 12;
-			skeletonJointNameIndices['left_knee'] = 13;
-			skeletonJointNameIndices['left_ankle'] = 14;
-			skeletonJointNameIndices['left_foot'] = 15;
-			skeletonJointNameIndices['right_hip'] = 16;
-			skeletonJointNameIndices['right_knee'] = 17;
-			skeletonJointNameIndices['right_ankle'] = 18;
-			skeletonJointNameIndices['right_foot'] = 19;
-			*/
-			skeletonJointNameIndices['torso'] = 0;
-			skeletonJointNameIndices['neck'] = 1;
-			skeletonJointNameIndices['head'] = 2;
-			skeletonJointNameIndices['left_shoulder'] = 3;
-			skeletonJointNameIndices['left_elbow'] = 4;
-			skeletonJointNameIndices['left_hand'] = 5;
-			skeletonJointNameIndices['right_shoulder'] = 6;
-			skeletonJointNameIndices['right_elbow'] = 7;
-			skeletonJointNameIndices['right_hand'] = 8;
-			skeletonJointNameIndices['left_hip'] = 9;
-			skeletonJointNameIndices['left_knee'] = 10;
-			skeletonJointNameIndices['left_foot'] = 11;
-			skeletonJointNameIndices['right_hip'] = 12;
-			skeletonJointNameIndices['right_knee'] = 13;
-			skeletonJointNameIndices['right_foot'] = 14;
-			return skeletonJointNameIndices;
-		}
-		
-		public function getSkeletonJointNames(nr:uint):Vector.<String>
-		{
-			/*
-			return Vector.<String>([
-				'waist',
-				'torso',
-				'neck',
-				'head',
-				'left_shoulder',
-				'left_elbow',
-				'left_wrist',
-				'left_hand',
-				'right_shoulder',
-				'right_elbow',
-				'right_wrist',
-				'right_hand',
-				'left_hip',
-				'left_knee',
-				'left_ankle',
-				'left_foot',
-				'right_hip',
-				'right_knee',
-				'right_ankle',
-				'right_foot'
-			]);*/
-			return Vector.<String>([
-				'torso',
-				'neck',
-				'head',
-				'left_shoulder',
-				'left_elbow',
-				'left_hand',
-				'right_shoulder',
-				'right_elbow',
-				'right_hand',
-				'left_hip',
-				'left_knee',
-				'left_foot',
-				'right_hip',
-				'right_knee',
-				'right_foot'
-			]);
-		}
-		
 		public function setUserEnabled(nr:uint, enabled:Boolean):void
 		{
 		}
@@ -281,7 +194,11 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		{
 		}
 		
-		public function setSkeletonMode(nr:uint, mirrored:Boolean, seatedSkeletonEnabled:Boolean):void
+		public function setSkeletonMode(nr:uint, mirrored:Boolean, seatedSkeletonEnabled:Boolean, chooseSkeletons:Boolean):void
+		{
+		}
+		
+		public function chooseSkeletons(nr:uint, trackingIds:Vector.<uint>):void
 		{
 		}
 		
