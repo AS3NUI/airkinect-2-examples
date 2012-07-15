@@ -120,7 +120,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 						</VBox>
 					</HBox>
 				</Window>
-				<Window title="Device Messages" id="deviceMessagesWindow" x="770" y = "10" width="200" height="350" minimized="true" hasMinimizeButton="true">
+				<Window title="Device Messages" id="deviceMessagesWindow" x="770" y = "10" width="200" height="350" minimized="false" hasMinimizeButton="true">
 					<TextArea id="deviceMessagesField" width="200"  height="325" editable="false"/>
 				</Window>
 			</comps>;

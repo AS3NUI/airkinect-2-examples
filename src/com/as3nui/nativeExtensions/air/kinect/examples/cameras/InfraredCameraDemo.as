@@ -2,11 +2,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
-	import com.as3nui.nativeExtensions.air.kinect.constants.Framework;
-	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.OpenNIKinect;
 	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.OpenNIKinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.events.OpenNICameraImageEvent;
 	
@@ -15,13 +12,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.cameras
 	public class InfraredCameraDemo extends DemoBase
 	{
 		private var infraredBitmap:Bitmap;
-		private var device:OpenNIKinect;
+		private var device:Kinect;
 		
 		override protected function startDemoImplementation():void
 		{
 			if(Kinect.isSupported())
 			{
-				device = Kinect.getDeviceByFramework(Framework.OPENNI) as OpenNIKinect;
+				device = Kinect.getDevice();
 				if(device.capabilities.hasInfraredSupport)
 				{
 					infraredBitmap = new Bitmap();
