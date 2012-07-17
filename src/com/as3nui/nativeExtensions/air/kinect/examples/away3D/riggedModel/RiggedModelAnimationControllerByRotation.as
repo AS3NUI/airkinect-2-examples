@@ -209,7 +209,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		private function updateCentralPosition() : void
 		{
-			var center : Vector3D = kinectUser.position;
+			var center : Vector3D = kinectUser.position.world;
 			var tr : Vector3D = _localPoses[0].translation;
 			var invPosSmoothing : Number = 1 - _posSmoothing;
 			
@@ -237,8 +237,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		private function getBoneOrientationFromKinectJoint(joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint):Quaternion
 		{
-			var q:Quaternion = new Quaternion(joint.absoluteOrientationQuaternion.x, joint.absoluteOrientationQuaternion.y, joint.absoluteOrientationQuaternion.z, joint.absoluteOrientationQuaternion.w);
+			//var q:Quaternion = new Quaternion(joint.absoluteOrientationQuaternion.x, joint.absoluteOrientationQuaternion.y, joint.absoluteOrientationQuaternion.z, joint.absoluteOrientationQuaternion.w);
 			//q.fromEulerAngles(joint.orientation.x, joint.orientation.y, joint.orientation.z);
+			var q:Quaternion = new Quaternion();
 			return q;
 		}
 		

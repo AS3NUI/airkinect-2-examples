@@ -265,7 +265,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 					{
 						rgbSkeletonContainer.graphics.lineStyle(2, 0xFFFFFF);
 						rgbSkeletonContainer.graphics.beginFill(0xFF0000);
-						rgbSkeletonContainer.graphics.drawCircle(joint.rgbPosition.x, joint.rgbPosition.y, 2);
+						rgbSkeletonContainer.graphics.drawCircle(joint.position.rgb.x, joint.position.rgb.y, 2);
 						rgbSkeletonContainer.graphics.endFill();
 					}
 				}
@@ -275,8 +275,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		private function drawRGBBone(from:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint, to:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint):void
 		{
 			rgbSkeletonContainer.graphics.lineStyle(3, 0xFF0000);
-			rgbSkeletonContainer.graphics.moveTo(from.rgbPosition.x, from.rgbPosition.y);
-			rgbSkeletonContainer.graphics.lineTo(to.rgbPosition.x, to.rgbPosition.y);
+			rgbSkeletonContainer.graphics.moveTo(from.position.rgb.x, from.position.rgb.y);
+			rgbSkeletonContainer.graphics.lineTo(to.position.rgb.x, to.position.rgb.y);
 			rgbSkeletonContainer.graphics.lineStyle(0);
 		}
 		

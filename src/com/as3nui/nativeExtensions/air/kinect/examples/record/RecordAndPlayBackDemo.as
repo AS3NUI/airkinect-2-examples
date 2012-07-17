@@ -253,11 +253,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			for each(var user:User in users)
 			{
 				rgbSkeletonContainer.graphics.beginFill(0x0000ff);
-				rgbSkeletonContainer.graphics.drawCircle(user.rgbPosition.x, user.rgbPosition.y, 20);
+				rgbSkeletonContainer.graphics.drawCircle(user.position.rgb.x, user.position.rgb.y, 20);
 				rgbSkeletonContainer.graphics.endFill();
 				
 				depthSkeletonContainer.graphics.beginFill(0x0000ff);
-				depthSkeletonContainer.graphics.drawCircle(user.depthPosition.x, user.depthPosition.y, 20);
+				depthSkeletonContainer.graphics.drawCircle(user.position.depth.x, user.position.depth.y, 20);
 				depthSkeletonContainer.graphics.endFill();
 				
 				if(user.hasSkeleton)
@@ -268,13 +268,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 					{
 						rgbSkeletonContainer.graphics.lineStyle(2, 0xff0000);
 						rgbSkeletonContainer.graphics.beginFill((joint.name.indexOf("left") == 0) ? 0xff0000 : 0xffffff);
-						rgbSkeletonContainer.graphics.drawCircle(joint.rgbPosition.x, joint.rgbPosition.y, 5);
+						rgbSkeletonContainer.graphics.drawCircle(joint.position.rgb.x, joint.position.rgb.y, 5);
 						rgbSkeletonContainer.graphics.endFill();
 						rgbSkeletonContainer.graphics.lineStyle(0);
 						
 						depthSkeletonContainer.graphics.lineStyle(2, 0xff0000);
 						depthSkeletonContainer.graphics.beginFill((joint.name.indexOf("left") == 0) ? 0xff0000 : 0xffffff);
-						depthSkeletonContainer.graphics.drawCircle(joint.depthPosition.x, joint.depthPosition.y, 5);
+						depthSkeletonContainer.graphics.drawCircle(joint.position.depth.x, joint.position.depth.y, 5);
 						depthSkeletonContainer.graphics.endFill();
 						depthSkeletonContainer.graphics.lineStyle(0);
 					}
@@ -289,7 +289,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			var joint:SkeletonJoint = userWithSkeleton.getJointByName(boneView.skeletonJointName);
 			if(joint)
 			{
-				var m:Matrix3D = joint.absoluteOrientationMatrix.clone();
+				//var m:Matrix3D = joint.absoluteOrientationMatrix.clone();
+				var m:Matrix3D = new Matrix3D();
 				//TODO: scale the matrix in native code
 				m.appendScale(1, -1, 1);
 				
@@ -301,7 +302,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 				}
 				else
 				{
-					m.appendTranslation(joint.positionRelative.x * 320, joint.positionRelative.y * 240, joint.positionRelative.z);
+					m.appendTranslation(joint.position.worldRelative.x * 320, joint.position.worldRelative.y * 240, joint.position.worldRelative.z);
 				}
 				
 				try

@@ -213,14 +213,9 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 				var userObject:Object = {};
 				userObject.trackingID = user.trackingID;
 				userObject.userID = user.userID;
-				userObject.depthPosition = (user.depthPosition != null) ? user.depthPosition.clone() : null;
-				userObject.depthRelativePosition = (user.depthRelativePosition != null) ? user.depthRelativePosition.clone() : null;
 				userObject.framework = user.framework;
 				userObject.hasSkeleton = user.hasSkeleton;
 				userObject.position = (user.position != null) ? user.position.clone() : null;
-				userObject.positionRelative = (user.positionRelative != null) ? user.positionRelative.clone() : null;
-				userObject.rgbPosition = (user.rgbPosition != null) ? user.rgbPosition.clone() : null;
-				userObject.rgbRelativePosition = (user.rgbRelativePosition != null) ? user.rgbRelativePosition.clone() : null;
 				userObject.skeletonJointNames = (user.skeletonJointNames != null) ? user.skeletonJointNames.concat() : null;
 				userObject.skeletonJoints = new Vector.<Object>();
 				var numJoints:int = (user.skeletonJoints != null) ? user.skeletonJoints.length  : 0;
@@ -228,19 +223,9 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 				{
 					var joint:SkeletonJoint = user.skeletonJoints[j];
 					var jointObject:Object = {};
-					jointObject.absoluteOrientationMatrix = joint.absoluteOrientationMatrix.clone();
-					jointObject.absoluteOrientationQuaternion = joint.absoluteOrientationQuaternion.clone();
-					jointObject.depthPosition = joint.depthPosition.clone();
-					jointObject.depthRelativePosition = joint.depthRelativePosition.clone();
-					jointObject.hierarchicalOrientationMatrix = joint.hierarchicalOrientationMatrix.clone();
-					jointObject.hierarchicalOrientationQuaternion = joint.hierarchicalOrientationQuaternion.clone();
 					jointObject.name = joint.name;
-					jointObject.orientationConfidence = joint.orientationConfidence;
 					jointObject.position = joint.position.clone();
 					jointObject.positionConfidence = joint.positionConfidence;
-					jointObject.positionRelative = joint.positionRelative.clone();
-					jointObject.rgbPosition = joint.rgbPosition.clone();
-					jointObject.rgbRelativePosition = joint.rgbRelativePosition.clone();
 					
 					userObject.skeletonJoints.push(jointObject);
 				}

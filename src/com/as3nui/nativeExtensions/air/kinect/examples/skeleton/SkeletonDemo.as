@@ -120,12 +120,12 @@ internal class SkeletonRenderer extends Sprite
 			var label:Label = labels[i];
 			//circle
 			graphics.beginFill(0xFF0000);
-			graphics.drawCircle(joint.depthRelativePosition.x * stage.stageWidth, joint.depthRelativePosition.y * stage.stageHeight, 10);
+			graphics.drawCircle(joint.position.depthRelative.x * stage.stageWidth, joint.position.depthRelative.y * stage.stageHeight, 10);
 			graphics.endFill();
 			//label
 			label.text = joint.name;
-			label.x = joint.depthRelativePosition.x * stage.stageWidth;
-			label.y = joint.depthRelativePosition.y * stage.stageHeight;
+			label.x = joint.position.depthRelative.x * stage.stageWidth;
+			label.y = joint.position.depthRelative.y * stage.stageHeight;
 		}
 	}
 }

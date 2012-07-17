@@ -101,21 +101,21 @@ package com.as3nui.nativeExtensions.air.kinect.examples.multiple {
 				if (user.hasSkeleton) {
 					for each(var joint:SkeletonJoint in user.skeletonJoints) {
 						rgbSkeletonContainer.graphics.beginFill(0xFF0000);
-						rgbSkeletonContainer.graphics.drawCircle(joint.rgbPosition.x, joint.rgbPosition.y, 5);
+						rgbSkeletonContainer.graphics.drawCircle(joint.position.rgb.x, joint.position.rgb.y, 5);
 						rgbSkeletonContainer.graphics.endFill();
 
 						depthSkeletonContainer.graphics.beginFill(0xFF0000);
-						depthSkeletonContainer.graphics.drawCircle(joint.depthPosition.x, joint.depthPosition.y, 5);
+						depthSkeletonContainer.graphics.drawCircle(joint.position.depth.x, joint.position.depth.y, 5);
 						depthSkeletonContainer.graphics.endFill();
 
-						var color:uint = (joint.positionRelative.z / (KinectMaxDepthInFlash * 4)) * 255 << 16 | (1 - (joint.positionRelative.z / (KinectMaxDepthInFlash * 4))) * 255 << 8 | 0;
+						var color:uint = (joint.position.worldRelative.z / (KinectMaxDepthInFlash * 4)) * 255 << 16 | (1 - (joint.position.worldRelative.z / (KinectMaxDepthInFlash * 4))) * 255 << 8 | 0;
 
-						var jointSprite:Sprite = createCircleForPosition(joint.positionRelative, color, startX, endX);
+						var jointSprite:Sprite = createCircleForPosition(joint.position.worldRelative, color, startX, endX);
 						skeletonContainer.addChild(jointSprite);
 					}
 				}
 				//user center position
-				var userCenterSprite:Sprite = createCircleForPosition(user.positionRelative, 0xFF0000, startX, endX);
+				var userCenterSprite:Sprite = createCircleForPosition(user.position.worldRelative, 0xFF0000, startX, endX);
 				skeletonContainer.addChild(userCenterSprite);
 			}
 		}

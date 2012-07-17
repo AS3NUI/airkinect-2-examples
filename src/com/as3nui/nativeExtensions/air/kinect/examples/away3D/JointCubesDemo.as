@@ -204,9 +204,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D
 					{
 						for(var i:uint = 0; i < skeleton.skeletonJoints.length; i++)
 						{
-							boxes[i].x = skeleton.skeletonJoints[i].positionRelative.x * SCALE;
-							boxes[i].y = skeleton.skeletonJoints[i].positionRelative.y * SCALE;
-							boxes[i].z = skeleton.skeletonJoints[i].positionRelative.z * -SCALE;
+							boxes[i].x = skeleton.skeletonJoints[i].position.worldRelative.x * SCALE;
+							boxes[i].y = skeleton.skeletonJoints[i].position.worldRelative.y * SCALE;
+							boxes[i].z = skeleton.skeletonJoints[i].position.worldRelative.z * -SCALE;
 						}
 					}
 				}

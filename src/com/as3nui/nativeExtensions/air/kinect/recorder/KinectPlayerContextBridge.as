@@ -251,6 +251,7 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 	}
 }
 
+import com.as3nui.nativeExtensions.air.kinect.data.Position;
 import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 import com.as3nui.nativeExtensions.air.kinect.data.User;
 import com.as3nui.nativeExtensions.air.kinect.data.UserFrame;
@@ -409,18 +410,8 @@ internal class UserFramePlayer extends FramePlayer
 				var joint:SkeletonJoint = new SkeletonJoint();
 				
 				joint.name = jointObject.name;
-				joint.position = deserializeVector3D(jointObject.position);
-				joint.positionRelative = deserializeVector3D(jointObject.positionRelative);
+				joint.position = deserializePosition(jointObject.position);
 				joint.positionConfidence = jointObject.positionConfidence;
-				joint.absoluteOrientationMatrix = deserializeMatrix3D(jointObject.absoluteOrientationMatrix);
-				joint.absoluteOrientationQuaternion = deserializeVector3D(jointObject.absoluteOrientationQuaternion);
-				joint.hierarchicalOrientationMatrix = deserializeMatrix3D(jointObject.hierarchicalOrientationMatrix);
-				joint.hierarchicalOrientationQuaternion = deserializeVector3D(jointObject.hierarchicalOrientationQuaternion);
-				joint.orientationConfidence = jointObject.orientationConfidence;
-				joint.rgbPosition = deserializePoint(jointObject.rgbPosition);
-				joint.rgbRelativePosition = deserializePoint(jointObject.rgbRelativePosition);
-				joint.depthPosition = deserializePoint(jointObject.depthPosition);
-				joint.depthRelativePosition = deserializePoint(jointObject.depthRelativePosition);
 				
 				skeletonJoints.push(joint);
 			}
@@ -429,12 +420,7 @@ internal class UserFramePlayer extends FramePlayer
 			user.framework = userObject.framework;
 			user.userID = userObject.userID;
 			user.trackingID = userObject.trackingID;
-			user.position = deserializeVector3D(userObject.position);
-			user.positionRelative = deserializeVector3D(userObject.positionRelative);
-			user.rgbPosition = deserializePoint(userObject.rgbPosition);
-			user.rgbRelativePosition = deserializePoint(userObject.rgbRelativePosition);
-			user.depthPosition = deserializePoint(userObject.depthPosition);
-			user.depthRelativePosition = deserializePoint(userObject.depthRelativePosition);
+			user.position = deserializePosition(userObject.position);
 			user.hasSkeleton = userObject.hasSkeleton;
 			user.skeletonJoints = skeletonJoints;
 			users.push(user);
@@ -451,6 +437,18 @@ internal class UserFramePlayer extends FramePlayer
 	private function deserializeVector3D(o:Object):Vector3D
 	{
 		return new Vector3D(o.x, o.y, o.z, o.w);
+	}
+	
+	private function deserializePosition(o:Object):Position
+	{
+		var p:Position = new Position();
+		p.depth = deserializePoint(o.depth);
+		p.depthRelative = deserializePoint(o.depthRelative);
+		p.rgb = deserializePoint(o.rgb);
+		p.rgbRelative = deserializePoint(o.rgbRelative);
+		p.world = deserializeVector3D(o.world);
+		p.worldRelative = deserializeVector3D(o.worldRelative);
+		return p;
 	}
 	
 	private function deserializeMatrix3D(o:Object):Matrix3D

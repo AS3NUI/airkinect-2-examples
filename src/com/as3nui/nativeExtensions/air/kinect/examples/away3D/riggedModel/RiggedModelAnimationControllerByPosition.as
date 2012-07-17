@@ -330,9 +330,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			var pos : Vector3D;
 			var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint = kinectUser.getJointByName(kinectSkeletonJointName);
 			pos = (_trackedPositions[targetIndex] ||= new Vector3D());
-			pos.x = joint.position.x;
-			pos.y = joint.position.y;
-			pos.z = joint.position.z;
+			pos.x = joint.position.world.x;
+			pos.y = joint.position.world.y;
+			pos.z = joint.position.world.z;
 			_positionConfidences[targetIndex] = joint.positionConfidence;
 		}
 		

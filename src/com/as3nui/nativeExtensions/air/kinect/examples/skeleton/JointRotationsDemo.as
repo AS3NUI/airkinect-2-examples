@@ -81,7 +81,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 					{
 						//rgb overlay
 						rgbSkeletonContainer.graphics.beginFill(0xFF0000);
-						rgbSkeletonContainer.graphics.drawCircle(joint.rgbPosition.x, joint.rgbPosition.y, 5);
+						rgbSkeletonContainer.graphics.drawCircle(joint.position.rgb.x, joint.position.rgb.y, 5);
 						rgbSkeletonContainer.graphics.endFill();
 					}
 					
