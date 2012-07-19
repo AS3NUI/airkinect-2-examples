@@ -10,6 +10,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceInfoEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
+	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.data.OpenNISkeletonJoint;
 	import com.bit101.components.CheckBox;
 	import com.bit101.components.InputText;
 	import com.bit101.components.NumericStepper;
@@ -222,6 +223,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 				if(user.position.world.z < closestUser.position.world.z) closestUser = user;
 				
 				if (user.hasSkeleton) {
+					
+					if(user.leftElbow is OpenNISkeletonJoint)
+					{
+						trace((user.leftElbow as OpenNISkeletonJoint).nativeOrientation.rawData);
+					}
 					
 					for each(var joint:SkeletonJoint in user.skeletonJoints) {
 						rgbSkeletonContainer.graphics.beginFill(0xFF0000, joint.positionConfidence);
