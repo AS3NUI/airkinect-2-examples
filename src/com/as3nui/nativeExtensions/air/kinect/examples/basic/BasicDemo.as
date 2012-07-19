@@ -11,8 +11,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceInfoEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.bit101.components.CheckBox;
-	import com.bit101.components.ComboBox;
-	import com.bit101.components.HSlider;
 	import com.bit101.components.InputText;
 	import com.bit101.components.NumericStepper;
 	import com.bit101.components.Text;
@@ -224,6 +222,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 				if(user.position.world.z < closestUser.position.world.z) closestUser = user;
 				
 				if (user.hasSkeleton) {
+					
 					for each(var joint:SkeletonJoint in user.skeletonJoints) {
 						rgbSkeletonContainer.graphics.beginFill(0xFF0000, joint.positionConfidence);
 						rgbSkeletonContainer.graphics.drawCircle(joint.position.rgb.x, joint.position.rgb.y, 5);
