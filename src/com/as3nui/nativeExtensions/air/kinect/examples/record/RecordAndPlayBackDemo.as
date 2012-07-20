@@ -9,6 +9,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
+	import com.as3nui.nativeExtensions.air.kinect.frameworks.mssdk.data.MSSkeletonJoint;
+	import com.as3nui.nativeExtensions.air.kinect.frameworks.mssdk.data.MSUser;
+	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.data.OpenNISkeletonJoint;
 	import com.as3nui.nativeExtensions.air.kinect.recorder.KinectPlayer;
 	import com.as3nui.nativeExtensions.air.kinect.recorder.KinectRecorder;
 	import com.bit101.components.PushButton;
@@ -85,8 +88,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			bonesContainer = new Sprite();
 			addChild(bonesContainer);
 			
-			createMSSkeleton();
-			//createOpenNISkeleton();
+			//createMSSkeleton();
+			createOpenNISkeleton();
 			
 			settings = new KinectSettings();
 			settings.rgbEnabled = true;
@@ -96,7 +99,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			settings.skeletonEnabled = true;
 			settings.depthShowUserColors = true;
 			
-			if (Kinect.isSupported()) 
+			if(Kinect.isSupported()) 
 			{
 				recordingButton.enabled = true;
 				
@@ -174,6 +177,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 		private function createBoneView(jointName:String, length:uint, color:uint, parentBone:BoneView = null):BoneView
 		{
 			var boneView:BoneView = new BoneView(jointName, length, color);
+			boneView.name = jointName;
 			if(parentBone)
 			{
 				boneView.parentBoneView = parentBone;
@@ -279,31 +283,153 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 						depthSkeletonContainer.graphics.lineStyle(0);
 					}
 					
-					transformBoneAndChildBones(user, rootBoneView);
+					if(user is MSUser)
+						msTransformBoneAndChildBones(user as MSUser, rootBoneView);
+					else
+					{
+						openNITransformSkeleton(user);
+					}
 				}
 			}
 		}
 		
-		private function transformBoneAndChildBones(userWithSkeleton:User, boneView:BoneView):void
+		private function openNITransformSkeleton(user:User):void
 		{
-			var joint:SkeletonJoint = userWithSkeleton.getJointByName(boneView.skeletonJointName);
+			var torsoBoneView:BoneView = bonesContainer.getChildByName('torso') as BoneView;
+			
+			var leftHipBoneView:BoneView = bonesContainer.getChildByName('left_hip') as BoneView;
+			var leftKneeView:BoneView = bonesContainer.getChildByName('left_knee') as BoneView;
+			var leftFootView:BoneView = bonesContainer.getChildByName('left_foot') as BoneView;
+			
+			var rightHipBoneView:BoneView = bonesContainer.getChildByName('right_hip') as BoneView;
+			var rightKneeBoneView:BoneView = bonesContainer.getChildByName('right_knee') as BoneView;
+			var rightFootView:BoneView = bonesContainer.getChildByName('right_foot') as BoneView;
+			
+			var neckBoneView:BoneView = bonesContainer.getChildByName('neck') as BoneView;
+			var headBoneView:BoneView = bonesContainer.getChildByName('head') as BoneView;
+			
+			var leftShoulderView:BoneView = bonesContainer.getChildByName('left_shoulder') as BoneView;
+			var leftElbowView:BoneView = bonesContainer.getChildByName('left_elbow') as BoneView;
+			var leftHandView:BoneView = bonesContainer.getChildByName('left_hand') as BoneView;
+			
+			var rightShoulderView:BoneView = bonesContainer.getChildByName('right_shoulder') as BoneView;
+			var rightElbowView:BoneView = bonesContainer.getChildByName('right_elbow') as BoneView;
+			var rightHandView:BoneView = bonesContainer.getChildByName('right_hand') as BoneView;
+			
+			var m:Matrix3D;
+			
+			m = new Matrix3D();
+			m.appendRotation(180, new Vector3D(0, 0, 1));
+			applyTranslation(m, user.getJointByName(torsoBoneView.skeletonJointName), torsoBoneView);
+			torsoBoneView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			//m.appendRotation(180, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(leftHipBoneView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(leftHipBoneView.skeletonJointName), leftHipBoneView);
+			leftHipBoneView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			//m.appendRotation(180, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(leftKneeView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(leftKneeView.skeletonJointName), leftKneeView);
+			leftKneeView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			//m.appendRotation(180, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(leftFootView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(leftFootView.skeletonJointName), leftFootView);
+			leftFootView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			//m.appendRotation(-180, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(rightHipBoneView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(rightHipBoneView.skeletonJointName), rightHipBoneView);
+			rightHipBoneView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			//m.appendRotation(-180, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(rightKneeBoneView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(rightKneeBoneView.skeletonJointName), rightKneeBoneView);
+			rightKneeBoneView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			//m.appendRotation(-180, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(rightFootView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(rightFootView.skeletonJointName), rightFootView);
+			rightFootView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			m.appendRotation(180, new Vector3D(0, 0, 1));
+			applyTranslation(m, user.getJointByName(neckBoneView.skeletonJointName), neckBoneView);
+			neckBoneView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			m.appendRotation(180, new Vector3D(0, 0, 1));
+			applyTranslation(m, user.getJointByName(headBoneView.skeletonJointName), headBoneView);
+			headBoneView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			m.appendRotation(90, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(leftShoulderView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(leftShoulderView.skeletonJointName), leftShoulderView);
+			leftShoulderView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			m.appendRotation(90, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(leftElbowView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(leftElbowView.skeletonJointName), leftElbowView);
+			leftElbowView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			m.appendRotation(90, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(leftHandView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(leftHandView.skeletonJointName), leftHandView);
+			leftHandView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			m.appendRotation(-90, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(rightShoulderView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(rightShoulderView.skeletonJointName), rightShoulderView);
+			rightShoulderView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			m.appendRotation(-90, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(rightElbowView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(rightElbowView.skeletonJointName), rightElbowView);
+			rightElbowView.transform.matrix3D = m;
+			
+			m = new Matrix3D();
+			m.appendRotation(-90, new Vector3D(0, 0, 1));
+			m.append((user.getJointByName(rightHandView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
+			applyTranslation(m, user.getJointByName(rightHandView.skeletonJointName), rightHandView);
+			rightHandView.transform.matrix3D = m;
+		}
+		
+		private function applyTranslation(m:Matrix3D, joint:SkeletonJoint, boneView:BoneView):void
+		{
+			if(boneView.parentBoneView != null && boneView.parentBoneView.transform.matrix3D != null)
+			{
+				var p:Vector3D = new Vector3D(0, boneView.parentBoneView.lenght, 0);
+				p = boneView.parentBoneView.transform.matrix3D.transformVector(p);
+				m.appendTranslation(p.x, p.y, p.z);
+			}
+			else
+			{
+				m.appendTranslation(joint.position.worldRelative.x * 320, joint.position.worldRelative.y * 240, joint.position.worldRelative.z);
+			}
+		}
+		
+		private function msTransformBoneAndChildBones(userWithSkeleton:MSUser, boneView:BoneView):void
+		{
+			var joint:MSSkeletonJoint = userWithSkeleton.getJointByName(boneView.skeletonJointName) as MSSkeletonJoint;
 			if(joint)
 			{
-				//var m:Matrix3D = joint.absoluteOrientationMatrix.clone();
-				var m:Matrix3D = new Matrix3D();
-				//TODO: scale the matrix in native code
+				var m:Matrix3D = joint.nativeAbsoluteRotationMatrix.clone();
+				//TODO: scale the matrix in native code?
 				m.appendScale(1, -1, 1);
 				
-				if(boneView.parentBoneView != null && boneView.parentBoneView.transform.matrix3D != null)
-				{
-					var p:Vector3D = new Vector3D(0, boneView.parentBoneView.lenght, 0);
-					p = boneView.parentBoneView.transform.matrix3D.transformVector(p);
-					m.appendTranslation(p.x, p.y, p.z);
-				}
-				else
-				{
-					m.appendTranslation(joint.position.worldRelative.x * 320, joint.position.worldRelative.y * 240, joint.position.worldRelative.z);
-				}
+				applyTranslation(m, joint, boneView);
 				
 				try
 				{
@@ -315,7 +441,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 				}
 				for each(var childBoneView:BoneView in boneView.childBoneViews)
 				{
-					transformBoneAndChildBones(userWithSkeleton, childBoneView);
+					msTransformBoneAndChildBones(userWithSkeleton, childBoneView);
 				}
 			}
 		}

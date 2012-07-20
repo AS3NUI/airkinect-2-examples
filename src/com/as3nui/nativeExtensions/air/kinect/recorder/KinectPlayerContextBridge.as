@@ -4,6 +4,7 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 	import com.as3nui.nativeExtensions.air.kinect.bridge.IContextBridge;
 	import com.as3nui.nativeExtensions.air.kinect.data.DeviceCapabilities;
 	import com.as3nui.nativeExtensions.air.kinect.data.PointCloudRegion;
+	import com.as3nui.nativeExtensions.air.kinect.data.Serialize;
 	import com.as3nui.nativeExtensions.air.kinect.data.UserFrame;
 	
 	import flash.display.Sprite;
@@ -13,8 +14,6 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 	import flash.events.StatusEvent;
 	import flash.filesystem.File;
 	import flash.utils.ByteArray;
-	import flash.utils.Dictionary;
-	import flash.utils.Endian;
 	import flash.utils.getTimer;
 	
 	public class KinectPlayerContextBridge extends EventDispatcher implements IContextBridge
@@ -31,6 +30,8 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		public function KinectPlayerContextBridge(target:IEventDispatcher=null)
 		{
 			super(target);
+			
+			Serialize.init();
 			
 			_frameHelperSprite = new Sprite();
 			
@@ -251,22 +252,15 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 	}
 }
 
-import com.as3nui.nativeExtensions.air.kinect.data.Position;
-import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 import com.as3nui.nativeExtensions.air.kinect.data.User;
 import com.as3nui.nativeExtensions.air.kinect.data.UserFrame;
 
-import flash.display.BitmapData;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Vector3D;
 import flash.utils.ByteArray;
-import flash.utils.Endian;
 
 internal class FramePlayer extends EventDispatcher
 {
@@ -384,76 +378,27 @@ internal class UserFramePlayer extends FramePlayer
 	{
 		var fs:FileStream = new FileStream();
 		fs.open(_framesDirectory.resolvePath("" + _currentFrameTime), FileMode.READ);
-		var o:Object = fs.readObject();
 		
+		var o:Object = fs.readObject();
+		if(o is UserFrame)
+		{
+			_userFrame = o as UserFrame;
+		}
+		else
+		{
+			_userFrame = new UserFrame();
+			_userFrame.frameNumber = o.frameNumber;
+			_userFrame.timestamp = o.timestamp;
+			_userFrame.users = Vector.<User>([]);
+		}
+		/*
 		_userFrame = new UserFrame();
 		_userFrame.frameNumber = o.frameNumber;
 		_userFrame.timestamp = o.timestamp;
 		_userFrame.users = deserializeUsers(o.users);
+		*/
 		
 		dispatchEvent(new Event(Event.CHANGE));
-	}
-	
-	private function deserializeUsers(userObjects:Vector.<Object>):Vector.<User>
-	{
-		var users:Vector.<User> = new Vector.<User>();
-		
-		var numUsers:int = userObjects.length;
-		for(var i:int = 0; i < numUsers; i++)
-		{
-			var userObject:Object = userObjects[i];
-			var numJoints:int = (userObject.skeletonJoints != null) ? userObject.skeletonJoints.length  : 0;
-			var skeletonJoints:Vector.<SkeletonJoint> = new Vector.<SkeletonJoint>();
-			for(var j:int = 0; j < numJoints; j++)
-			{
-				var jointObject:Object = userObject.skeletonJoints[j];
-				var joint:SkeletonJoint = new SkeletonJoint();
-				
-				joint.name = jointObject.name;
-				joint.position = deserializePosition(jointObject.position);
-				joint.positionConfidence = jointObject.positionConfidence;
-				
-				skeletonJoints.push(joint);
-			}
-			
-			var user:User = new User();
-			user.framework = userObject.framework;
-			user.userID = userObject.userID;
-			user.trackingID = userObject.trackingID;
-			user.position = deserializePosition(userObject.position);
-			user.hasSkeleton = userObject.hasSkeleton;
-			user.skeletonJoints = skeletonJoints;
-			users.push(user);
-		}
-		
-		return users;
-	}
-	
-	private function deserializePoint(o:Object):Point
-	{
-		return new Point(o.x, o.y);
-	}
-	
-	private function deserializeVector3D(o:Object):Vector3D
-	{
-		return new Vector3D(o.x, o.y, o.z, o.w);
-	}
-	
-	private function deserializePosition(o:Object):Position
-	{
-		var p:Position = new Position();
-		p.depth = deserializePoint(o.depth);
-		p.depthRelative = deserializePoint(o.depthRelative);
-		p.rgb = deserializePoint(o.rgb);
-		p.rgbRelative = deserializePoint(o.rgbRelative);
-		p.world = deserializeVector3D(o.world);
-		p.worldRelative = deserializeVector3D(o.worldRelative);
-		return p;
-	}
-	
-	private function deserializeMatrix3D(o:Object):Matrix3D
-	{
-		return new Matrix3D(o.rawData);
 	}
 }
 

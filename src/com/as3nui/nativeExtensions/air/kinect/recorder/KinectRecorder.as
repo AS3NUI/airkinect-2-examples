@@ -1,8 +1,7 @@
 package com.as3nui.nativeExtensions.air.kinect.recorder
 {
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
-	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
-	import com.as3nui.nativeExtensions.air.kinect.data.User;
+	import com.as3nui.nativeExtensions.air.kinect.data.Serialize;
 	import com.as3nui.nativeExtensions.air.kinect.data.UserFrame;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.UserFrameEvent;
@@ -12,7 +11,6 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
-	import flash.sampler.startSampling;
 	import flash.utils.getTimer;
 
 	public class KinectRecorder
@@ -44,6 +42,9 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 			if(!_isRecording)
 			{
 				_isRecording = true;
+				
+				Serialize.init();
+				
 				_recordingStartTime = getTimer();
 				_kinect = kinect;
 				
@@ -192,47 +193,8 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 			var frameFile:File = frameDirectory.resolvePath("" + time);
 			var fileStream:FileStream = new FileStream();
 			fileStream.open(frameFile, FileMode.WRITE);
-			
-			var o:Object = {};
-			o.frameNumber = userFrame.frameNumber;
-			o.timestamp = userFrame.timestamp;
-			o.users = serializeUsers(userFrame.users);
-			
-			fileStream.writeObject(o);
+			fileStream.writeObject(userFrame);
 			fileStream.close();
-		}
-		
-		private function serializeUsers(users:Vector.<User>):Vector.<Object>
-		{
-			var userObjects:Vector.<Object> = new Vector.<Object>();
-			
-			var numUsers:int = users.length;
-			for(var i:int = 0; i < numUsers; i++)
-			{
-				var user:User = users[i];
-				var userObject:Object = {};
-				userObject.trackingID = user.trackingID;
-				userObject.userID = user.userID;
-				userObject.framework = user.framework;
-				userObject.hasSkeleton = user.hasSkeleton;
-				userObject.position = (user.position != null) ? user.position.clone() : null;
-				userObject.skeletonJointNames = (user.skeletonJointNames != null) ? user.skeletonJointNames.concat() : null;
-				userObject.skeletonJoints = new Vector.<Object>();
-				var numJoints:int = (user.skeletonJoints != null) ? user.skeletonJoints.length  : 0;
-				for(var j:int = 0; j < numJoints; j++)
-				{
-					var joint:SkeletonJoint = user.skeletonJoints[j];
-					var jointObject:Object = {};
-					jointObject.name = joint.name;
-					jointObject.position = joint.position.clone();
-					jointObject.positionConfidence = joint.positionConfidence;
-					
-					userObject.skeletonJoints.push(jointObject);
-				}
-				userObjects.push(userObject);
-			}
-			
-			return userObjects;
 		}
 	}
 }

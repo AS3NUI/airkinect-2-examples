@@ -87,7 +87,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoClass = BasicDemo;
+			currentDemoClass = RecordAndPlayBackDemo;
 
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}
