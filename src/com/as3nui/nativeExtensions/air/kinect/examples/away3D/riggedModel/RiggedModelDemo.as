@@ -23,11 +23,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.UserEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
+	import com.as3nui.nativeExtensions.air.kinect.recorder.KinectPlayer;
 	import com.derschmale.away3d.loading.RotatedMD5MeshParser;
 	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.filesystem.File;
 	import flash.net.URLRequest;
 
 	public class RiggedModelDemo extends DemoBase
@@ -43,7 +45,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 
 		private var _bodyMaterial:TextureMaterial;
 		
-		
 		private var _light:PointLight;
 		private var _light2:PointLight;
 		private var _light3:PointLight;
@@ -51,6 +52,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		private var animationController:RiggedModelAnimationController;
 		
 		private var device:Kinect;
+		private var player:KinectPlayer;
 		
 		private var rgbBitmap:Bitmap;
 		private var rgbSkeletonContainer:Sprite;
@@ -129,21 +131,34 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			if(Kinect.isSupported())
 			{
 				device = Kinect.getDevice();
-				if(device.capabilities.hasJointOrientationSupport)
-				{
-					animationController = new RiggedModelAnimationControllerByRotation(jointMapping, SkeletonAnimationState(mesh.animationState));
-				}
-				else
-				{
-					trace("[RiggedModelDemo] No Joint Orientation Support, fallback on positions");
-					animationController = new RiggedModelAnimationControllerByPosition(jointMapping, SkeletonAnimationState(mesh.animationState));
-				}
-				
-				rgbBitmap = new Bitmap();
-				addChild(rgbBitmap);
-				
-				rgbSkeletonContainer = new Sprite();
-				addChild(rgbSkeletonContainer);
+			}
+			
+			//animationController = new RiggedModelAnimationControllerByBoneOrientation(jointMapping, SkeletonAnimationState(mesh.animationState));
+			animationController = new RiggedModelAnimationControllerByJointPosition(jointMapping, SkeletonAnimationState(mesh.animationState));
+			
+			rgbBitmap = new Bitmap();
+			addChild(rgbBitmap);
+			
+			rgbSkeletonContainer = new Sprite();
+			addChild(rgbSkeletonContainer);
+			
+			var settings:KinectSettings = new KinectSettings();
+			settings.rgbEnabled = true;
+			settings.rgbResolution = CameraResolution.RESOLUTION_320_240;
+			settings.skeletonEnabled = true;
+			
+			player = new KinectPlayer();
+			player.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
+			player.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
+			player.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
+			player.addEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler, false, 0, true);
+			player.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler, false, 0, true);
+			//player.playbackDirectoryUrl = File.documentsDirectory.resolvePath("export-mssdk").url;
+			//player.start(settings);
+			
+			if(Kinect.isSupported())
+			{
+				device = Kinect.getDevice();
 				
 				device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
 				device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
@@ -151,16 +166,10 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				device.addEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler, false, 0, true);
 				device.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler, false, 0, true);
 				
-				var settings:KinectSettings = new KinectSettings();
-				settings.rgbEnabled = true;
-				settings.rgbResolution = CameraResolution.RESOLUTION_320_240;
-				settings.skeletonEnabled = true;
-				
-				trace("[RiggedModelDemo] Start Kinect");
 				device.start(settings);
-				
-				addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
 			}
+			
+			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
 		}
 		
 		protected function rgbImageUpdateHandler(event:CameraImageEvent):void
@@ -170,12 +179,26 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		protected function kinectStartedHandler(event:DeviceEvent):void
 		{
-			trace("[RiggedModelDemo] Kinect started");
+			if(event.target == device)
+			{
+				trace("[RiggedModelDemo] Kinect started");
+			}
+			else
+			{
+				trace("[RiggedModelDemo] Kinect Player started");
+			}
 		}
 		
 		protected function kinectStoppedHandler(event:DeviceEvent):void
 		{
-			trace("[RiggedModelDemo] Kinect stopped");
+			if(event.target == player)
+			{
+				trace("[RiggedModelDemo] Kinect stopped");
+			}
+			else
+			{
+				trace("[RiggedModelDemo] Kinect Player stopped");
+			}
 		}
 		
 		protected function usersWithSkeletonAddedHandler(event:UserEvent):void
@@ -236,38 +259,50 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		protected function enterFrameHandler(event:Event):void
 		{
 			view.render();
-			if(rgbSkeletonContainer != null && device != null)
+			if(rgbSkeletonContainer != null)
 			{
 				rgbSkeletonContainer.graphics.clear();
-				for each(var user:User in device.usersWithSkeleton)
+				if(device != null)
 				{
-					drawRGBBone(user.leftHand, user.leftElbow);
-					drawRGBBone(user.leftElbow, user.leftShoulder);
-					drawRGBBone(user.leftShoulder, user.neck);
-					drawRGBBone(user.leftShoulder, user.torso);
-					
-					drawRGBBone(user.rightHand, user.rightElbow);
-					drawRGBBone(user.rightElbow, user.rightShoulder);
-					drawRGBBone(user.rightShoulder, user.neck);
-					drawRGBBone(user.rightShoulder, user.torso);
-					
-					drawRGBBone(user.head, user.neck);
-					
-					drawRGBBone(user.torso, user.leftHip);
-					drawRGBBone(user.leftHip, user.leftKnee);
-					drawRGBBone(user.leftKnee, user.leftFoot);
-					
-					drawRGBBone(user.torso, user.rightHip);
-					drawRGBBone(user.rightHip, user.rightKnee);
-					drawRGBBone(user.rightKnee, user.rightFoot);
-					
-					for each(var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint in user.skeletonJoints)
-					{
-						rgbSkeletonContainer.graphics.lineStyle(2, 0xFFFFFF);
-						rgbSkeletonContainer.graphics.beginFill(0xFF0000);
-						rgbSkeletonContainer.graphics.drawCircle(joint.position.rgb.x, joint.position.rgb.y, 2);
-						rgbSkeletonContainer.graphics.endFill();
-					}
+					drawUsers(device.usersWithSkeleton);
+				}
+				if(player != null)
+				{
+					drawUsers(player.users);
+				}
+			}
+		}
+		
+		private function drawUsers(users:Vector.<User>):void
+		{
+			for each(var user:User in users)
+			{
+				drawRGBBone(user.leftHand, user.leftElbow);
+				drawRGBBone(user.leftElbow, user.leftShoulder);
+				drawRGBBone(user.leftShoulder, user.neck);
+				drawRGBBone(user.leftShoulder, user.torso);
+				
+				drawRGBBone(user.rightHand, user.rightElbow);
+				drawRGBBone(user.rightElbow, user.rightShoulder);
+				drawRGBBone(user.rightShoulder, user.neck);
+				drawRGBBone(user.rightShoulder, user.torso);
+				
+				drawRGBBone(user.head, user.neck);
+				
+				drawRGBBone(user.torso, user.leftHip);
+				drawRGBBone(user.leftHip, user.leftKnee);
+				drawRGBBone(user.leftKnee, user.leftFoot);
+				
+				drawRGBBone(user.torso, user.rightHip);
+				drawRGBBone(user.rightHip, user.rightKnee);
+				drawRGBBone(user.rightKnee, user.rightFoot);
+				
+				for each(var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint in user.skeletonJoints)
+				{
+					rgbSkeletonContainer.graphics.lineStyle(2, 0xFFFFFF);
+					rgbSkeletonContainer.graphics.beginFill(0xFF0000);
+					rgbSkeletonContainer.graphics.drawCircle(joint.position.rgb.x, joint.position.rgb.y, 2);
+					rgbSkeletonContainer.graphics.endFill();
 				}
 			}
 		}
@@ -293,6 +328,15 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				device.removeEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler);
 				device.removeEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler);
 				device.stop();
+			}
+			if(player != null)
+			{
+				player.removeEventListener(DeviceEvent.STARTED, kinectStartedHandler);
+				player.removeEventListener(DeviceEvent.STOPPED, kinectStoppedHandler);
+				player.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
+				player.removeEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler);
+				player.removeEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler);
+				player.stop();
 			}
 			view.dispose();
 		}

@@ -8,6 +8,8 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 	public class KinectPlayer extends Kinect
 	{
 		
+		public var playbackDirectoryUrl:String;
+		
 		public function KinectPlayer()
 		{
 			super(0);
@@ -16,6 +18,12 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		override protected function createContextBridge():void
 		{
 			contextBridge = new KinectPlayerContextBridge();
+		}
+		
+		override protected function initSettings():void
+		{
+			super.initSettings();
+			(contextBridge as KinectPlayerContextBridge).playbackDirectoryUrl = playbackDirectoryUrl;
 		}
 		
 		override protected function parseSettings(deviceSettings:Object):KinectSettings

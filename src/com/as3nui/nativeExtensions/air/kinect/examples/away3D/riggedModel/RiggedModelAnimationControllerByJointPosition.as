@@ -9,9 +9,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import away3d.core.math.Quaternion;
 	
 	import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
+	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.derschmale.data.ObjectPool;
 	import com.derschmale.openni.XnSkeletonJoint;
 	
+	import flash.display.Graphics;
+	import flash.display.Sprite;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	
@@ -19,7 +22,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	
 	use namespace arcane;
 	
-	public class RiggedModelAnimationControllerByRotation extends RiggedModelAnimationController
+	public class RiggedModelAnimationControllerByJointPosition extends RiggedModelAnimationController
 	{
 		private static const NUM_TRACKED_JOINTS : int = 15;
 		
@@ -29,20 +32,23 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		private var _globalWisdom : Vector.<Boolean>;
 		private var _localPoses : Vector.<JointPose>;
 		private var _globalPoses : Vector.<JointPose>;
+		private var _trackedPositions : Vector.<Vector3D>;
 		private var _positionConfidences : Vector.<Number>;
 		private var _bindPoses : Vector.<Matrix3D>;
+		private var _jointSmoothing : Number = .1;
+		private var _posSmoothing : Number = .8;
 		private var _bindPoseOrientations : Vector.<Vector3D>;
 		private var _bindShoulderOrientation : Vector3D;
 		private var _bindSpineOrientation : Vector3D;
-		private var _jointSmoothing : Number = .1;
-		private var _posSmoothing : Number = .8;
 		private var _trackingCenter : Vector3D;
 		private var _trackScale : Number = .1;
 		private var _quaternionPool:ObjectPool;
 		private var _vector3DPool:ObjectPool;
 		private var _skeletonAnimationState : SkeletonAnimationState;
 		
-		public function RiggedModelAnimationControllerByRotation(jointMapping : Vector.<Number>, target : SkeletonAnimationState)
+		private var _rootLocalPose:JointPose;
+		
+		public function RiggedModelAnimationControllerByJointPosition(jointMapping : Vector.<Number>, target : SkeletonAnimationState)
 		{
 			super();
 			_quaternionPool = ObjectPool.getGlobalPool(Quaternion);
@@ -50,6 +56,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			_jointMapping = jointMapping;
 			
 			_trackingCenter = new Vector3D();
+			_trackedPositions = new Vector.<Vector3D>(NUM_TRACKED_JOINTS, true);
 			_positionConfidences = new Vector.<Number>(NUM_TRACKED_JOINTS, true);
 			_skeletonAnimationState = target;
 			
@@ -97,7 +104,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				_bindPoses[i] = bind;
 				
 				_localPoses[i].orientation = new Quaternion();
-				if (joint.parentIndex < 0) {
+				if (joint.parentIndex < 0)
+				{
+					_rootLocalPose = _localPoses[i];
 					_localPoses[i].orientation.fromMatrix(bind);
 					_localPoses[i].translation = bind.position;
 				}
@@ -123,7 +132,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			
 			_bindShoulderOrientation = new Vector3D();
 			_bindSpineOrientation = new Vector3D();
-			getSimpleBindOrientation(XnSkeletonJoint.LEFT_SHOULDER, XnSkeletonJoint.RIGHT_SHOULDER, _bindShoulderOrientation);
+			getSimpleBindOrientation(XnSkeletonJoint.RIGHT_SHOULDER, XnSkeletonJoint.LEFT_SHOULDER, _bindShoulderOrientation);
 			getSimpleBindOrientation(XnSkeletonJoint.TORSO, XnSkeletonJoint.NECK, _bindSpineOrientation);
 			
 			getSimpleBindOrientation(XnSkeletonJoint.NECK, XnSkeletonJoint.HEAD);
@@ -162,18 +171,18 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		private function updatePose() : void
 		{
-			setPositionConfidences();
+			setPosesFromKinectSkeleton();
 			updateCentralPosition();
-			updateSimpleJoint(XnSkeletonJoint.TORSO, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.TORSO);
-			updateSimpleJoint(XnSkeletonJoint.NECK, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.NECK);
-			updateSimpleJoint(XnSkeletonJoint.LEFT_SHOULDER, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_SHOULDER);
-			updateSimpleJoint(XnSkeletonJoint.LEFT_ELBOW, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_ELBOW);
-			updateSimpleJoint(XnSkeletonJoint.RIGHT_SHOULDER, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_SHOULDER);
-			updateSimpleJoint(XnSkeletonJoint.RIGHT_ELBOW, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_ELBOW);
-			updateSimpleJoint(XnSkeletonJoint.LEFT_HIP, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_HIP);
-			updateSimpleJoint(XnSkeletonJoint.LEFT_KNEE, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_KNEE);
-			updateSimpleJoint(XnSkeletonJoint.RIGHT_HIP, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_HIP);
-			updateSimpleJoint(XnSkeletonJoint.RIGHT_KNEE, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_KNEE);
+			updateTorso();
+			updateSimpleJoint(XnSkeletonJoint.NECK, XnSkeletonJoint.HEAD);
+			updateSimpleJoint(XnSkeletonJoint.LEFT_SHOULDER, XnSkeletonJoint.LEFT_ELBOW);
+			updateSimpleJoint(XnSkeletonJoint.LEFT_ELBOW, XnSkeletonJoint.LEFT_HAND);
+			updateSimpleJoint(XnSkeletonJoint.RIGHT_SHOULDER, XnSkeletonJoint.RIGHT_ELBOW);
+			updateSimpleJoint(XnSkeletonJoint.RIGHT_ELBOW, XnSkeletonJoint.RIGHT_HAND);
+			updateSimpleJoint(XnSkeletonJoint.LEFT_HIP, XnSkeletonJoint.LEFT_KNEE);
+			updateSimpleJoint(XnSkeletonJoint.LEFT_KNEE, XnSkeletonJoint.LEFT_FOOT);
+			updateSimpleJoint(XnSkeletonJoint.RIGHT_HIP, XnSkeletonJoint.RIGHT_KNEE);
+			updateSimpleJoint(XnSkeletonJoint.RIGHT_KNEE, XnSkeletonJoint.RIGHT_FOOT);
 			
 			for (var i : int = 0; i < NUM_TRACKED_JOINTS; ++i) {
 				var mapIndex : int = _jointMapping[i];
@@ -184,33 +193,10 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			updateMatrices();
 		}
 		
-		private function setPositionConfidences() : void
-		{
-			_positionConfidences[XnSkeletonJoint.HEAD] = kinectUser.head.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.NECK] = kinectUser.neck.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.TORSO] = kinectUser.torso.positionConfidence;
-			
-			_positionConfidences[XnSkeletonJoint.LEFT_SHOULDER] = kinectUser.leftShoulder.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.LEFT_ELBOW] = kinectUser.leftElbow.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.LEFT_HAND] = kinectUser.leftHand.positionConfidence;
-			
-			_positionConfidences[XnSkeletonJoint.RIGHT_SHOULDER] = kinectUser.rightShoulder.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.RIGHT_ELBOW] = kinectUser.rightElbow.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.RIGHT_HAND] = kinectUser.rightHand.positionConfidence;
-			
-			_positionConfidences[XnSkeletonJoint.LEFT_HIP] = kinectUser.leftHip.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.LEFT_KNEE] = kinectUser.leftKnee.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.LEFT_FOOT] = kinectUser.leftFoot.positionConfidence;
-			
-			_positionConfidences[XnSkeletonJoint.RIGHT_HIP] = kinectUser.rightHip.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.RIGHT_KNEE] = kinectUser.rightKnee.positionConfidence;
-			_positionConfidences[XnSkeletonJoint.RIGHT_FOOT] = kinectUser.rightFoot.positionConfidence;
-		}
-		
 		private function updateCentralPosition() : void
 		{
-			var center : Vector3D = kinectUser.position.world;
-			var tr : Vector3D = _localPoses[0].translation;
+			var center : Vector3D = _trackedPositions[XnSkeletonJoint.TORSO];
+			var tr : Vector3D = _rootLocalPose.translation;
 			var invPosSmoothing : Number = 1 - _posSmoothing;
 			
 			tr.x = tr.x + ((center.x - _trackingCenter.x) * _trackScale - tr.x) * invPosSmoothing;
@@ -218,29 +204,131 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			tr.z = tr.z + ((center.z - _trackingCenter.z) * _trackScale - tr.z) * invPosSmoothing;
 		}
 		
-		private function updateSimpleJoint(srcJoint:int, kinectSkeletonJointName:String) : void
+		private function updateTorso() : void
 		{
-			var mapIndex : int = _jointMapping[srcJoint];
+			var mapIndex : int = _jointMapping[XnSkeletonJoint.TORSO];
+			var axis : Vector3D;
+			var shoulderDir : Vector3D, spineDir : Vector3D;
+			var torsoYawRotation : Quaternion;
+			var torsoPitchRotation : Quaternion;
+			var torsoRollRotation : Quaternion;
+			var temp : Quaternion;
+			var pos1 : Vector3D, pos2 : Vector3D;
+			
 			if (mapIndex < 0) return;
+			
 			_globalWisdom[mapIndex] = true;
 			
-			var orientation:Quaternion = getBoneOrientationFromKinectJoint(kinectUser.getJointByName(kinectSkeletonJointName));
+			// torso
+			shoulderDir = _trackedPositions[XnSkeletonJoint.LEFT_SHOULDER].subtract(_trackedPositions[XnSkeletonJoint.RIGHT_SHOULDER]);
+			shoulderDir.y = 0.0;
+			shoulderDir.normalize();
+			axis = _bindShoulderOrientation.crossProduct(shoulderDir);
+			torsoYawRotation = Quaternion(_quaternionPool.alloc());
+			torsoYawRotation.fromAxisAngle(axis, Math.acos(_bindShoulderOrientation.dotProduct(shoulderDir)));
 			
-			var initialBindPose:Vector3D = _bindPoseOrientations[srcJoint];
-			if(initialBindPose != null)
-			{
-				//todo: take the initial pose into account (otherwise non-T-posed models don't work)
-			}
+			pos1 = _trackedPositions[XnSkeletonJoint.NECK];
+			pos2 = _trackedPositions[XnSkeletonJoint.TORSO];
+			spineDir = Vector3D(_vector3DPool.alloc());
+			spineDir.x = 0.0;
+			spineDir.y = pos1.y - pos2.y;
+			spineDir.z = pos1.z - pos2.z;
+			spineDir.normalize();
+			axis = _bindSpineOrientation.crossProduct(spineDir);
+			torsoPitchRotation = Quaternion(_quaternionPool.alloc());
+			torsoPitchRotation.fromAxisAngle(axis, Math.acos(_bindSpineOrientation.dotProduct(spineDir)));
 			
-			_globalPoses[mapIndex].orientation = orientation;
+			spineDir.x = pos1.x - pos2.x;
+			spineDir.y = pos1.y - pos2.y;
+			spineDir.z = 0;
+			spineDir.normalize();
+			axis = _bindSpineOrientation.crossProduct(spineDir);
+			torsoRollRotation = Quaternion(_quaternionPool.alloc());
+			torsoRollRotation.fromAxisAngle(axis, Math.acos(_bindSpineOrientation.dotProduct(spineDir)));
+			
+			temp = Quaternion(_quaternionPool.alloc());
+			temp.multiply(torsoPitchRotation, torsoRollRotation);
+			
+			_globalPoses[mapIndex].orientation.multiply(torsoYawRotation, temp);
+			
+			_quaternionPool.free(temp);
+			_quaternionPool.free(torsoPitchRotation);
+			_quaternionPool.free(torsoRollRotation);
+			_quaternionPool.free(torsoYawRotation);
+			_vector3DPool.free(spineDir);
 		}
 		
-		private function getBoneOrientationFromKinectJoint(joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint):Quaternion
+		private function updateSimpleJoint(srcJoint : int, tgtJoint : int) : void
 		{
-			//var q:Quaternion = new Quaternion(joint.absoluteOrientationQuaternion.x, joint.absoluteOrientationQuaternion.y, joint.absoluteOrientationQuaternion.z, joint.absoluteOrientationQuaternion.w);
-			//q.fromEulerAngles(joint.orientation.x, joint.orientation.y, joint.orientation.z);
-			var q:Quaternion = new Quaternion();
-			return q;
+			var bindDir : Vector3D, currDir : Vector3D, axis : Vector3D;
+			var mapIndex : int = _jointMapping[srcJoint];
+			var orientation : Quaternion;
+			
+			if (mapIndex < 0) return;
+			
+			currDir = _trackedPositions[tgtJoint].subtract(_trackedPositions[srcJoint]);
+			currDir.normalize();
+			bindDir = _bindPoseOrientations[srcJoint];
+			
+			axis = bindDir.crossProduct(currDir);
+			axis.normalize();
+			
+			_globalWisdom[mapIndex] = true;
+			orientation = _globalPoses[mapIndex].orientation;
+			orientation.fromAxisAngle(axis, Math.acos(bindDir.dotProduct(currDir)));
+		}
+		
+		private function setPosesFromKinectSkeleton() : void
+		{
+			setPoseForJoint(XnSkeletonJoint.HEAD, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.HEAD);
+			setPoseForJoint(XnSkeletonJoint.NECK, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.NECK);
+			setPoseForJoint(XnSkeletonJoint.TORSO, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.TORSO);
+			
+			setPoseForJoint(XnSkeletonJoint.LEFT_SHOULDER, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_SHOULDER);
+			setPoseForJoint(XnSkeletonJoint.LEFT_ELBOW, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_ELBOW);
+			setPoseForJoint(XnSkeletonJoint.LEFT_HAND, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_HAND);
+			
+			setPoseForJoint(XnSkeletonJoint.RIGHT_SHOULDER, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_SHOULDER);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_ELBOW, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_ELBOW);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_HAND, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_HAND);
+			
+			setPoseForJoint(XnSkeletonJoint.LEFT_HIP, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_HIP);
+			setPoseForJoint(XnSkeletonJoint.LEFT_KNEE, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_KNEE);
+			setPoseForJoint(XnSkeletonJoint.LEFT_FOOT, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_FOOT);
+			
+			setPoseForJoint(XnSkeletonJoint.RIGHT_HIP, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_HIP);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_KNEE, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_KNEE);
+			setPoseForJoint(XnSkeletonJoint.RIGHT_FOOT, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_FOOT);
+		}
+		
+		private function setPoseForJoint(targetIndex:int, kinectSkeletonJointName:String):void
+		{
+			var pos : Vector3D;
+			var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint = kinectUser.getJointByName(kinectSkeletonJointName);
+			pos = (_trackedPositions[targetIndex] ||= new Vector3D());
+			pos.x = joint.position.world.x;
+			pos.y = joint.position.world.y;
+			pos.z = joint.position.world.z;
+			_positionConfidences[targetIndex] = joint.positionConfidence;
+		}
+		
+		private function drawLimb(target : Graphics, startIndex : int, endIndex : int, scale : Number, drawFirstPoint : Boolean = true) : void
+		{
+			var pos1 : Vector3D = _trackedPositions[startIndex];
+			var pos2 : Vector3D = _trackedPositions[endIndex];
+			
+			if (_positionConfidences[startIndex] < .5) return;
+			
+			if (drawFirstPoint) {
+				target.beginFill(0x0000ff, pos1.z / 1000);
+				target.drawCircle(pos1.x * scale, -pos1.y * scale, 3);
+				target.endFill();
+			}
+			
+			target.lineStyle(1, 0xff00ff);
+			target.moveTo(pos1.x * scale, -pos1.y * scale);
+			target.lineTo(pos2.x * scale, -pos2.y * scale);
+			target.lineStyle();
 		}
 		
 		private function updateMatrices() : void

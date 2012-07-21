@@ -9,22 +9,14 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-	import com.as3nui.nativeExtensions.air.kinect.frameworks.mssdk.data.MSSkeletonJoint;
-	import com.as3nui.nativeExtensions.air.kinect.frameworks.mssdk.data.MSUser;
-	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.data.OpenNISkeletonJoint;
-	import com.as3nui.nativeExtensions.air.kinect.frameworks.openni.data.OpenNIUser;
 	import com.as3nui.nativeExtensions.air.kinect.recorder.KinectPlayer;
 	import com.as3nui.nativeExtensions.air.kinect.recorder.KinectRecorder;
 	import com.bit101.components.PushButton;
 	
 	import flash.display.Bitmap;
-	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.geom.Matrix3D;
 	import flash.geom.Point;
-	import flash.geom.Vector3D;
-	import flash.utils.Dictionary;
 	
 	public class RecordAndPlayBackDemo extends DemoBase
 	{
@@ -40,15 +32,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 		private var depth:Bitmap;
 		private var rgbSkeletonContainer:Sprite;
 		private var depthSkeletonContainer:Sprite;
-		
-		private var bonesContainer:Sprite;
 
 		private var settings:KinectSettings;
-
-		private var rootBoneView:BoneView;
-		private var hasUserWithSkeleton:Boolean;
-
-		private var bindPoseMatrices:Dictionary;
 		
 		public function RecordAndPlayBackDemo()
 		{
@@ -89,12 +74,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			depthSkeletonContainer.x = depth.x;
 			addChild(depthSkeletonContainer);
 			
-			bonesContainer = new Sprite();
-			addChild(bonesContainer);
-			
-			//createMSSkeleton();
-			createOpenNISkeleton();
-			
 			settings = new KinectSettings();
 			settings.rgbEnabled = true;
 			settings.rgbResolution = CameraResolution.RESOLUTION_320_240;
@@ -103,7 +82,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			settings.skeletonEnabled = true;
 			settings.depthShowUserColors = true;
 			
-			if(false && Kinect.isSupported()) 
+			if(Kinect.isSupported()) 
 			{
 				recordingButton.enabled = true;
 				
@@ -123,74 +102,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			addChild(playbackButton);
 			
 			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
-		}
-		
-		private function createMSSkeleton():void
-		{
-			rootBoneView = createBoneView('waist', 0, 0xff0000);
-			
-			var leftHipBoneView:BoneView = createBoneView('left_hip', 50, 0xff0000, rootBoneView);
-			var leftKneeView:BoneView = createBoneView('left_knee', 100, 0xff0000, leftHipBoneView);
-			var leftAnkleView:BoneView = createBoneView('left_ankle', 100, 0xff0000, leftKneeView);
-			var leftFootView:BoneView = createBoneView('left_foot', 30, 0xff0000, leftAnkleView);
-			
-			var rightHipBoneView:BoneView = createBoneView('right_hip', 50, 0xff0000, rootBoneView);
-			var rightKneeBoneView:BoneView = createBoneView('right_knee', 100, 0xff0000, rightHipBoneView);
-			var rightAnkleBoneView:BoneView = createBoneView('right_ankle', 100, 0xff0000, rightKneeBoneView);
-			var rightFootView:BoneView = createBoneView('right_foot', 30, 0xff0000, rightAnkleBoneView);
-			
-			var torsoBoneView:BoneView = createBoneView('torso', 50, 0xff0000, rootBoneView);
-			var neckBoneView:BoneView = createBoneView('neck', 100, 0xff0000, torsoBoneView);
-			var headBoneView:BoneView = createBoneView('head', 40, 0xff0000, neckBoneView);
-			
-			var leftShoulderView:BoneView = createBoneView('left_shoulder', 70, 0xff0000, neckBoneView);
-			var leftElbowView:BoneView = createBoneView('left_elbow', 100, 0xff0000, leftShoulderView);
-			var leftWristView:BoneView = createBoneView('left_wrist', 100, 0xff0000, leftElbowView);
-			var leftHandView:BoneView = createBoneView('left_hand', 30, 0xff0000, leftWristView);
-			
-			var rightShoulderView:BoneView = createBoneView('right_shoulder', 70, 0xff0000, neckBoneView);
-			var rightElbowView:BoneView = createBoneView('right_elbow', 100, 0xff0000, rightShoulderView);
-			var rightWristView:BoneView = createBoneView('right_wrist', 100, 0xff0000, rightElbowView);
-			var rightHandView:BoneView = createBoneView('right_hand', 30, 0xff0000, rightWristView);
-		}
-		
-		private function createOpenNISkeleton():void
-		{
-			initBindPoseOpenNI();
-			
-			rootBoneView = createBoneView('torso', 0, 0xff0000);
-
-			var leftHipBoneView:BoneView = createBoneView('left_hip', 50, 0xff00ff, rootBoneView);
-			var leftKneeView:BoneView = createBoneView('left_knee', 100, 0xff00ff, leftHipBoneView);
-			var leftFootView:BoneView = createBoneView('left_foot', 30, 0xff00ff, leftKneeView);
-			
-			var rightHipBoneView:BoneView = createBoneView('right_hip', 50, 0xff00ff, rootBoneView);
-			var rightKneeBoneView:BoneView = createBoneView('right_knee', 100, 0xff00ff, rightHipBoneView);
-			var rightFootView:BoneView = createBoneView('right_foot', 30, 0xff00ff, rightKneeBoneView);
-
-			var neckBoneView:BoneView = createBoneView('neck', 100, 0xff0000, rootBoneView);
-			var headBoneView:BoneView = createBoneView('head', 40, 0x00ff00, neckBoneView);
-			
-			var leftShoulderView:BoneView = createBoneView('left_shoulder', 70, 0x0000ff, neckBoneView);
-			var leftElbowView:BoneView = createBoneView('left_elbow', 100, 0xffff00, leftShoulderView);
-			var leftHandView:BoneView = createBoneView('left_hand', 30, 0x00ffff, leftElbowView);
-			
-			var rightShoulderView:BoneView = createBoneView('right_shoulder', 70, 0xff00ff, neckBoneView);
-			var rightElbowView:BoneView = createBoneView('right_elbow', 100, 0xff00ff, rightShoulderView);
-			var rightHandView:BoneView = createBoneView('right_hand', 30, 0xff00ff, rightElbowView);
-		}
-		
-		private function createBoneView(jointName:String, length:uint, color:uint, parentBone:BoneView = null):BoneView
-		{
-			var boneView:BoneView = new BoneView(jointName, length, color);
-			boneView.name = jointName;
-			if(parentBone)
-			{
-				boneView.parentBoneView = parentBone;
-				boneView.parentBoneView.childBoneViews.push(boneView);
-			}
-			bonesContainer.addChild(boneView);
-			return boneView;
 		}
 		
 		override protected function stopDemoImplementation():void
@@ -214,8 +125,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 			{
 				root.transform.perspectiveProjection.projectionCenter = new Point(explicitWidth * .5, explicitHeight * .5);
 			}
-			bonesContainer.x = explicitWidth * .5;
-			bonesContainer.y = explicitHeight * .5;
 		}
 		
 		protected function playerStartedHandler(event:Event):void
@@ -240,7 +149,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 		
 		protected function enterFrameHandler(event:Event):void
 		{
-			hasUserWithSkeleton = false;
 			if(player.state == DeviceState.STARTED)
 			{
 				drawUsers(player.users);
@@ -252,7 +160,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 					drawUsers(device.users);
 				}
 			}
-			bonesContainer.visible = hasUserWithSkeleton;
 		}
 		
 		private function drawUsers(users:Vector.<User>):void
@@ -272,7 +179,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 				
 				if(user.hasSkeleton)
 				{
-					hasUserWithSkeleton = true;
 					var joint:SkeletonJoint;
 					for each(joint in user.skeletonJoints)
 					{
@@ -288,105 +194,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 						depthSkeletonContainer.graphics.endFill();
 						depthSkeletonContainer.graphics.lineStyle(0);
 					}
-					
-					if(user is MSUser)
-						msTransformBoneAndChildBones(user as MSUser, rootBoneView);
-					else
-					{
-						openNITransformBoneAndChildBones(user as OpenNIUser, rootBoneView);
-					}
-				}
-			}
-		}
-		
-		private function initBindPoseOpenNI():void
-		{
-			bindPoseMatrices = new Dictionary();
-			
-			bindPoseMatrices.torso = createBindPoseMatrix(0, 0, 180);
-			
-			bindPoseMatrices.left_hip = createBindPoseMatrix(0, 0, 0);
-			bindPoseMatrices.left_knee = createBindPoseMatrix(0, 0, 0);
-			bindPoseMatrices.left_foot = createBindPoseMatrix(0, 0, 0);
-			
-			bindPoseMatrices.right_hip = createBindPoseMatrix(0, 0, 0);
-			bindPoseMatrices.right_knee = createBindPoseMatrix(0, 0, 0);
-			bindPoseMatrices.right_foot = createBindPoseMatrix(0, 0, 0);
-			
-			bindPoseMatrices.neck = createBindPoseMatrix(0, 0, 180);
-			bindPoseMatrices.head = createBindPoseMatrix(0, 0, 180);
-			
-			bindPoseMatrices.left_shoulder = createBindPoseMatrix(0, 0, 90);
-			bindPoseMatrices.left_elbow = createBindPoseMatrix(0, 0, 90);
-			bindPoseMatrices.left_hand = createBindPoseMatrix(0, 0, 90);
-			
-			bindPoseMatrices.right_shoulder = createBindPoseMatrix(0, 0, -90);
-			bindPoseMatrices.right_elbow = createBindPoseMatrix(0, 0, -90);
-			bindPoseMatrices.right_hand = createBindPoseMatrix(0, 0, -90);
-		}
-		
-		private function createBindPoseMatrix(rotationX:Number, rotationY:Number, rotationZ:Number):Matrix3D
-		{
-			var m:Matrix3D = new Matrix3D();
-			if(rotationX != 0) m.appendRotation(rotationX, new Vector3D(1, 0, 0));
-			if(rotationY != 0) m.appendRotation(rotationY, new Vector3D(0, 1, 0));
-			if(rotationZ != 0) m.appendRotation(rotationZ, new Vector3D(0, 0, 1));
-			return m;
-		}
-		
-		private function openNITransformBoneAndChildBones(userWithSkeleton:OpenNIUser, boneView:BoneView):void
-		{
-			var joint:OpenNISkeletonJoint = userWithSkeleton.getJointByName(boneView.skeletonJointName) as OpenNISkeletonJoint;
-			if(joint)
-			{
-				var m:Matrix3D = bindPoseMatrices[boneView.skeletonJointName].clone();
-				m.append((userWithSkeleton.getJointByName(boneView.skeletonJointName) as OpenNISkeletonJoint).nativeOrientation);
-				applyTranslation(m, userWithSkeleton.getJointByName(boneView.skeletonJointName), boneView);
-				boneView.transform.matrix3D = m;
-				
-				for each(var childBoneView:BoneView in boneView.childBoneViews)
-				{
-					openNITransformBoneAndChildBones(userWithSkeleton, childBoneView);
-				}
-			}
-		}
-		
-		private function applyTranslation(m:Matrix3D, joint:SkeletonJoint, boneView:BoneView):void
-		{
-			if(boneView.parentBoneView != null && boneView.parentBoneView.transform.matrix3D != null)
-			{
-				var p:Vector3D = new Vector3D(0, boneView.parentBoneView.lenght, 0);
-				p = boneView.parentBoneView.transform.matrix3D.transformVector(p);
-				m.appendTranslation(p.x, p.y, p.z);
-			}
-			else
-			{
-				m.appendTranslation(joint.position.worldRelative.x * 320, joint.position.worldRelative.y * 240, joint.position.worldRelative.z);
-			}
-		}
-		
-		private function msTransformBoneAndChildBones(userWithSkeleton:MSUser, boneView:BoneView):void
-		{
-			var joint:MSSkeletonJoint = userWithSkeleton.getJointByName(boneView.skeletonJointName) as MSSkeletonJoint;
-			if(joint)
-			{
-				var m:Matrix3D = joint.nativeAbsoluteRotationMatrix.clone();
-				//TODO: scale the matrix in native code?
-				m.appendScale(1, -1, 1);
-				
-				applyTranslation(m, joint, boneView);
-				
-				try
-				{
-					boneView.transform.matrix3D = m;
-				}
-				catch(error:Error)
-				{
-					trace(joint.name, error.message);
-				}
-				for each(var childBoneView:BoneView in boneView.childBoneViews)
-				{
-					msTransformBoneAndChildBones(userWithSkeleton, childBoneView);
 				}
 			}
 		}
@@ -425,39 +232,5 @@ package com.as3nui.nativeExtensions.air.kinect.examples.record
 		{
 			depth.bitmapData = event.imageData;
 		}
-	}
-}
-import flash.display.Shape;
-
-internal class BoneView extends Shape
-{
-	
-	private var _length:uint;
-	
-	public function get lenght():uint
-	{
-		return _length;
-	}
-	
-	private var _skeletonJointName:String;
-	
-	public function get skeletonJointName():String
-	{
-		return _skeletonJointName;
-	}
-	
-	public var parentBoneView:BoneView;
-	public var childBoneViews:Vector.<BoneView>;
-	
-	public function BoneView(skeletonJointName:String, length:uint, color:uint)
-	{
-		_length = length;
-		_skeletonJointName = skeletonJointName;
-		
-		graphics.beginFill(color);
-		graphics.drawRect(-10, 0, 20, length);
-		graphics.endFill();
-		
-		childBoneViews = new Vector.<BoneView>();
 	}
 }

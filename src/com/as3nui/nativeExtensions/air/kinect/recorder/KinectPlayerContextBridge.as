@@ -27,6 +27,8 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		private var _depthFramePlayer:ImageFramePlayer;
 		private var _userFramePlayer:UserFramePlayer;
 		
+		public var playbackDirectoryUrl:String;
+		
 		public function KinectPlayerContextBridge(target:IEventDispatcher=null)
 		{
 			super(target);
@@ -55,10 +57,15 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		protected function playbackDirectorySelectHandler(event:Event):void
 		{
 			trace("playing from", _playbackDirectory.nativePath);
+			readPlaybackDirectory();
+			playRecording();
+		}
+		
+		protected function readPlaybackDirectory():void
+		{
 			_rgbFramePlayer.readFrameNrsFromPlaybackDirectory(_playbackDirectory.resolvePath("rgb"));
 			_depthFramePlayer.readFrameNrsFromPlaybackDirectory(_playbackDirectory.resolvePath("depth"));
 			_userFramePlayer.readFrameNrsFromPlaybackDirectory(_playbackDirectory.resolvePath("user"));
-			playRecording();
 		}
 		
 		private function playRecording():void
@@ -139,7 +146,17 @@ package com.as3nui.nativeExtensions.air.kinect.recorder
 		
 		public function start(nr:uint):void
 		{
-			askToPlayRecording();
+			if(playbackDirectoryUrl != null)
+			{
+				_playbackDirectory = new File(playbackDirectoryUrl);
+				trace(_playbackDirectory.nativePath);
+				readPlaybackDirectory();
+				playRecording();
+			}
+			else
+			{
+				askToPlayRecording();
+			}
 		}
 		
 		public function stop(nr:uint):void

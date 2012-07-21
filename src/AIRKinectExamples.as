@@ -1,17 +1,14 @@
 package
 {
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
-	import com.as3nui.nativeExtensions.air.kinect.examples.away3D.JointCubesDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel.RiggedModelDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.basic.BasicDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.DepthCameraDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.InfraredCameraDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.RGBCameraDemo;
-	import com.as3nui.nativeExtensions.air.kinect.examples.multiple.MultipleDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRegionsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.record.RecordAndPlayBackDemo;
-	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.JointRotationsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonBonesDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
@@ -34,15 +31,12 @@ package
 			{label: "Infrared Camera Demo", data: InfraredCameraDemo},
 			{label: "Point Cloud Demo", data: PointCloudDemo},
 			{label: "Point Cloud Regions Demo", data: PointCloudRegionsDemo},
-			{label: "Skeleton Demo", data: SkeletonDemo},
+			{label: "Skeleton Joints Demo", data: SkeletonDemo},
+			{label: "Skeleton Bones Demo", data: SkeletonBonesDemo},
 			{label: "User Mask Demo", data: UserMaskDemo},
 			{label: "User Mask Demo Enter Frame", data: UserMaskEnterFrameDemo},
-			{label: "Joint Rotations Demo", data: JointRotationsDemo},
-			{label: "Joint Cubes Demo", data: JointCubesDemo},
-			{label: "Dual Kinect Demo", data: MultipleDemo},
 			{label: "3D Character Demo", data: RiggedModelDemo},
-			{label: "Record & Playback Demo", data: RecordAndPlayBackDemo},
-			{label: "Skeleton Bones Demo", data: SkeletonBonesDemo}
+			{label: "Record & Playback Demo", data: RecordAndPlayBackDemo}
 		]);
 		
 		private var _currentDemoIndex:int = -1;
@@ -89,7 +83,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoClass = SkeletonBonesDemo;
+			currentDemoClass = RiggedModelDemo;
 
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}
