@@ -12,6 +12,7 @@ package
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRegionsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.record.RecordAndPlayBackDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.JointRotationsDemo;
+	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonBonesDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskEnterFrameDemo;
@@ -22,7 +23,7 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 
-	[SWF(frameRate="60", width="1024", height="768", backgroundColor="#FFFFFF")]
+	[SWF(frameRate="60", width="1024", height="500", backgroundColor="#FFFFFF")]
 	public class AIRKinectExamples extends Sprite
 	{
 		
@@ -40,7 +41,8 @@ package
 			{label: "Joint Cubes Demo", data: JointCubesDemo},
 			{label: "Dual Kinect Demo", data: MultipleDemo},
 			{label: "3D Character Demo", data: RiggedModelDemo},
-			{label: "Record & Playback Demo", data: RecordAndPlayBackDemo}
+			{label: "Record & Playback Demo", data: RecordAndPlayBackDemo},
+			{label: "Skeleton Bones Demo", data: SkeletonBonesDemo}
 		]);
 		
 		private var _currentDemoIndex:int = -1;
@@ -87,7 +89,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoClass = RecordAndPlayBackDemo;
+			currentDemoClass = SkeletonBonesDemo;
 
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}
