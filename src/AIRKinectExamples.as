@@ -10,7 +10,7 @@ package
 	import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRegionsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.record.RecordAndPlayBackDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonBonesDemo;
-	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonDemo;
+	import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonJointsDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskEnterFrameDemo;
 	import com.bit101.components.ComboBox;
@@ -31,7 +31,7 @@ package
 			{label: "Infrared Camera Demo", data: InfraredCameraDemo},
 			{label: "Point Cloud Demo", data: PointCloudDemo},
 			{label: "Point Cloud Regions Demo", data: PointCloudRegionsDemo},
-			{label: "Skeleton Joints Demo", data: SkeletonDemo},
+			{label: "Skeleton Joints Demo", data: SkeletonJointsDemo},
 			{label: "Skeleton Bones Demo", data: SkeletonBonesDemo},
 			{label: "User Mask Demo", data: UserMaskDemo},
 			{label: "User Mask Demo Enter Frame", data: UserMaskEnterFrameDemo},

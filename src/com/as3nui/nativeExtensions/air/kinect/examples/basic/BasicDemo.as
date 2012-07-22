@@ -222,12 +222,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 				closestUser ||= user;
 				if(user.position.world.z < closestUser.position.world.z) closestUser = user;
 				
-				if (user.hasSkeleton) {
-					
-					if(user.leftElbow is OpenNISkeletonJoint)
-					{
-						trace((user.leftElbow as OpenNISkeletonJoint).nativeOrientation.rawData);
-					}
+				if (user.hasSkeleton) 
+				{
 					
 					for each(var joint:SkeletonJoint in user.skeletonJoints) {
 						rgbSkeletonContainer.graphics.beginFill(0xFF0000, joint.positionConfidence);
@@ -262,19 +258,20 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 		
 		private function updateChosenSkeletonId(chosenSkeletonId:int):void
 		{
-			trace("updateChosenSkeletonId(" + chosenSkeletonId + ")");
+			//trace("updateChosenSkeletonId(" + chosenSkeletonId + ")");
 			this.chosenSkeletonId = chosenSkeletonId;
 			if(chosenSkeletonId > -1)
 			{
 				if(device.capabilities.hasChooseSkeletonsSupport && device.settings.chooseSkeletonsEnabled)
 				{
-					trace("choose skeleton: " + chosenSkeletonId);
+					//trace("choose skeleton: " + chosenSkeletonId);
 					device.chooseSkeletons(Vector.<uint>([chosenSkeletonId]));
 				}
 			}
 		}
 
-		private function createCircleForPosition(positionRelative:Vector3D, color:uint, alpha:Number):Sprite {
+		private function createCircleForPosition(positionRelative:Vector3D, color:uint, alpha:Number):Sprite
+		{
 			var xPos:Number = ((positionRelative.x + 1) * .5) * explicitWidth;
 			var yPos:Number = ((positionRelative.y - 1) / -2) * explicitHeight;
 			var zPos:Number = positionRelative.z * KinectMaxDepthInFlash;
@@ -299,12 +296,15 @@ package com.as3nui.nativeExtensions.air.kinect.examples.basic {
 			rgbBitmap.bitmapData = event.imageData;
 		}
 
-		override protected function layout():void {
-			if (depthBitmap != null) {
+		override protected function layout():void
+		{
+			if (depthBitmap != null)
+			{
 				depthBitmap.x = explicitWidth - depthBitmap.width;
 				depthSkeletonContainer.x = depthBitmap.x;
 			}
-			if (root != null) {
+			if (root != null)
+			{
 				root.transform.perspectiveProjection.projectionCenter = new Point(explicitWidth * .5, explicitHeight * .5);
 			}
 		}

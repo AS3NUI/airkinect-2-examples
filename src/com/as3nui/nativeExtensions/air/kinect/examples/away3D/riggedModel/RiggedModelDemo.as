@@ -1,18 +1,9 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 {
-	import away3d.animators.data.SkeletonAnimation;
-	import away3d.animators.data.SkeletonAnimationState;
-	import away3d.animators.skeleton.SkeletonJoint;
+	
 	import away3d.cameras.Camera3D;
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
-	import away3d.entities.Mesh;
-	import away3d.events.AssetEvent;
-	import away3d.library.AssetLibrary;
-	import away3d.lights.PointLight;
-	import away3d.materials.TextureMaterial;
-	import away3d.materials.lightpickers.StaticLightPicker;
-	import away3d.textures.BitmapTexture;
 	
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
@@ -24,13 +15,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import com.as3nui.nativeExtensions.air.kinect.events.UserEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.as3nui.nativeExtensions.air.kinect.recorder.KinectPlayer;
-	import com.derschmale.away3d.loading.RotatedMD5MeshParser;
 	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.filesystem.File;
-	import flash.net.URLRequest;
 
 	public class RiggedModelDemo extends DemoBase
 	{
@@ -41,21 +30,14 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		private var scene:Scene3D;
 		private var camera:Camera3D;
 		private var view:View3D;
-		private var mesh:Mesh;
-
-		private var _bodyMaterial:TextureMaterial;
-		
-		private var _light:PointLight;
-		private var _light2:PointLight;
-		private var _light3:PointLight;
-		
-		private var animationController:RiggedModelAnimationController;
 		
 		private var device:Kinect;
 		private var player:KinectPlayer;
 		
 		private var rgbBitmap:Bitmap;
 		private var rgbSkeletonContainer:Sprite;
+		
+		private var riggedModels:Vector.<RiggedModel>;
 		
 		override protected function startDemoImplementation():void
 		{
@@ -64,77 +46,17 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			scene = new Scene3D();
 			camera = new Camera3D();
 			
+			camera.z = 13 * -14;
+			camera.y = 170 * .5;
+			
+			riggedModels = new Vector.<RiggedModel>();
+			
 			view = new View3D();
 			view.antiAlias = 4;
 			view.backgroundColor = 0xFFFFFF;
 			view.scene = scene;
 			view.camera = camera;
 			addChild(view);
-			
-			AssetLibrary.enableParser(RotatedMD5MeshParser);
-			AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, assetCompleteHandler, false, 0, true);
-			
-			//you'll need a mesh in T-pose for rotation based rigging to work!
-			AssetLibrary.load(new URLRequest("assets/characters/export/character.md5mesh"));
-		}
-		
-		protected function assetCompleteHandler(event:AssetEvent):void
-		{
-			trace("assetCompleteHandler");
-			if (!(event.asset is Mesh)) return;
-			
-			trace("create mesh");
-			
-			mesh = Mesh(event.asset);
-			
-			camera.z = mesh.maxZ * -14;
-			camera.y = mesh.maxY / 2;
-			
-			initLights();
-			initMaterials();
-			
-			mesh.material = _bodyMaterial;
-			
-			scene.addChild(mesh);
-			
-			var i:uint = 0;
-			for each(var skeletonJoint:away3d.animators.skeleton.SkeletonJoint in (mesh.animationState.animation as SkeletonAnimation).skeleton.joints)
-			{
-				trace(i, skeletonJoint.name, skeletonJoint.parentIndex);
-				i++;
-			}
-			
-			var jointMapping:Vector.<Number> = Vector.<Number>([
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Head"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Neck"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Spine"),
-				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightArm"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightForeArm"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightHand"),
-				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftArm"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftForeArm"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftHand"),
-				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightUpLeg"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightLeg"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightFoot"),
-				
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftUpLeg"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftLeg"),
-				(mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftFoot")
-			]);
-			
-			jointMapping.fixed = true;
-			
-			if(Kinect.isSupported())
-			{
-				device = Kinect.getDevice();
-			}
-			
-			//animationController = new RiggedModelAnimationControllerByBoneOrientation(jointMapping, SkeletonAnimationState(mesh.animationState));
-			animationController = new RiggedModelAnimationControllerByJointPosition(jointMapping, SkeletonAnimationState(mesh.animationState));
 			
 			rgbBitmap = new Bitmap();
 			addChild(rgbBitmap);
@@ -146,6 +68,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			settings.rgbEnabled = true;
 			settings.rgbResolution = CameraResolution.RESOLUTION_320_240;
 			settings.skeletonEnabled = true;
+			settings.skeletonMirrored = true;
 			
 			player = new KinectPlayer();
 			player.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
@@ -153,7 +76,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			player.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
 			player.addEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, usersWithSkeletonAddedHandler, false, 0, true);
 			player.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler, false, 0, true);
-			//player.playbackDirectoryUrl = File.documentsDirectory.resolvePath("export-mssdk").url;
+			//player.playbackDirectoryUrl = File.documentsDirectory.resolvePath("export-openni").url;
 			//player.start(settings);
 			
 			if(Kinect.isSupported())
@@ -204,56 +127,41 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		protected function usersWithSkeletonAddedHandler(event:UserEvent):void
 		{
 			trace("[RiggedModelDemo] User With Skeleton Added", event.users);
-			if(animationController.kinectUser == null)
+			for each(var user:User in event.users)
 			{
-				animationController.kinectUser = event.users[0];
+				createRiggedModelForUser(user);
 			}
+		}
+		
+		private function createRiggedModelForUser(user:User):void
+		{
+			var riggedModel:RiggedModel = new RiggedModel(user);
+			riggedModels.push(riggedModel);
+			scene.addChild(riggedModel);
+			trace("added rigged model");
 		}
 		
 		protected function usersWithSkeletonRemovedHandler(event:UserEvent):void
 		{
 			trace("[RiggedModelDemo] User With Skeleton Removed", event.users);
-			for each(var removedUser:User in event.users)
+			for each(var user:User in event.users)
 			{
-				if(removedUser == animationController.kinectUser)
+				destroyRiggedModelForUser(user);
+			}
+		}
+		
+		private function destroyRiggedModelForUser(user:User):void
+		{
+			var index:int = -1;
+			for(var i:int = 0; i < riggedModels.length; i++)
+			{
+				if(riggedModels[i].user == user)
 				{
-					animationController.kinectUser = null;
-					break;
+					scene.removeChild(riggedModels[i]);
 				}
 			}
-			if(device.usersWithSkeleton.length > 0)
-			{
-				animationController.kinectUser = device.usersWithSkeleton[0];
-			}
-		}
-		
-		private function initLights():void
-		{
-			_light = new PointLight(); // DirectionalLight();
-			_light.x = -5000;
-			_light.y = 1000;
-			_light.z = 7000;
-			_light.color = 0xff1111;
-			_light2 = new PointLight(); // DirectionalLight();
-			_light2.x = 5000;
-			_light2.y = 1000;
-			_light2.z = 7000;
-			_light2.color = 0x1111ff;
-			_light3 = new PointLight();
-			_light3.x = 30;
-			_light3.y = 200;
-			_light3.z = -100;
-			_light3.color = 0xffeedd;
-		}
-		
-		private function initMaterials():void
-		{
-			var lightPicker:StaticLightPicker = new StaticLightPicker([ _light, _light2, _light3 ]);
-			
-			_bodyMaterial = new TextureMaterial(new BitmapTexture(new BodyMaterial().bitmapData));
-			_bodyMaterial.lightPicker = lightPicker;
-			_bodyMaterial.ambientColor = 0x101020;
-			_bodyMaterial.ambient = 1;
+			if(index > -1)
+				riggedModels.splice(index, 1);
 		}
 		
 		protected function enterFrameHandler(event:Event):void
@@ -280,14 +188,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				drawRGBBone(user.leftHand, user.leftElbow);
 				drawRGBBone(user.leftElbow, user.leftShoulder);
 				drawRGBBone(user.leftShoulder, user.neck);
-				drawRGBBone(user.leftShoulder, user.torso);
 				
 				drawRGBBone(user.rightHand, user.rightElbow);
 				drawRGBBone(user.rightElbow, user.rightShoulder);
 				drawRGBBone(user.rightShoulder, user.neck);
-				drawRGBBone(user.rightShoulder, user.torso);
 				
 				drawRGBBone(user.head, user.neck);
+				drawRGBBone(user.torso, user.neck);
 				
 				drawRGBBone(user.torso, user.leftHip);
 				drawRGBBone(user.leftHip, user.leftKnee);
@@ -297,7 +204,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				drawRGBBone(user.rightHip, user.rightKnee);
 				drawRGBBone(user.rightKnee, user.rightFoot);
 				
-				for each(var joint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint in user.skeletonJoints)
+				for each(var joint:SkeletonJoint in user.skeletonJoints)
 				{
 					rgbSkeletonContainer.graphics.lineStyle(2, 0xFFFFFF);
 					rgbSkeletonContainer.graphics.beginFill(0xFF0000);
@@ -307,7 +214,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			}
 		}
 		
-		private function drawRGBBone(from:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint, to:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint):void
+		private function drawRGBBone(from:SkeletonJoint, to:SkeletonJoint):void
 		{
 			rgbSkeletonContainer.graphics.lineStyle(3, 0xFF0000);
 			rgbSkeletonContainer.graphics.moveTo(from.position.rgb.x, from.position.rgb.y);
@@ -318,7 +225,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		override protected function stopDemoImplementation():void
 		{
 			trace("[RiggedModelDemo] Stop Demo");
-			AssetLibrary.removeEventListener(AssetEvent.ASSET_COMPLETE, assetCompleteHandler);
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 			if(device != null)
 			{

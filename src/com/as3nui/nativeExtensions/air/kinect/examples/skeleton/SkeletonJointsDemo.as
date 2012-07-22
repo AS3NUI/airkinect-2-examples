@@ -8,9 +8,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.geom.Point;
 	
-	public class SkeletonDemo extends DemoBase
+	public class SkeletonJointsDemo extends DemoBase
 	{
+		public static const KinectMaxDepthInFlash:uint = 200;
+		
 		private var device:Kinect;
 		private var skeletonRenderers:Vector.<SkeletonRenderer>;
 		private var skeletonContainer:Sprite;
@@ -23,6 +26,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 				
 				var settings:KinectSettings = new KinectSettings();
 				settings.skeletonEnabled = true;
+				settings.skeletonMirrored = true;
 				
 				device.addEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, skeletonsAddedHandler, false, 0, true);
 				device.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, skeletonsRemovedHandler, false, 0, true);
@@ -71,6 +75,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 		{
 			for each(var skeletonRenderer:SkeletonRenderer in skeletonRenderers)
 			{
+				skeletonRenderer.explicitWidth = explicitWidth;
+				skeletonRenderer.explicitHeight = explicitHeight;
 				skeletonRenderer.render();
 			}
 		}
@@ -85,10 +91,25 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 				device.stop();
 			}
 		}
+		
+		override protected function layout():void
+		{
+			if (skeletonContainer != null)
+			{
+				
+			}
+			if (root != null)
+			{
+				root.transform.perspectiveProjection.projectionCenter = new Point(explicitWidth * .5, explicitHeight * .5);
+			}
+		}
 	}
 }
+import away3d.animators.skeleton.Skeleton;
+
 import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 import com.as3nui.nativeExtensions.air.kinect.data.User;
+import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonJointsDemo;
 import com.bit101.components.Label;
 
 import flash.display.Sprite;
@@ -98,11 +119,37 @@ internal class SkeletonRenderer extends Sprite
 	
 	public var user:User;
 	private var labels:Vector.<Label>;
+	private var circles:Vector.<Sprite>;
+	
+	public var explicitWidth:uint;
+	public var explicitHeight:uint;
 	
 	public function SkeletonRenderer(user:User)
 	{
 		this.user = user;
 		labels = new Vector.<Label>();
+		circles = new Vector.<Sprite>();
+	}
+	
+	private function createLabelsIfNeeded():void
+	{
+		while(labels.length < user.skeletonJoints.length)
+		{
+			labels.push(new Label(this));
+		}
+	}
+	
+	private function createCirclesIfNeeded():void
+	{
+		while(circles.length < user.skeletonJoints.length)
+		{
+			var circle:Sprite = new Sprite();
+			circle.graphics.beginFill(0xff0000);
+			circle.graphics.drawCircle(0, 0, 10);
+			circle.graphics.endFill();
+			addChild(circle);
+			circles.push(circle);
+		}
 	}
 	
 	public function render():void
@@ -110,22 +157,20 @@ internal class SkeletonRenderer extends Sprite
 		graphics.clear();
 		var numJoints:uint = user.skeletonJoints.length;
 		//create labels
-		while(labels.length < numJoints)
-		{
-			labels.push(new Label(this));
-		}
+		createLabelsIfNeeded();
+		createCirclesIfNeeded();
 		for(var i:int = 0; i < numJoints; i++)
 		{
 			var joint:SkeletonJoint = user.skeletonJoints[i];
 			var label:Label = labels[i];
+			var circle:Sprite = circles[i];
 			//circle
-			graphics.beginFill(0xFF0000);
-			graphics.drawCircle(joint.position.depthRelative.x * stage.stageWidth, joint.position.depthRelative.y * stage.stageHeight, 10);
-			graphics.endFill();
+			circle.x = joint.position.depthRelative.x * explicitWidth;
+			circle.y = joint.position.depthRelative.y * explicitHeight;
 			//label
 			label.text = joint.name;
-			label.x = joint.position.depthRelative.x * stage.stageWidth;
-			label.y = joint.position.depthRelative.y * stage.stageHeight;
+			label.x = circle.x;
+			label.y = circle.y;
 		}
 	}
 }

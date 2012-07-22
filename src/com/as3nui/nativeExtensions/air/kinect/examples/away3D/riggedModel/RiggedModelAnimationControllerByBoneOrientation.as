@@ -13,6 +13,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	import com.derschmale.openni.XnSkeletonJoint;
 	
 	import flash.geom.Matrix3D;
+	import flash.geom.Orientation3D;
 	import flash.geom.Vector3D;
 	
 	use namespace arcane;
@@ -199,33 +200,37 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				return;
 			
 			_globalWisdom[mapIndex] = true;
-			_globalPoses[mapIndex].orientation = getBoneOrientationFromKinectBone(kinectUser.getBoneByName(kinectSkeletonBoneName));
-		}
-		
-		private function getBoneOrientationFromKinectBone(bone:SkeletonBone):Quaternion
-		{
+			
 			var q:Quaternion = new Quaternion();
+			
+			var bone:SkeletonBone = kinectUser.getBoneByName(kinectSkeletonBoneName);
 			if(bone)
 			{
-				
-				var s:Matrix3D = bone.orientation.absoluteOrientationMatrix.clone();
-				
 				switch(bone.name)
 				{
-					case SkeletonBone.SPINE:
+					case SkeletonBone.LEFT_UPPER_ARM:
+						
+						var bindDir:Vector3D = _bindPoseOrientations[srcJoint];
+						
+						/*
+						var absoluteOrientationMatrix:Matrix3D = bone.orientation.absoluteOrientationMatrix.clone();
+						var decomposed:Vector.<Vector3D> = absoluteOrientationMatrix.decompose(Orientation3D.AXIS_ANGLE);
+						*/
+						
+						var absoluteOrientationMatrix:Matrix3D = bone.orientation.absoluteOrientationMatrix.clone();
+						//absoluteOrientationMatrix.transpose();
+						var kinectRotation:Quaternion = new Quaternion();
+						kinectRotation.fromMatrix(absoluteOrientationMatrix);
+						var modelRotation:Quaternion = new Quaternion(kinectRotation.y, -kinectRotation.z, -kinectRotation.x, kinectRotation.w);
+						
+						q.copyFrom(modelRotation);
+						
+						
 						break;
 				}
-				
-				var m:Matrix3D = new Matrix3D(Vector.<Number>([
-					s.rawData[0], s.rawData[4], s.rawData[8], 0,
-					s.rawData[1], s.rawData[5], s.rawData[9], 0,
-					s.rawData[2], s.rawData[6], s.rawData[10], 0,
-					0, 0, 0, 1
-				]));
-				
-				q.fromMatrix(m);
 			}
-			return q;
+			
+			_globalPoses[mapIndex].orientation = q;
 		}
 		
 		private function updateMatrices() : void
@@ -263,22 +268,20 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 					globalTranslation.y += parentTranslation.y;
 					globalTranslation.z += parentTranslation.z;
 					
-					globalOrientation.multiply(parentOrientation, localPose.orientation);
-					globalOrientation.normalize();
-					
 					if (_globalWisdom[i]) 
 					{
-						//global orientation is now in default pose
-						//what angle will we add?
-						/*
 						_bindPoses[i].copyToMatrix3D(mtx);
 						mtx.append(globalOrientation.toMatrix3D(mtx2));
 						globalOrientation.fromMatrix(mtx);
-						*/
+					}
+					else
+					{
+						globalOrientation.multiply(parentOrientation, localPose.orientation);
+						globalOrientation.normalize();
 					}
 					
-					globalPose.orientation = globalOrientation;
-					globalPose.translation = globalTranslation;
+					globalPose.orientation.copyFrom(globalOrientation);
+					globalPose.translation.copyFrom(globalTranslation);
 				}
 				
 				mtx.rawData = joint.inverseBindPose;
@@ -316,5 +319,17 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			SkeletonAnimationState(_skeletonAnimationState).invalidateState();
 			SkeletonAnimationState(_skeletonAnimationState).arcane::validateGlobalMatrices();
 		}
+		
+		private function getInvertedQuaternion(q:Quaternion):Quaternion
+		{
+			var fNorm:Number = q.w*q.w+q.x*q.x+q.y*q.y+q.z*q.z;
+			if (fNorm > 0.0 )
+			{
+				var fInvNorm:Number = 1.0/fNorm;
+				return new Quaternion(q.w*fInvNorm,-q.x*fInvNorm,-q.y*fInvNorm,-q.z*fInvNorm);
+			}
+			return new Quaternion();
+		}
 	}
+	
 }
