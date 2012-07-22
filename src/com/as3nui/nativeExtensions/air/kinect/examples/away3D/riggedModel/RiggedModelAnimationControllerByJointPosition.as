@@ -1,5 +1,6 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 {
+	import away3d.animators.AnimatorBase;
 	import away3d.animators.data.SkeletonAnimation;
 	import away3d.animators.data.SkeletonAnimationState;
 	import away3d.animators.skeleton.JointPose;
@@ -18,33 +19,31 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	
 	use namespace arcane;
 	
-	public class RiggedModelAnimationControllerByJointPosition extends RiggedModelAnimationController
+	public class RiggedModelAnimationControllerByJointPosition extends AnimatorBase
 	{
-		private static const NUM_TRACKED_JOINTS : int = 15;
-		
 		private var _kinectUser:User;
 		
 		private var _jointMapping:Dictionary;
-		private var _skeleton : away3d.animators.skeleton.Skeleton;
-		private var _globalMatrices : Vector.<Matrix3D>;
-		private var _globalWisdom : Vector.<Boolean>;
-		private var _localPoses : Vector.<JointPose>;
-		private var _globalPoses : Vector.<JointPose>;
-		private var _bindPoses : Vector.<Matrix3D>;
-		private var _jointSmoothing : Number = .1;
-		private var _posSmoothing : Number = .8;
+		private var _skeleton:away3d.animators.skeleton.Skeleton;
+		private var _globalMatrices:Vector.<Matrix3D>;
+		private var _globalWisdom:Vector.<Boolean>;
+		private var _localPoses:Vector.<JointPose>;
+		private var _globalPoses:Vector.<JointPose>;
+		private var _bindPoses:Vector.<Matrix3D>;
+		private var _jointSmoothing:Number = .1;
+		private var _posSmoothing:Number = .8;
 		private var _bindPoseOrientationsOfTrackedJoints:Dictionary;
-		private var _bindShoulderOrientation : Vector3D;
-		private var _bindSpineOrientation : Vector3D;
-		private var _trackingCenter : Vector3D;
-		private var _trackScale : Number = .1;
+		private var _bindShoulderOrientation:Vector3D;
+		private var _bindSpineOrientation:Vector3D;
+		private var _trackingCenter:Vector3D;
+		private var _trackScale:Number = .1;
 		private var _quaternionPool:ObjectPool;
 		private var _vector3DPool:ObjectPool;
-		private var _skeletonAnimationState : SkeletonAnimationState;
+		private var _skeletonAnimationState:SkeletonAnimationState;
 		
 		private var _rootLocalPose:JointPose;
 		
-		public function RiggedModelAnimationControllerByJointPosition(user:User, jointMapping:Dictionary, target : SkeletonAnimationState)
+		public function RiggedModelAnimationControllerByJointPosition(user:User, jointMapping:Dictionary, target:SkeletonAnimationState)
 		{
 			super();
 			_kinectUser = user;
@@ -63,7 +62,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			start();
 		}
 		
-		override protected function updateAnimation(realDT : Number, scaledDT : Number) : void
+		override protected function updateAnimation(realDT:Number, scaledDT:Number):void
 		{
 			if(_kinectUser != null)
 			{
@@ -71,13 +70,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			}
 		}
 		
-		private function initSkeleton() : void
+		private function initSkeleton():void
 		{
-			var joint : away3d.animators.skeleton.SkeletonJoint;
-			var q1 : Quaternion = Quaternion(_quaternionPool.alloc()),
-				q2 : Quaternion = Quaternion(_quaternionPool.alloc());
-			var bind : Matrix3D = new Matrix3D();
-			var parentBind : Matrix3D = new Matrix3D();
+			var joint:away3d.animators.skeleton.SkeletonJoint;
+			var q1:Quaternion = Quaternion(_quaternionPool.alloc()),
+				q2:Quaternion = Quaternion(_quaternionPool.alloc());
+			var bind:Matrix3D = new Matrix3D();
+			var parentBind:Matrix3D = new Matrix3D();
 			
 			_skeleton = SkeletonAnimation(_skeletonAnimationState.animation).skeleton;
 			
@@ -87,7 +86,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			_bindPoses = new Vector.<Matrix3D>(_skeleton.numJoints, true);
 			_globalMatrices = new Vector.<Matrix3D>(_skeleton.numJoints, true);
 			
-			for (var i : int = 0; i < _skeleton.numJoints; ++i) 
+			for (var i:int = 0; i < _skeleton.numJoints; ++i) 
 			{
 				joint = _skeleton.joints[i];
 				_localPoses[i] = new JointPose();
@@ -122,7 +121,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			_quaternionPool.free(q2);
 		}
 		
-		private function initBindPoseOrientations() : void
+		private function initBindPoseOrientations():void
 		{
 			_bindPoseOrientationsOfTrackedJoints = new Dictionary();
 			
@@ -143,13 +142,13 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			getSimpleBindOrientation(com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_KNEE, com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_FOOT);
 		}
 		
-		private function getSimpleBindOrientation(sourceKinectJointName:String, targetKinectJointName:String, storeVec : Vector3D = null) : void
+		private function getSimpleBindOrientation(sourceKinectJointName:String, targetKinectJointName:String, storeVec:Vector3D = null):void
 		{
-			var pos1 : Vector3D;
-			var pos2 : Vector3D;
-			var mapIndex1 : int = _jointMapping[sourceKinectJointName];
-			var mapIndex2 : int = _jointMapping[targetKinectJointName];
-			var mtx : Matrix3D = new Matrix3D();
+			var pos1:Vector3D;
+			var pos2:Vector3D;
+			var mapIndex1:int = _jointMapping[sourceKinectJointName];
+			var mapIndex2:int = _jointMapping[targetKinectJointName];
+			var mtx:Matrix3D = new Matrix3D();
 			
 			if (mapIndex1 < 0 || mapIndex2 < 0) return;
 			
@@ -166,7 +165,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			}
 		}
 		
-		private function updatePose() : void
+		private function updatePose():void
 		{
 			updateCentralPosition();
 			updateTorso();
@@ -197,27 +196,27 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			return p;
 		}
 		
-		private function updateCentralPosition() : void
+		private function updateCentralPosition():void
 		{
 			var center:Vector3D = getPosition(_kinectUser.torso);
-			var tr : Vector3D = _rootLocalPose.translation;
-			var invPosSmoothing : Number = 1 - _posSmoothing;
+			var tr:Vector3D = _rootLocalPose.translation;
+			var invPosSmoothing:Number = 1 - _posSmoothing;
 			
 			tr.x = tr.x + ((center.x - _trackingCenter.x) * _trackScale - tr.x) * invPosSmoothing;
 			tr.y = tr.y + ((center.y - _trackingCenter.y) * _trackScale - tr.y) * invPosSmoothing;
 			tr.z = tr.z + ((center.z - _trackingCenter.z) * _trackScale - tr.z) * invPosSmoothing;
 		}
 		
-		private function updateTorso() : void
+		private function updateTorso():void
 		{
-			var mapIndex : int = _jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.TORSO];
-			var axis : Vector3D;
-			var shoulderDir : Vector3D, spineDir : Vector3D;
-			var torsoYawRotation : Quaternion;
-			var torsoPitchRotation : Quaternion;
-			var torsoRollRotation : Quaternion;
-			var temp : Quaternion;
-			var pos1 : Vector3D, pos2 : Vector3D;
+			var mapIndex:int = _jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.TORSO];
+			var axis:Vector3D;
+			var shoulderDir:Vector3D, spineDir:Vector3D;
+			var torsoYawRotation:Quaternion;
+			var torsoPitchRotation:Quaternion;
+			var torsoRollRotation:Quaternion;
+			var temp:Quaternion;
+			var pos1:Vector3D, pos2:Vector3D;
 			
 			if (mapIndex < 0) return;
 			
@@ -261,11 +260,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			_vector3DPool.free(spineDir);
 		}
 		
-		private function updateSimpleJoint(sourceKinectJointName:String, targetKinectJointName:String) : void
+		private function updateSimpleJoint(sourceKinectJointName:String, targetKinectJointName:String):void
 		{
-			var bindDir : Vector3D, currDir : Vector3D, axis : Vector3D;
-			var mapIndex : int = _jointMapping[sourceKinectJointName];
-			var orientation : Quaternion;
+			var bindDir:Vector3D, currDir:Vector3D, axis:Vector3D;
+			var mapIndex:int = _jointMapping[sourceKinectJointName];
+			var orientation:Quaternion;
 			var sourceKinectJoint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint = _kinectUser.getJointByName(sourceKinectJointName);
 			var targetKinectJoint:com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint = _kinectUser.getJointByName(targetKinectJointName);
 			
@@ -283,21 +282,21 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			orientation.fromAxisAngle(axis, Math.acos(bindDir.dotProduct(currDir)));
 		}
 		
-		private function updateMatrices() : void
+		private function updateMatrices():void
 		{
-			var j : int;
-			var raw : Vector.<Number>;
-			var joint : away3d.animators.skeleton.SkeletonJoint;
-			var mtx : Matrix3D = new Matrix3D();
-			var mtx2 : Matrix3D = new Matrix3D();
-			var parentIndex : int;
-			var globalPose : JointPose, localPose : JointPose, parentPose : JointPose;
-			var globalOrientation : Quaternion, localOrientation : Quaternion, parentOrientation : Quaternion;
-			var globalTranslation : Vector3D, localTranslation : Vector3D, parentTranslation : Vector3D;
+			var j:int;
+			var raw:Vector.<Number>;
+			var joint:away3d.animators.skeleton.SkeletonJoint;
+			var mtx:Matrix3D = new Matrix3D();
+			var mtx2:Matrix3D = new Matrix3D();
+			var parentIndex:int;
+			var globalPose:JointPose, localPose:JointPose, parentPose:JointPose;
+			var globalOrientation:Quaternion, localOrientation:Quaternion, parentOrientation:Quaternion;
+			var globalTranslation:Vector3D, localTranslation:Vector3D, parentTranslation:Vector3D;
 			// todo: check if globalMatrices is correct (was: jointMatrices)
-			var jointMatrices : Vector.<Number> = SkeletonAnimationState(_skeletonAnimationState).globalMatrices;
+			var jointMatrices:Vector.<Number> = SkeletonAnimationState(_skeletonAnimationState).globalMatrices;
 			
-			for (var i : int = 0; i < _skeleton.numJoints; ++i) {
+			for (var i:int = 0; i < _skeleton.numJoints; ++i) {
 				joint = _skeleton.joints[i];
 				parentIndex = joint.parentIndex;
 				globalPose = _globalPoses[i];
@@ -334,7 +333,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				mtx.append(globalPose.toMatrix3D(mtx2));
 				raw = mtx.rawData;
 				
-				var smInv : Number = 1 - _jointSmoothing;
+				var smInv:Number = 1 - _jointSmoothing;
 				
 				jointMatrices[j] = jointMatrices[j] * _jointSmoothing + raw[0] * smInv;
 				++j;

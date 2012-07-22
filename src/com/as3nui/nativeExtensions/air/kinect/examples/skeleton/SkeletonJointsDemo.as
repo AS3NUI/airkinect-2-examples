@@ -105,11 +105,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 		}
 	}
 }
-import away3d.animators.skeleton.Skeleton;
 
 import com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint;
 import com.as3nui.nativeExtensions.air.kinect.data.User;
-import com.as3nui.nativeExtensions.air.kinect.examples.skeleton.SkeletonJointsDemo;
 import com.bit101.components.Label;
 
 import flash.display.Sprite;

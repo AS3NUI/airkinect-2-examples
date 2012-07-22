@@ -2,7 +2,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 {
 	import away3d.animators.data.SkeletonAnimation;
 	import away3d.animators.data.SkeletonAnimationState;
-	import away3d.animators.skeleton.SkeletonJoint;
+	import away3d.animators.skeleton.Skeleton;
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.events.AssetEvent;
@@ -26,9 +26,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		public var user:User;
 		
 		private var _mesh:Mesh;
+		private var _skeleton:Skeleton;
+		
 		private var _bodyMaterial:TextureMaterial;
 		
-		private var _animationController:RiggedModelAnimationController;
+		private var _animationController:RiggedModelAnimationControllerByJointPosition;
 		
 		public function RiggedModel(user:User)
 		{
@@ -39,9 +41,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			
 			//you'll need a mesh in T-pose for rotation based rigging to work!
 			AssetLibrary.load(new URLRequest("assets/characters/export/character.md5mesh"));
-			
-			
-			//animationController = new RiggedModelAnimationControllerByJointPosition(jointMapping, SkeletonAnimationState(mesh.animationState));
 		}
 		
 		override public function dispose():void
@@ -52,61 +51,60 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		protected function assetCompleteHandler(event:AssetEvent):void
 		{
-			if (!(event.asset is Mesh)) return;
+			if(event.asset is Mesh)
+				handleMesh(event.asset as Mesh);
 			
-			_mesh = Mesh(event.asset);
-			
-			trace(_mesh.maxX, _mesh.maxY, _mesh.maxZ);
-			
-			
+			if(everythingIsLoaded())
+				createAnimationController();	
+		}
+		
+		private function handleMesh(mesh:Mesh):void
+		{
+			_mesh = mesh;
 			_bodyMaterial = new TextureMaterial(new BitmapTexture(new BodyMaterial().bitmapData));
-			//_bodyMaterial.lightPicker = lightPicker;
 			_bodyMaterial.ambientColor = 0x101020;
 			_bodyMaterial.ambient = 1;
-			
 			_mesh.material = _bodyMaterial;
-			
 			addChild(_mesh);
 			
-			//traceMeshSkeletonJoints();
-			
-			var jointMapping:Dictionary = createJointMapping();
-			
+			_skeleton = (_mesh.animationState.animation as SkeletonAnimation).skeleton;
+		}
+		
+		private function everythingIsLoaded():Boolean
+		{
+			return (_mesh != null && _skeleton != null);
+		}
+		
+		private function createAnimationController():void
+		{
+			var jointMapping:Dictionary = createMappingForKinectJointsToMeshBones();
 			_animationController = new RiggedModelAnimationControllerByJointPosition(user, jointMapping, SkeletonAnimationState(_mesh.animationState));
 		}
 		
-		private function traceMeshSkeletonJoints():void
-		{
-			var i:uint = 0;
-			for each(var skeletonJoint:away3d.animators.skeleton.SkeletonJoint in (_mesh.animationState.animation as SkeletonAnimation).skeleton.joints)
-			{
-				trace(i, skeletonJoint.name, skeletonJoint.parentIndex);
-				i++;
-			}
-		}
-		
-		private function createJointMapping():Dictionary
+		private function createMappingForKinectJointsToMeshBones():Dictionary
 		{
 			var jointMapping:Dictionary = new Dictionary();
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.HEAD] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Head");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.NECK] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Neck");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.TORSO] = 	(_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("Spine");
 			
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_SHOULDER] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightArm");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_ELBOW] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightForeArm");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_HAND] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightHand");
+			jointMapping[SkeletonJoint.HEAD] = _skeleton.jointIndexFromName("Head");
+			jointMapping[SkeletonJoint.NECK] = _skeleton.jointIndexFromName("Neck");
+			jointMapping[SkeletonJoint.TORSO] = _skeleton.jointIndexFromName("Spine");
 			
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_SHOULDER] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftArm");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_ELBOW] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftForeArm");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_HAND] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftHand");
+			jointMapping[SkeletonJoint.RIGHT_SHOULDER] = _skeleton.jointIndexFromName("RightArm");
+			jointMapping[SkeletonJoint.RIGHT_ELBOW] = _skeleton.jointIndexFromName("RightForeArm");
+			jointMapping[SkeletonJoint.RIGHT_HAND] = _skeleton.jointIndexFromName("RightHand");
 			
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_HIP] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightUpLeg");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_KNEE] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightLeg");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.RIGHT_FOOT] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("RightFoot");
+			jointMapping[SkeletonJoint.LEFT_SHOULDER] = _skeleton.jointIndexFromName("LeftArm");
+			jointMapping[SkeletonJoint.LEFT_ELBOW] = _skeleton.jointIndexFromName("LeftForeArm");
+			jointMapping[SkeletonJoint.LEFT_HAND] = _skeleton.jointIndexFromName("LeftHand");
 			
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_HIP] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftUpLeg");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_KNEE] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftLeg");
-			jointMapping[com.as3nui.nativeExtensions.air.kinect.data.SkeletonJoint.LEFT_FOOT] = (_mesh.animationState.animation as SkeletonAnimation).skeleton.jointIndexFromName("LeftFoot");
+			jointMapping[SkeletonJoint.RIGHT_HIP] = _skeleton.jointIndexFromName("RightUpLeg");
+			jointMapping[SkeletonJoint.RIGHT_KNEE] = _skeleton.jointIndexFromName("RightLeg");
+			jointMapping[SkeletonJoint.RIGHT_FOOT] = _skeleton.jointIndexFromName("RightFoot");
+			
+			jointMapping[SkeletonJoint.LEFT_HIP] = _skeleton.jointIndexFromName("LeftUpLeg");
+			jointMapping[SkeletonJoint.LEFT_KNEE] = _skeleton.jointIndexFromName("LeftLeg");
+			jointMapping[SkeletonJoint.LEFT_FOOT] = _skeleton.jointIndexFromName("LeftFoot");
+			
 			return jointMapping;
 		}
 	}

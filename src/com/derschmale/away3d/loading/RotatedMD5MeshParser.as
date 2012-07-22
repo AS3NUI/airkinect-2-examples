@@ -1,7 +1,8 @@
 package com.derschmale.away3d.loading
 {
-	import away3d.loaders.parsers.MD5MeshParser;
 	import away3d.arcane;
+	import away3d.loaders.parsers.MD5MeshParser;
+	
 	import flash.geom.Vector3D;
 	
 	use namespace arcane;
