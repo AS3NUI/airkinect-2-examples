@@ -1,13 +1,8 @@
 package com.derschmale.away3d.loading
 {
-	import away3d.arcane;
 	import away3d.loaders.parsers.MD5MeshParser;
 	
 	import flash.geom.Vector3D;
-	
-	use namespace arcane;
-	
-	// todo: create animation system, parse skeleton
 	
 	/**
 	 * AWDParser provides a parser for the md5mesh data type, providing the geometry of the md5 format.
@@ -23,6 +18,7 @@ package com.derschmale.away3d.loading
 		public function RotatedMD5MeshParser()
 		{
 			super(new Vector3D(0, 1, 0), Math.PI*.5);
+			//super(new Vector3D(0, 0, 1), Math.PI);
 		}
 		
 		/**

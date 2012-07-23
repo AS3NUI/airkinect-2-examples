@@ -314,6 +314,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 					parentOrientation = parentPose.orientation;
 					parentTranslation = parentPose.translation;
 					parentPose.orientation.rotatePoint(localTranslation, globalTranslation);
+					
 					globalTranslation.x += parentTranslation.x;
 					globalTranslation.y += parentTranslation.y;
 					globalTranslation.z += parentTranslation.z;

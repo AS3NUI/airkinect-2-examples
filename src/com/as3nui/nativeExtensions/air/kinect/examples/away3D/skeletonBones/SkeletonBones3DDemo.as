@@ -1,9 +1,10 @@
-package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
+package com.as3nui.nativeExtensions.air.kinect.examples.away3D.skeletonBones
 {
 	
 	import away3d.cameras.Camera3D;
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
+	import away3d.controllers.HoverController;
 	
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
@@ -19,15 +20,26 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
+	import flash.display.Stage;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.filesystem.File;
-
-	public class RiggedModelDemo extends DemoBase
+	import flash.geom.Vector3D;
+	
+	public class SkeletonBones3DDemo extends DemoBase
 	{
 		
 		private var scene:Scene3D;
-		private var camera:Camera3D;
 		private var view:View3D;
+		
+		private var cameraController:HoverController;
+		
+		//navigation variables
+		private var _move:Boolean = false;
+		private var _lastPanAngle:Number;
+		private var _lastTiltAngle:Number;
+		private var _lastMouseX:Number;
+		private var _lastMouseY:Number;
 		
 		private var device:Kinect;
 		private var player:KinectPlayer;
@@ -35,26 +47,26 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		private var rgbBitmap:Bitmap;
 		private var rgbSkeletonContainer:Sprite;
 		
-		private var riggedModels:Vector.<RiggedModel>;
+		private var userViews:Vector.<SkeletonRenderer>;
+		
+		private var stageRef:Stage;
 		
 		override protected function startDemoImplementation():void
 		{
-			trace("[RiggedModelDemo] Start Demo");
+			trace("[SkeletonBones3DDemo] Start Demo");
+			stageRef = stage;
 			
 			scene = new Scene3D();
-			camera = new Camera3D();
 			
-			camera.z = 13 * -14;
-			camera.y = 170 * .5;
-			
-			riggedModels = new Vector.<RiggedModel>();
+			userViews = new Vector.<SkeletonRenderer>();
 			
 			view = new View3D();
 			view.antiAlias = 4;
 			view.backgroundColor = 0xFFFFFF;
 			view.scene = scene;
-			view.camera = camera;
 			addChild(view);
+			
+			cameraController = new HoverController(view.camera, null, 45, 20, 1000, -90);
 			
 			rgbBitmap = new Bitmap();
 			addChild(rgbBitmap);
@@ -65,8 +77,9 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			var settings:KinectSettings = new KinectSettings();
 			settings.rgbEnabled = true;
 			settings.rgbResolution = CameraResolution.RESOLUTION_320_240;
+			settings.rgbMirrored = false;
 			settings.skeletonEnabled = true;
-			settings.skeletonMirrored = true;
+			settings.skeletonMirrored = false;
 			
 			player = new KinectPlayer();
 			player.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
@@ -94,6 +107,22 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			}
 			
 			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
+			stageRef.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
+			stageRef.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
+		}
+		
+		private function onMouseDown(event:MouseEvent):void
+		{
+			_lastPanAngle = cameraController.panAngle;
+			_lastTiltAngle = cameraController.tiltAngle;
+			_lastMouseX = stage.mouseX;
+			_lastMouseY = stage.mouseY;
+			_move = true;
+		}
+		
+		private function onMouseUp(event:MouseEvent):void
+		{
+			_move = false;
 		}
 		
 		protected function rgbImageUpdateHandler(event:CameraImageEvent):void
@@ -105,11 +134,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		{
 			if(event.target == device)
 			{
-				trace("[RiggedModelDemo] Kinect started");
+				trace("[SkeletonBones3DDemo] Kinect started");
 			}
 			else
 			{
-				trace("[RiggedModelDemo] Kinect Player started");
+				trace("[SkeletonBones3DDemo] Kinect Player started");
 			}
 		}
 		
@@ -117,57 +146,69 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		{
 			if(event.target == player)
 			{
-				trace("[RiggedModelDemo] Kinect stopped");
+				trace("[SkeletonBones3DDemo] Kinect stopped");
 			}
 			else
 			{
-				trace("[RiggedModelDemo] Kinect Player stopped");
+				trace("[SkeletonBones3DDemo] Kinect Player stopped");
 			}
 		}
 		
 		protected function usersWithSkeletonAddedHandler(event:UserEvent):void
 		{
-			trace("[RiggedModelDemo] User With Skeleton Added", event.users);
+			trace("[SkeletonBones3DDemo] User With Skeleton Added", event.users);
 			for each(var user:User in event.users)
 			{
-				createRiggedModelForUser(user);
+				createViewForUser(user);
 			}
 		}
 		
-		private function createRiggedModelForUser(user:User):void
+		private function createViewForUser(user:User):void
 		{
-			var riggedModel:RiggedModel = new RiggedModel(user);
-			riggedModels.push(riggedModel);
-			scene.addChild(riggedModel);
-			trace("added rigged model");
+			var userView:SkeletonRenderer = new SkeletonRenderer(user);
+			userViews.push(userView);
+			scene.addChild(userView);
+			trace("added user view");
 		}
 		
 		protected function usersWithSkeletonRemovedHandler(event:UserEvent):void
 		{
-			trace("[RiggedModelDemo] User With Skeleton Removed", event.users);
+			trace("[SkeletonBones3DDemo] User With Skeleton Removed", event.users);
 			for each(var user:User in event.users)
 			{
-				destroyRiggedModelForUser(user);
+				destroyViewForUser(user);
 			}
 		}
 		
-		private function destroyRiggedModelForUser(user:User):void
+		private function destroyViewForUser(user:User):void
 		{
 			var index:int = -1;
-			for(var i:int = 0; i < riggedModels.length; i++)
+			for(var i:int = 0; i < userViews.length; i++)
 			{
-				if(riggedModels[i].user == user)
+				if(userViews[i].user == user)
 				{
-					scene.removeChild(riggedModels[i]);
+					scene.removeChild(userViews[i]);
 				}
 			}
 			if(index > -1)
-				riggedModels.splice(index, 1);
+				userViews.splice(index, 1);
 		}
 		
 		protected function enterFrameHandler(event:Event):void
 		{
+			if(_move)
+			{
+				cameraController.panAngle = 0.3*(stage.mouseX - _lastMouseX) + _lastPanAngle;
+				cameraController.tiltAngle = 0.3*(stage.mouseY - _lastMouseY) + _lastTiltAngle;
+			}
 			view.render();
+			if(userViews != null)
+			{
+				for each(var userView:SkeletonRenderer in userViews)
+				{
+					userView.render();
+				}
+			}
 			if(rgbSkeletonContainer != null)
 			{
 				rgbSkeletonContainer.graphics.clear();
@@ -225,8 +266,10 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		
 		override protected function stopDemoImplementation():void
 		{
-			trace("[RiggedModelDemo] Stop Demo");
+			trace("[SkeletonBones3DDemo] Stop Demo");
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			stageRef.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			stageRef.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			if(device != null)
 			{
 				device.removeEventListener(DeviceEvent.STARTED, kinectStartedHandler);
@@ -256,5 +299,136 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 				view.height = explicitHeight;
 			}
 		}
+	}
+}
+import away3d.containers.ObjectContainer3D;
+import away3d.entities.Mesh;
+import away3d.materials.ColorMaterial;
+import away3d.primitives.CylinderGeometry;
+
+import com.as3nui.nativeExtensions.air.kinect.data.SkeletonBone;
+import com.as3nui.nativeExtensions.air.kinect.data.User;
+
+import flash.display.Sprite;
+import flash.geom.Matrix3D;
+import flash.geom.Vector3D;
+
+internal class SkeletonRenderer extends ObjectContainer3D
+{
+	
+	public var user:User;
+	
+	private var rootView:BoneView;
+	
+	public function SkeletonRenderer(user:User)
+	{
+		this.user = user;
+		
+		rootView = createBoneView(SkeletonBone.SPINE, 0, 0);
+		
+		var spineView:BoneView = createBoneView(SkeletonBone.SPINE, 100, 0xff0000, rootView);
+		var neckView:BoneView = createBoneView(SkeletonBone.NECK, 40, 0xff0000, spineView);
+		
+		var leftUpperArmView:BoneView = createBoneView(SkeletonBone.LEFT_UPPER_ARM, 100, 0xff0000, spineView);
+		var leftLowerArmView:BoneView = createBoneView(SkeletonBone.LEFT_LOWER_ARM, 100, 0xff0000, leftUpperArmView);
+		
+		var rightUpperArmView:BoneView = createBoneView(SkeletonBone.RIGHT_UPPER_ARM, 100, 0xff0000, spineView);
+		var rightLowerArmView:BoneView = createBoneView(SkeletonBone.RIGHT_LOWER_ARM, 100, 0xff0000, rightUpperArmView);
+		
+		var leftUpperLegView:BoneView = createBoneView(SkeletonBone.LEFT_UPPER_LEG, 100, 0xff0000, rootView);
+		var leftLowerLegView:BoneView = createBoneView(SkeletonBone.LEFT_LOWER_LEG, 100, 0xff0000, leftUpperLegView);
+		
+		var rightUpperLegView:BoneView = createBoneView(SkeletonBone.RIGHT_UPPER_LEG, 100, 0xff0000, rootView);
+		var rightLowerLegView:BoneView = createBoneView(SkeletonBone.RIGHT_LOWER_LEG, 100, 0xff0000, rightUpperLegView);
+	}
+	
+	private function createBoneView(boneName:String, length:uint, color:uint, parentBone:BoneView = null):BoneView
+	{
+		var boneView:BoneView = new BoneView(boneName, length, color);
+		boneView.name = boneName;
+		if(parentBone)
+		{
+			boneView.parentBoneView = parentBone;
+			boneView.parentBoneView.childBoneViews.push(boneView);
+		}
+		addChild(boneView);
+		return boneView;
+	}
+	
+	private function transformBoneAndChildBones(boneView:BoneView):void
+	{
+		var bone:SkeletonBone = user.getBoneByName(boneView.boneName);
+		if(bone)
+		{
+			var m:Matrix3D = bone.orientation.absoluteOrientationMatrix.clone();
+			if(m.determinant == 0) 
+				m.identity();
+			m.appendScale(1, -1, 1);
+			applyTranslation(m, boneView);
+			boneView.transform = m;
+		}
+		else
+		{
+			boneView.rotationX = 0;
+		}
+		for each(var childBoneView:BoneView in boneView.childBoneViews)
+		{
+			transformBoneAndChildBones(childBoneView);
+		}
+	}
+	
+	private function applyTranslation(m:Matrix3D, boneView:BoneView):void
+	{
+		if(boneView.parentBoneView != null && boneView.parentBoneView.transform != null)
+		{
+			var p:Vector3D = new Vector3D(0, boneView.parentBoneView.lenght, 0);
+			p = boneView.parentBoneView.transform.transformVector(p);
+			m.appendTranslation(p.x, p.y, p.z);
+		}
+	}
+	
+	public function render():void
+	{
+		this.x = user.torso.position.world.x * .2;
+		this.y = user.torso.position.world.y * .2;
+		this.z = user.torso.position.world.z * .2;
+		
+		transformBoneAndChildBones(rootView);
+	}
+}
+
+internal class BoneView extends ObjectContainer3D
+{
+	
+	private var _length:uint;
+	
+	public function get lenght():uint
+	{
+		return _length;
+	}
+	
+	private var _boneName:String;
+	
+	public function get boneName():String
+	{
+		return _boneName;
+	}
+	
+	public var framework:String;
+	
+	public var parentBoneView:BoneView;
+	public var childBoneViews:Vector.<BoneView>;
+	
+	public function BoneView(boneName:String, length:uint, color:uint)
+	{
+		_length = length;
+		_boneName = boneName;
+		
+		var m:Mesh = new Mesh(new CylinderGeometry(10, 10, length));
+		m.material = new ColorMaterial(0xff0000);
+		m.y = length * .5;
+		addChild(m);
+		
+		childBoneViews = new Vector.<BoneView>();
 	}
 }

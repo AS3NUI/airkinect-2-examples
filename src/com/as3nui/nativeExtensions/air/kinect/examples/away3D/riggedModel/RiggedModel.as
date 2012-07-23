@@ -1,5 +1,7 @@
 package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 {
+	
+	import away3d.animators.SkeletonAnimator;
 	import away3d.animators.data.SkeletonAnimation;
 	import away3d.animators.data.SkeletonAnimationState;
 	import away3d.animators.skeleton.Skeleton;
@@ -29,7 +31,6 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		private var _skeleton:Skeleton;
 		
 		private var _bodyMaterial:TextureMaterial;
-		
 		private var _animationController:RiggedModelAnimationControllerByJointPosition;
 		
 		public function RiggedModel(user:User)
@@ -38,6 +39,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			
 			AssetLibrary.enableParser(RotatedMD5MeshParser);
 			AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, assetCompleteHandler, false, 0, true);
+			
+			//TODO: check info at http://away3d.com/forum/viewthread/2851/ and get it working with the latest away3D release
 			
 			//you'll need a mesh in T-pose for rotation based rigging to work!
 			AssetLibrary.load(new URLRequest("assets/characters/export/character.md5mesh"));
@@ -53,6 +56,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		{
 			if(event.asset is Mesh)
 				handleMesh(event.asset as Mesh);
+			if(event.asset is Skeleton)
+				handleSkeleton(event.asset as Skeleton);
 			
 			if(everythingIsLoaded())
 				createAnimationController();	
@@ -70,6 +75,11 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 			_skeleton = (_mesh.animationState.animation as SkeletonAnimation).skeleton;
 		}
 		
+		private function handleSkeleton(skeleton:Skeleton):void
+		{
+			//_skeleton = skeleton;
+		}
+		
 		private function everythingIsLoaded():Boolean
 		{
 			return (_mesh != null && _skeleton != null);
@@ -78,6 +88,18 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel
 		private function createAnimationController():void
 		{
 			var jointMapping:Dictionary = createMappingForKinectJointsToMeshBones();
+			
+			//code commented below will be used for latest away3D release
+			/*
+			var skeletonAnimationNode:RiggedModelAnimationNode = new RiggedModelAnimationNode(user, jointMapping);
+			var skeletonAnimationSet:SkeletonAnimationSet = new SkeletonAnimationSet(5);
+			var skeletonAnimationState:SkeletonAnimationState = new SkeletonAnimationState(skeletonAnimationNode);
+			skeletonAnimationSet.addState("airkinect", skeletonAnimationState);
+			var animator:SkeletonAnimator = new SkeletonAnimator(skeletonAnimationSet, _skeleton, false);
+			animator.play("airkinect");
+			_mesh.animator = animator;
+			*/
+			
 			_animationController = new RiggedModelAnimationControllerByJointPosition(user, jointMapping, SkeletonAnimationState(_mesh.animationState));
 		}
 		
