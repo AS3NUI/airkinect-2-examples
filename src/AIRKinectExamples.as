@@ -85,7 +85,7 @@ package
 			}
 			
 			//start default demo
-			currentDemoClass = BasicDemo;
+			currentDemoClass = SkeletonBonesDemo;
 
 			stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
 		}

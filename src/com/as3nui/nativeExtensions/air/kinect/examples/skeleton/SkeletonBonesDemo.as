@@ -157,7 +157,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 			if(skeletonContainer)
 			{
 				skeletonContainer.x = explicitWidth * .5;
-				skeletonContainer.y = explicitHeight * .5;
+				skeletonContainer.y = explicitHeight * .75;
+				skeletonContainer.rotationX = 20;
 			}
 			
 		}
@@ -205,6 +206,10 @@ internal class SkeletonRenderer extends Sprite
 		this.user = user;
 		
 		rootView = createBoneView(SkeletonBone.SPINE, 0, 0);
+		
+		trace("left lower arm bone info:", user.getBoneByName(SkeletonBone.LEFT_LOWER_ARM).startJointName,
+			user.getBoneByName(SkeletonBone.LEFT_LOWER_ARM).endJointName,
+			user.getBoneByName(SkeletonBone.LEFT_LOWER_ARM).parentBoneName);
 		
 		var spineView:BoneView = createBoneView(SkeletonBone.SPINE, 100, 0xff0000, rootView);
 		var neckView:BoneView = createBoneView(SkeletonBone.NECK, 40, 0xff0000, spineView);
@@ -264,14 +269,11 @@ internal class SkeletonRenderer extends Sprite
 			p = boneView.parentBoneView.transform.matrix3D.transformVector(p);
 			m.appendTranslation(p.x, p.y, p.z);
 		}
-		else
-		{
-			//m.appendTranslation(joint.position.worldRelative.x * 320, joint.position.worldRelative.y * 240, joint.position.worldRelative.z);
-		}
 	}
 	
 	public function render():void
 	{
+		this.z = user.torso.position.world.z - 1000;
 		transformBoneAndChildBones(rootView);
 	}
 }

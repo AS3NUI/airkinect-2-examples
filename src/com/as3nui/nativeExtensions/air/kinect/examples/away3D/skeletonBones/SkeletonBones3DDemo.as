@@ -89,8 +89,8 @@ package com.as3nui.nativeExtensions.air.kinect.examples.away3D.skeletonBones
 			player.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, usersWithSkeletonRemovedHandler, false, 0, true);
 			
 			//simulate using a recording
-			//player.playbackDirectoryUrl = File.documentsDirectory.resolvePath("export-openni").url;
-			//player.start(settings);
+			//player.playbackDirectoryUrl = File.documentsDirectory.resolvePath("export-mssdk").url;
+			//splayer.start(settings);
 			
 			//use kinect when the player / simulator is not used
 			if(player.state == DeviceState.STOPPED && Kinect.isSupported())
