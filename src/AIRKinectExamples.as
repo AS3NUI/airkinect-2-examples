@@ -2,7 +2,6 @@ package
 {
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 	import com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel.RiggedModelDemo;
-	import com.as3nui.nativeExtensions.air.kinect.examples.away3D.skeletonBones.SkeletonBones3DDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.basic.BasicDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.DepthCameraDemo;
 	import com.as3nui.nativeExtensions.air.kinect.examples.cameras.InfraredCameraDemo;
@@ -37,7 +36,6 @@ package
 			{label: "User Mask Demo", data: UserMaskDemo},
 			{label: "User Mask Demo Enter Frame", data: UserMaskEnterFrameDemo},
 			{label: "3D Character Demo", data: RiggedModelDemo},
-			{label: "Skeleton Bones 3D", data: SkeletonBones3DDemo},
 			{label: "Record & Playback Demo", data: RecordAndPlayBackDemo}
 		]);
 		

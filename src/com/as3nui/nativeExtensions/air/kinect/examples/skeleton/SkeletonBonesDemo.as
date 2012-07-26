@@ -3,6 +3,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 	import com.as3nui.nativeExtensions.air.kinect.Kinect;
 	import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 	import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
+	import com.as3nui.nativeExtensions.air.kinect.constants.DeviceState;
 	import com.as3nui.nativeExtensions.air.kinect.data.User;
 	import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceErrorEvent;
@@ -10,10 +11,12 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 	import com.as3nui.nativeExtensions.air.kinect.events.DeviceInfoEvent;
 	import com.as3nui.nativeExtensions.air.kinect.events.UserEvent;
 	import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
+	import com.as3nui.nativeExtensions.air.kinect.recorder.KinectPlayer;
 	
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.filesystem.File;
 	import flash.geom.Point;
 	
 	public class SkeletonBonesDemo extends DemoBase
@@ -27,6 +30,7 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 		private var skeletonContainer:Sprite;
 
 		private var settings:KinectSettings;
+		private var player:KinectPlayer;
 		
 		public function SkeletonBonesDemo()
 		{
@@ -55,7 +59,24 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 			skeletonContainer = new Sprite();
 			addChild(skeletonContainer);
 			
-			if(Kinect.isSupported())
+			player = new KinectPlayer();
+			player.addEventListener(DeviceInfoEvent.INFO, deviceInfoHandler, false, 0, true);
+			player.addEventListener(DeviceErrorEvent.ERROR, deviceErrorHandler, false, 0, true);
+			
+			player.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
+			player.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
+			
+			player.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbHandler, false, 0, true);
+			player.addEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthHandler, false, 0, true);
+			
+			player.addEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, skeletonsAddedHandler, false, 0, true);
+			player.addEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, skeletonsRemovedHandler, false, 0, true);
+			
+			//simulate using a recording
+			//player.playbackDirectoryUrl = File.documentsDirectory.resolvePath("export-openni").url;
+			//player.start(settings);
+			
+			if(player.state == DeviceState.STOPPED &&  Kinect.isSupported())
 			{
 				kinect = Kinect.getDevice();
 				
@@ -179,8 +200,23 @@ package com.as3nui.nativeExtensions.air.kinect.examples.skeleton
 				kinect.removeEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, skeletonsAddedHandler, false);
 				kinect.removeEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, skeletonsRemovedHandler, false);
 				
-				trace("[SkeletonBonesDemo] stop kinect");
 				kinect.stop();
+				
+				player.removeEventListener(DeviceInfoEvent.INFO, deviceInfoHandler, false);
+				player.removeEventListener(DeviceErrorEvent.ERROR, deviceErrorHandler, false);
+				
+				player.removeEventListener(DeviceEvent.STARTED, kinectStartedHandler, false);
+				player.removeEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false);
+				
+				player.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbHandler, false);
+				player.removeEventListener(CameraImageEvent.DEPTH_IMAGE_UPDATE, depthHandler, false);
+				
+				player.removeEventListener(UserEvent.USERS_WITH_SKELETON_ADDED, skeletonsAddedHandler, false);
+				player.removeEventListener(UserEvent.USERS_WITH_SKELETON_REMOVED, skeletonsRemovedHandler, false);
+				
+				player.stop();
+				
+				trace("[SkeletonBonesDemo] stop kinect");
 			}
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler, false);
 		}
@@ -193,51 +229,57 @@ import flash.display.Shape;
 import flash.display.Sprite;
 import flash.geom.Matrix3D;
 import flash.geom.Vector3D;
+import flash.utils.Dictionary;
 
 internal class SkeletonRenderer extends Sprite
 {
 	
 	public var user:User;
 	
-	private var rootView:BoneView;
+	private var rootBoneViews:Vector.<BoneView>;
+	private var boneViews:Vector.<BoneView>;
+	private var boneViewsByBoneName:Dictionary;
 	
 	public function SkeletonRenderer(user:User)
 	{
 		this.user = user;
 		
-		rootView = createBoneView(SkeletonBone.SPINE, 0, 0);
-		
-		trace("left lower arm bone info:", user.getBoneByName(SkeletonBone.LEFT_LOWER_ARM).startJointName,
-			user.getBoneByName(SkeletonBone.LEFT_LOWER_ARM).endJointName,
-			user.getBoneByName(SkeletonBone.LEFT_LOWER_ARM).parentBoneName);
-		
-		var spineView:BoneView = createBoneView(SkeletonBone.SPINE, 100, 0xff0000, rootView);
-		var neckView:BoneView = createBoneView(SkeletonBone.NECK, 40, 0xff0000, spineView);
-		
-		var leftUpperArmView:BoneView = createBoneView(SkeletonBone.LEFT_UPPER_ARM, 100, 0xff0000, spineView);
-		var leftLowerArmView:BoneView = createBoneView(SkeletonBone.LEFT_LOWER_ARM, 100, 0xff0000, leftUpperArmView);
-		
-		var rightUpperArmView:BoneView = createBoneView(SkeletonBone.RIGHT_UPPER_ARM, 100, 0xff0000, spineView);
-		var rightLowerArmView:BoneView = createBoneView(SkeletonBone.RIGHT_LOWER_ARM, 100, 0xff0000, rightUpperArmView);
-		
-		var leftUpperLegView:BoneView = createBoneView(SkeletonBone.LEFT_UPPER_LEG, 100, 0xff0000, rootView);
-		var leftLowerLegView:BoneView = createBoneView(SkeletonBone.LEFT_LOWER_LEG, 100, 0xff0000, leftUpperLegView);
-		
-		var rightUpperLegView:BoneView = createBoneView(SkeletonBone.RIGHT_UPPER_LEG, 100, 0xff0000, rootView);
-		var rightLowerLegView:BoneView = createBoneView(SkeletonBone.RIGHT_LOWER_LEG, 100, 0xff0000, rightUpperLegView);
+		createBoneViews();
+		parseBonesStructure();
 	}
 	
-	private function createBoneView(boneName:String, length:uint, color:uint, parentBone:BoneView = null):BoneView
+	private function createBoneViews():void
 	{
-		var boneView:BoneView = new BoneView(boneName, length, color);
-		boneView.name = boneName;
-		if(parentBone)
+		boneViewsByBoneName = new Dictionary();
+		boneViews = new Vector.<BoneView>();
+		for each(var skeletonBone:SkeletonBone in user.skeletonBones)
 		{
-			boneView.parentBoneView = parentBone;
-			boneView.parentBoneView.childBoneViews.push(boneView);
+			var boneView:BoneView = new BoneView(skeletonBone.name, 100, 0xff0000);
+			boneView.name = skeletonBone.name;
+			addChild(boneView);
+			boneViews.push(boneView);
+			boneViewsByBoneName[skeletonBone.name] = boneView;
 		}
-		addChild(boneView);
-		return boneView;
+	}
+	
+	private function parseBonesStructure():void
+	{
+		rootBoneViews = new Vector.<BoneView>();
+		for each(var boneView:BoneView in boneViews)
+		{
+			var skeletonBone:SkeletonBone = user.getBoneByName(boneView.boneName);
+			var parentBone:SkeletonBone = user.getBoneByName(skeletonBone.parentBoneName);
+			if(parentBone)
+			{
+				var parentBoneView:BoneView = boneViewsByBoneName[parentBone.name];
+				parentBoneView.childBoneViews.push(boneView);
+				boneView.parentBoneView = parentBoneView;
+			}
+			else
+			{
+				rootBoneViews.push(boneView);
+			}
+		}
 	}
 	
 	private function transformBoneAndChildBones(boneView:BoneView):void
@@ -274,7 +316,10 @@ internal class SkeletonRenderer extends Sprite
 	public function render():void
 	{
 		this.z = user.torso.position.world.z - 1000;
-		transformBoneAndChildBones(rootView);
+		for each(var rootBoneView:BoneView in rootBoneViews)
+		{
+			transformBoneAndChildBones(rootBoneView);
+		}
 	}
 }
 
