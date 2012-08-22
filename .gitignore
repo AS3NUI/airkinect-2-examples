@@ -1,6 +1,7 @@
 .actionScriptProperties
 .project
-.settings/org.eclipse.core.resources.prefs
+.settings/*
+.idea/*
 build/*
 bin-debug/*
 bin/*
