@@ -77,7 +77,7 @@ public class AIRKinectExamples extends Sprite {
         }
 
         //start default demo
-        currentDemoClass = BasicDemo;
+        currentDemoClass = RGBCameraDemo;
 
         stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
     }

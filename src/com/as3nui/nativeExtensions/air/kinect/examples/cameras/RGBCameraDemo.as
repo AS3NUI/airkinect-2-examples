@@ -4,7 +4,9 @@ import com.as3nui.nativeExtensions.air.kinect.KinectSettings;
 import com.as3nui.nativeExtensions.air.kinect.constants.CameraResolution;
 import com.as3nui.nativeExtensions.air.kinect.constants.Framework;
 import com.as3nui.nativeExtensions.air.kinect.events.CameraImageEvent;
+import com.as3nui.nativeExtensions.air.kinect.events.DeviceErrorEvent;
 import com.as3nui.nativeExtensions.air.kinect.events.DeviceEvent;
+import com.as3nui.nativeExtensions.air.kinect.events.DeviceInfoEvent;
 import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 
 import flash.display.Bitmap;
@@ -22,22 +24,29 @@ public class RGBCameraDemo extends DemoBase {
             addChild(rgbBitmap);
 
             device.addEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler, false, 0, true);
+			device.addEventListener(DeviceInfoEvent.INFO, deviceInfoHandler, false, 0, true);
+			device.addEventListener(DeviceErrorEvent.ERROR, deviceErrorHandler, false, 0, true);
             device.addEventListener(DeviceEvent.STARTED, kinectStartedHandler, false, 0, true);
             device.addEventListener(DeviceEvent.STOPPED, kinectStoppedHandler, false, 0, true);
 
             var settings:KinectSettings = new KinectSettings();
             settings.rgbEnabled = true;
-            if (device.capabilities.framework == Framework.MSSDK) {
-                settings.rgbResolution = CameraResolution.RESOLUTION_1280_960;
-            }
-            else {
-                settings.rgbResolution = CameraResolution.RESOLUTION_640_480;
-            }
+			settings.rgbResolution = CameraResolution.RESOLUTION_1280_960;
 
             device.start(settings);
         }
     }
-
+	
+	protected function deviceErrorHandler(event:DeviceErrorEvent):void
+	{
+		trace("ERROR: " + event.message);
+	}
+	
+	protected function deviceInfoHandler(event:DeviceInfoEvent):void
+	{
+		trace("INFO: " + event.message);
+	}
+	
     protected function kinectStartedHandler(event:DeviceEvent):void {
         trace("[RGBCameraDemo] device started");
     }
@@ -52,6 +61,8 @@ public class RGBCameraDemo extends DemoBase {
             device.removeEventListener(CameraImageEvent.RGB_IMAGE_UPDATE, rgbImageUpdateHandler);
             device.removeEventListener(DeviceEvent.STARTED, kinectStartedHandler);
             device.removeEventListener(DeviceEvent.STOPPED, kinectStoppedHandler);
+			device.removeEventListener(DeviceInfoEvent.INFO, deviceInfoHandler);
+			device.removeEventListener(DeviceErrorEvent.ERROR, deviceErrorHandler);
         }
     }
 
