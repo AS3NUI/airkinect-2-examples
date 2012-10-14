@@ -47,6 +47,7 @@ public class BasicDemo extends DemoBase {
     public var trackingIdsField:InputText;
 
     public var cameraElevationStepper:NumericStepper;
+	public var skeletonSmoothingStepper:NumericStepper;
     public var deviceMessagesField:Text;
 
     private var chosenSkeletonId:int = -1;
@@ -85,6 +86,7 @@ public class BasicDemo extends DemoBase {
             settings.depthResolution = CameraResolution.RESOLUTION_320_240;
             settings.depthShowUserColors = true;
             settings.skeletonEnabled = true;
+			settings.handTrackingEnabled = true;
 
             device.start(settings);
 
@@ -115,6 +117,10 @@ public class BasicDemo extends DemoBase {
                         <CheckBox label="RGB Mirror" id="rgbMirrorCheckBox" event="click:onChkClick"/>
                         <CheckBox label="Depth Mirror" id="depthMirrorCheckBox" event="click:onChkClick"/>
                         <CheckBox label="Skeleton Mirror" id="skeletonMirrorCheckBox" event="click:onChkClick"/>
+						<HBox>
+							<Label text="Skeleton Smoothing:" />
+							<NumericStepper id="skeletonSmoothingStepper" minimum="0" maximum="1" step="0.1" event="change:onStepperChange" />
+						</HBox>
                     </VBox>
                 </HBox>
             </Window>
@@ -146,6 +152,7 @@ public class BasicDemo extends DemoBase {
         rgbMirrorCheckBox.selected = deviceSettings.rgbMirrored;
         depthMirrorCheckBox.selected = deviceSettings.depthMirrored;
         skeletonMirrorCheckBox.selected = deviceSettings.skeletonMirrored;
+		skeletonSmoothingStepper.value = deviceSettings.skeletonSmoothing;
 
         if (nearModeCheckBox) nearModeCheckBox.selected = deviceSettings.nearModeEnabled;
         if (seatedSkeletonCheckBox) seatedSkeletonCheckBox.selected = deviceSettings.seatedSkeletonEnabled;
@@ -182,6 +189,9 @@ public class BasicDemo extends DemoBase {
             case cameraElevationStepper:
                 device.cameraElevationAngle = cameraElevationStepper.value;
                 break;
+			case skeletonSmoothingStepper:
+				device.setSkeletonSmoothing(skeletonSmoothingStepper.value);
+				break;
         }
     }
 

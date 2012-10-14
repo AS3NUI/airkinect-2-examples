@@ -159,6 +159,12 @@ public class KinectPlayerContextBridge extends EventDispatcher implements IConte
 
     public function setNearModeEnabled(nr:uint, enableNearMode:Boolean):void {
     }
+	
+	public function setHandTrackingEnabled(nr:uint, enabled:Boolean):void {
+	}
+	
+	public function setHandTrackingMode(nr:uint, mirrored:Boolean):void {
+	}
 
     public function setPointcloudEnabled(nr:uint, enabled:Boolean):void {
     }
@@ -178,7 +184,7 @@ public class KinectPlayerContextBridge extends EventDispatcher implements IConte
     public function setSkeletonEnabled(nr:uint, enabled:Boolean):void {
     }
 
-    public function setSkeletonMode(nr:uint, mirrored:Boolean, seatedSkeletonEnabled:Boolean, chooseSkeletons:Boolean):void {
+    public function setSkeletonMode(nr:uint, mirrored:Boolean, seatedSkeletonEnabled:Boolean, chooseSkeletons:Boolean, smoothing:Number):void {
     }
 
     public function chooseSkeletons(nr:uint, trackingIds:Vector.<uint>):void {
