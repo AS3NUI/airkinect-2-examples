@@ -14,12 +14,14 @@ import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskDemo;
 import com.as3nui.nativeExtensions.air.kinect.examples.userMask.UserMaskEnterFrameDemo;
 import com.bit101.components.ComboBox;
 
+import flash.display.Screen;
 import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.events.Event;
+import flash.geom.Rectangle;
 
-[SWF(frameRate="60", width="1024", height="500", backgroundColor="#FFFFFF")]
+[SWF(frameRate="60", backgroundColor="#FFFFFF")]
 public class AIRKinectExamples extends Sprite {
 
     public static const DEMO_CLASSES:Vector.<Object> = Vector.<Object>([
@@ -66,6 +68,7 @@ public class AIRKinectExamples extends Sprite {
     public function AIRKinectExamples() {
         stage.align = StageAlign.TOP_LEFT;
         stage.scaleMode = StageScaleMode.NO_SCALE;
+		stage.nativeWindow.bounds = new Rectangle((Screen.mainScreen.bounds.width - 1024) * .5, (Screen.mainScreen.bounds.height - 600) * .5, 1024, 600);
         stage.nativeWindow.visible = true;
 
         demoBox = new ComboBox(this, 10, 10);

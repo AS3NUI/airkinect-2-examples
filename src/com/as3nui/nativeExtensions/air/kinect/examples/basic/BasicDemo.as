@@ -145,7 +145,7 @@ public class BasicDemo extends DemoBase {
         if (deviceCapabilities.hasChooseSkeletonsSupport)
             mainLayout..Window.(@id == "statsWindow")..VBox.appendChild(<CheckBox label="Choose Skeletons" id="chooseSkeletonsCheckBox" event="click:onChkClick"/>);
         if (deviceCapabilities.hasCameraElevationSupport)
-            mainLayout..Window.(@id == "statsWindow")..VBox.appendChild(<NumericStepper id="cameraElevationStepper" minimum="-27" maximum="27" step="1" event="change:onStepperChange" />);
+            mainLayout..Window.(@id == "statsWindow")..VBox.appendChild(<HBox><Label text="Camera Angle:" /><NumericStepper id="cameraElevationStepper" minimum="-27" maximum="27" step="1" event="change:onStepperChange" /></HBox>);
 
         config.parseXML(mainLayout);
 
