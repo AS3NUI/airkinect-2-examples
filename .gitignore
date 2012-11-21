@@ -1,10 +1,10 @@
 .actionScriptProperties
 .project
+.idea
 .settings/org.eclipse.core.resources.prefs
-build/*
-bin-debug/*
-bin/*
-cert/*
-/assets/
-/bin-debug/
-/airkinect-2-examples.iml
+build
+bin-debug
+bin
+cert
+assets
+Airkinect-2-examples.iml
