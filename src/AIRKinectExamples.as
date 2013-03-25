@@ -1,4 +1,5 @@
 package {
+import com.as3nui.nativeExtensions.air.kinect.Kinect;
 import com.as3nui.nativeExtensions.air.kinect.examples.DemoBase;
 import com.as3nui.nativeExtensions.air.kinect.examples.away3D.riggedModel.RiggedModelDemo;
 import com.as3nui.nativeExtensions.air.kinect.examples.basic.BasicDemo;
@@ -75,12 +76,18 @@ public class AIRKinectExamples extends Sprite {
         demoBox.setSize(200, demoBox.height);
         demoBox.addEventListener(Event.SELECT, demoSelectHandler, false, 0, true);
 
-        for each(var demoItem:Object in DEMO_CLASSES) {
-            demoBox.addItem(demoItem);
+        if(Kinect.isSupported()) {
+            for each(var demoItem:Object in DEMO_CLASSES) {
+                demoBox.addItem(demoItem);
+            }
+            
+            //start default demo
+            currentDemoClass = BasicDemo;
         }
-
-        //start default demo
-        currentDemoClass = BasicDemo;
+        else {
+            demoBox.addItem("Kinect Not Supported");
+            demoBox.selectedIndex = 0;
+        }
 
         stage.addEventListener(Event.RESIZE, resizeHandler, false, 0, true);
     }
