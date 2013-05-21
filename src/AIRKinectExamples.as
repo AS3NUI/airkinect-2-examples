@@ -5,6 +5,7 @@ import com.as3nui.nativeExtensions.air.kinect.examples.basic.BasicDemo;
 import com.as3nui.nativeExtensions.air.kinect.examples.cameras.DepthCameraDemo;
 import com.as3nui.nativeExtensions.air.kinect.examples.cameras.InfraredCameraDemo;
 import com.as3nui.nativeExtensions.air.kinect.examples.cameras.RGBCameraDemo;
+import com.as3nui.nativeExtensions.air.kinect.examples.gripRelease.GripReleaseExample;
 import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudDemo;
 import com.as3nui.nativeExtensions.air.kinect.examples.pointCloud.PointCloudRegionsDemo;
 import com.as3nui.nativeExtensions.air.kinect.examples.record.RecordAndPlayBackDemo;
@@ -36,7 +37,8 @@ public class AIRKinectExamples extends Sprite {
         {label:"User Mask Demo", data:UserMaskDemo},
         {label:"User Mask Demo Enter Frame", data:UserMaskEnterFrameDemo},
         {label:"3D Character Demo", data:RiggedModelDemo},
-        {label:"Record & Playback Demo", data:RecordAndPlayBackDemo}
+		{label:"Record & Playback Demo", data:RecordAndPlayBackDemo},
+		{label:"Hand Grab/Release (MSSDK)", data:GripReleaseExample},
     ]);
 
     private var _currentDemoIndex:int = -1;
