@@ -31,8 +31,8 @@
         </excludedEntries>
       </libraryPathEntry>
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
-      <libraryPathEntry kind="3" linkType="1" path="libs/airkinect-2-core-openni.ane" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="5" linkType="2" path="libs/airkinect-2-core-openni.ane"/>
+      <libraryPathEntry kind="3" linkType="1" path="libs/airkinect-2-core-mssdk.ane" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="5" linkType="2" path="libs/airkinect-2-core-mssdk.ane"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
@@ -49,7 +49,7 @@
       <airSettings airCertificatePath="" airTimestamp="true" anePathSet="true" version="1">
         <airExcludes/>
         <anePaths>
-          <anePathEntry path="/Users/wouter/Documents/experiments/as3nui/airkinect-2-examples/libs/airkinect-2-core-openni.ane"/>
+          <anePathEntry path="C:/Users/wouter/Documents/Experiments/as3nui/airkinect-2-examples/libs/airkinect-2-core-mssdk.ane"/>
         </anePaths>
       </airSettings>
       <actionScriptSettings version="1"/>
